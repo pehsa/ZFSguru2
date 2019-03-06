@@ -1,0 +1,70 @@
+
+<h1>Update web-interface</h1>
+
+<p>
+ The ZFSguru web-interface can be updated independently of the current installed
+ system version. Updating is very easy, just click the update button on a desired
+ web-interface version and it becomes active immediately.
+ After updating, some parts of the interface may not display correctly because of
+ browser cache. Please click the refresh button after updating to correct this.
+</p>
+
+<div>
+<form enctype="multipart/form-data" action="system.php?update&submit"
+ method="post">
+<input type="hidden" name="handle" value="system_update" />
+
+<div class="update_easyupdate">
+<h2>Update status</h2>
+<div class="colorbox_green %%CLASS_EU_NOUPDATE%%">
+ You are running the latest web-interface version: 
+ <b>%%CURRENT_VERSION%%</b>.
+</div>
+<div class="colorbox_amber %%CLASS_EU_UPDATE%%">
+ You can update to version <b>%%EU_VERSION%%</b> by clicking this button:
+ <input type="submit" name="updatewebi_%%EU_B64%%" 
+  value="Update to %%EU_VERSION%%" />
+</div>
+<div class="colorbox_red %%CLASS_EU_UNKNOWN%%">
+ You are running an <b><u>unknown version</u></b> and ZFSguru could not 
+ determine the proper update branche.
+</div>
+</div><!-- div.update_easyupdate -->
+
+<div class="update_recentupdates">
+<h2>Recent updates</h2>
+<table class="widetable hover">
+<tr>
+ <th>Version</th>
+ <th>Branch</th>
+ <th>Date</th>
+ <th></th>
+</tr>
+%%TABLE_WEBIVERSIONS%%
+<tr class="%%CLASS_WEBI%%">
+ <td>%%WEBI_VERSION%%</td>
+ <td class="%%CLASS_BRANCH%%">%%WEBI_BRANCH%%</td>
+ <td>%%WEBI_DATE%%</td>
+ <td class="right">
+  <input type="submit" name="updatewebi_%%WEBI_B64%%" value="Update"
+   %%WEBI_UPDATE%% />
+ </td>
+</tr>
+%%TABLE_WEBIVERSIONS_END%%
+<tr>
+ <th class="center %%CLASS_NOWEBI%%" colspan="4">
+  No web-interface versions detected in GuruDB database. This is weird!
+ </th>
+</tr>
+</table>
+</div><br />
+
+<h2>Manual update</h2>
+<p>Alternatively, you can update the web interface by HTTP file upload:</p>
+
+<input type="file" name="import_webgui" />
+<input type="submit" name="submit_import_webgui" value="Import web-interface" />
+
+</form>
+</div>
+

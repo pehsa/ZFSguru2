@@ -1,0 +1,110 @@
+<h1>Network Interfaces</h1>
+
+<table class="widetable hover networklist">
+<tr>
+ <th>Interface</th>
+ <th>Identification</th>
+ <th>Status</th>
+ <th>IP address</th>
+ <th>MAC address</th>
+ <th>MTU</th>
+</tr>
+%%TABLE_NETWORK_IFLIST%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark networkname">
+  <img src="theme/default/pango/network-wired-22.png" alt=""
+   class="%%CLASS_WIRED%%" title="Wired network interface" />
+  <img src="theme/default/pango/network-wireless-22.png" alt=""
+   class="%%CLASS_WIRELESS%%" title="Wireless network interface" />
+  <img src="theme/default/pango/network-loopback-22.png" alt=""
+   class="%%CLASS_LOOPBACK%%" title="System loopback adapter" />
+  <img src="theme/default/pango/network-other-22.png" alt=""
+   class="%%CLASS_OTHER%%" title="Other network interface" />
+  <b><a href="network.php?query=%%IF_NAME%%">%%IF_NAME%%</a></b>
+ </td>
+ <td class="network_identstring">%%IF_IDENT%%</td>
+ <td><b>%%IF_STATUS%%</b></td>
+ <td>%%IF_IP%%</td>
+ <td class="grey">%%IF_MAC%%</td>
+ <td>%%IF_MTU%%</td>
+</tr>
+%%TABLE_NETWORK_IFLIST_END%%
+</table>
+
+<h2>Interface %%QUERY_IFNAME%%</h2>
+
+<table class="widetable">
+<tr>
+ <th style="width:200px">Name</th>
+ <th>Value</th>
+ <th style="width:150px">Action</th>
+</tr>
+<tr>
+ <td>Interface name</td>
+ <td><b>%%QUERY_IFNAME%%</b></td>
+ <td></td>
+</tr><tr>
+ <td>Identification</td>
+ <td>%%QUERY_IDENT%%</td>
+ <td></td>
+</tr><tr>
+ <td>Status</td>
+ <td><b>%%QUERY_STATUS%%</b></td>
+ <td></td>
+</tr><tr>
+ <td>Link speed</td>
+ <td>%%QUERY_LINKSPEED%%</td>
+ <td></td>
+</tr><tr>
+ <td>Flags</td>
+ <td>%%QUERY_FLAGS%%</td>
+ <td></td>
+</tr><tr>
+ <td>Capabilities</td>
+ <td>%%QUERY_CAPABILITIES%%</td>
+ <td></td>
+</tr><tr>
+ <td>MAC address</td>
+ <td>%%QUERY_MAC%%</td>
+ <td></td>
+</tr><tr>
+ <td>MTU</td>
+ <td>%%QUERY_MTU%% bytes</td>
+ <td></td>
+</tr>
+</table><br />
+
+<h2>IPv4 addresses</h2>
+
+<table class="widetable network_iptable">
+<tr>
+ <th>IP address</th>
+ <th>Subnet</th>
+ <th>Broadcast</th>
+</tr>
+%%TABLE_NETWORK_IPV4%%
+<tr>
+ <td>%%IPV4_IP%%</td>
+ <td>%%IPV4_SUBNET%%</td>
+ <td>%%IPV4_BROADCAST%%</td>
+</tr>
+%%TABLE_NETWORK_IPV4_END%%
+</table><br />
+
+<h2>IPv6 addresses</h2>
+
+<table class="widetable network_iptable">
+<tr>
+ <th>IP address</th>
+ <th>Prefix length</th>
+ <th>Scope</th>
+</tr>
+%%TABLE_NETWORK_IPV6%%
+<tr>
+ <td>%%IPV6_IP%%</td>
+ <td>%%IPV6_PREFIXLEN%%</td>
+ <td>%%IPV6_SCOPEID%%</td>
+</tr>
+%%TABLE_NETWORK_IPV6_END%%
+</table><br />
+

@@ -1,0 +1,213 @@
+#!/bin/sh
+
+##
+## ZFSguru Tuning script
+##
+
+# PROVIDE: zfsguru-tuning
+# REQUIRE: DAEMON
+# BEFORE: ctld
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="zfsguru_tuning"
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+rcvar="${name}_enable"
+
+: ${zfsguru_tuning_enable="NO"}
+: ${zfsguru_tuning_apm_enable="NO"}
+: ${zfsguru_tuning_apm_disks=""}
+: ${zfsguru_tuning_apm_level="254"}
+: ${zfsguru_tuning_spindown_enable="NO"}
+: ${zfsguru_tuning_spindown_disks=""}
+: ${zfsguru_tuning_spindown_timer="900"}
+: ${zfsguru_tuning_arc_warmup_enable="NO"}
+: ${zfsguru_tuning_encryption_enable="NO"}
+: ${zfsguru_tuning_iscsi_enable="NO"}
+: ${zfsguru_tuning_ramdisk_tmp_enable="NO"}
+: ${zfsguru_tuning_configureswap_enable="NO"}
+
+# variables
+SCRIPTVER="2"
+TAG="\e[1;33m[ZFSGURU-TUNING]\033[0m "
+
+
+zfsguru_tuning_start()
+{
+ echo
+ echo -e "${TAG}Starting ZFSguru tuning script version ${SCRIPTVER}"
+ echo
+ if checkyesno ${name}_enable
+ then
+
+  # APM - Advanced Power Management 
+  if checkyesno ${name}_apm_enable
+  then
+   zfsguru_tuning_apm
+  fi
+
+  # Spindown - harddrive spindown timer
+  if checkyesno ${name}_spindown_enable
+  then
+   zfsguru_tuning_spindown
+  fi
+
+  # ARC warmup (pre-cache filesystem metadata at startup)
+  if checkyesno ${name}_arc_warmup_enable
+  then
+   zfsguru_tuning_arc_warmup
+  fi
+
+  # Encryption - unlocks encrypted ZVOL containers
+  if checkyesno ${name}_encryption_enable
+  then
+   zfsguru_tuning_encryption
+  fi
+ 
+  # iSCSI - activates iSCSI configuration in /etc/ctl.conf
+  if checkyesno ${name}_iscsi_enable
+  then
+   zfsguru_tuning_iscsi
+  fi
+
+  # ramdisk on /tmp
+  if checkyesno ${name}_ramdisk_tmp_enable
+  then
+   zfsguru_tuning_ramdisk_tmp
+  fi
+ 
+  # Configure SWAP devices
+  if checkyesno ${name}_configureswap_enable
+  then
+   zfsguru_tuning_configureswap
+  fi
+
+ else
+  echo "${name} run control is disabled in rc.conf"
+ fi
+
+ # done
+ echo -e "${TAG}Finished ZFSguru tuning script"
+ echo
+}
+
+zfsguru_tuning_apm()
+{
+ echo -e "\033[1;37mAdvanced Power Management (APM)\033[0m"
+ for DISK in ${zfsguru_apm_disks}
+ do
+  APM_HEX=`printf "%X" ${zfsguru_apm_level}`
+  echo "setting disk ${DISK} to APM level ${zfsguru_apm_level} (${APM_HEX})"
+  camcontrol cmd ${DISK} -a "EF 05 00 00 00 00 00 00 00 00 ${APM_HEX} 00"
+ done
+ echo
+}
+
+zfsguru_tuning_spindown()
+{
+ echo -e "\033[1;37mHarddrive spindown timer\033[0m"
+ echo "note: harddrives may spindown immediately when enabling this!"
+ for DISK in ${zfsguru_spindown_disks}
+ do
+  echo "enabling spindown for disk ${DISK} (${zfsguru_spindown_timer} seconds)"
+  camcontrol standby ${DISK} -t ${zfsguru_spindown_timer}
+ done
+ echo
+}
+
+zfsguru_tuning_arc_warmup()
+{
+ echo -e "\033[1;37mAdaptive Replacement Cache (ARC) warmup\033[0m"
+ echo "note: this happens in background while system continues to boot"
+ echo "beware of slower performance until the scan is finished!"
+ find / > /dev/null 2>&1 &
+ echo
+}
+
+zfsguru_tuning_encryption()
+{
+ echo -e "\033[1;37mEncrypted ZFS volumes\033[0m"
+
+ # scan for ZFS volumes (ZVOLs) with encryption parameter set
+ ZVOLS=`/sbin/zfs get -t volume zfsguru:encryption`
+
+ # process each ZVOL
+ if [ -z "${ZVOLS}" ]
+ then
+  echo "no encrypted volumes found"
+ else
+  IFS=$'\n'
+  for ZVOL in ${ZVOLS}
+  do
+   echo ${ZVOL}
+  done
+ fi
+ echo
+}
+
+zfsguru_tuning_iscsi()
+{
+ echo -e "\033[1;37mNative iSCSI targets\033[0m"
+ echo "this feature will be available in a future ZFSguru release"
+ echo
+}
+
+zfsguru_tuning_ramdisk_tmp()
+{
+ echo -e "\033[1;37mRAMdisk on /tmp\033[0m"
+ # check if not already mounted
+ TMPFSMOUNTED=`mount | grep "on /tmp (tmpfs, local)$"`
+ if [ -z "${TMPFSMOUNTED}" ]
+ then
+  echo "mounting tmpfs on /tmp"
+  mount -t tmpfs tmpfs /tmp
+  chmod 1777 /tmp
+ else
+  echo "tmpfs already mounted on /tmp"
+ fi
+ echo
+}
+
+zfsguru_tuning_configureswap()
+{
+ echo -e "\033[1;37mConfigure SWAP devices\033[0m"
+ GPTDEVICES=`ls -1 /dev/gpt | grep "^SWAP\-"`
+ for GPTDEVICE in ${GPTDEVICES}
+ do
+  echo "activating AES-encrypted swap on gpt/${GPTDEVICE}"
+  geli onetime /dev/gpt/${GPTDEVICE}
+  swapon /dev/gpt/${GPTDEVICE}.eli
+ done
+ if [ -z "${GPTDEVICES}" ]
+ then
+  echo "no dedicated SWAP partitions found"
+ fi
+ echo
+}
+
+zfsguru_tuning_stop()
+{
+ echo
+ echo -e "${TAG}Shutting down..."
+
+ if checkyesno ${name}_enable
+ then
+ 
+  # stop ARC warmup (kill all find commands still running)
+  if checkyesno ${name}_arc_warmup_enable
+  then
+   echo "* stopping all find commands which may be running"
+   killall find
+   echo "* done"
+  fi
+
+ fi
+ echo
+ echo -e "${TAG}Finished shutdown"
+ echo
+}
+
+load_rc_config ${name}
+run_rc_command "$1"

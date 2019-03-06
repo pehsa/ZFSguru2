@@ -1,0 +1,60 @@
+
+<div class="%%CLASS_BULLETINLIST%%">
+<h1>Bulletin</h1>
+<p>
+ Bulletins are messages from the authors of ZFSguru. 
+ They may contain important information, such as discovered bugs or important
+ information about new releases.
+ It can also be used for less urgent messages, such as development progress.
+</p>
+
+<form enctype="multipart/form-data" method="post" 
+ action="zfsguru.php?bulletin&submit">
+<input type="hidden" name="handle" value="bulletin" />
+<input type="submit" name="submit_bulletin_viewall" value="View all" />
+<input type="submit" name="submit_bulletin_viewunread" value="View unread"/> &bullet; 
+<input type="submit" name="submit_bulletin_typegen" 
+ value="General" />
+<input type="submit" name="submit_bulletin_typerel" 
+ value="Release" />
+<input type="submit" name="submit_bulletin_typesec" 
+ value="Security" />
+<input type="submit" name="submit_bulletin_typepro" 
+ value="Problem" />
+<input type="submit" name="submit_bulletin_typedev" 
+ value="Development" />
+
+<input type="submit" name="submit_bulletin_markread" 
+ value="Mark all messages as read" />
+</form><br />
+
+<table class="widetable hover">
+<tr>
+ <th class="center" colspan="4">Bulletin messages</th>
+</tr>
+%%TABLE_BULLETINS%%
+<tr class="%%CLASS_ROW%%">
+ <td style="width:25px"><span class="minortext">%%BULL_ID%%</span></td>
+ <td style="width:110px"><span class="minortext"><a href="zfsguru.php?bulletin&type=%%BULL_TYPESHORT%%">[%%BULL_TYPELONG%%]</a></span></td>
+ <td class="%%CLASS_BOLD%%">
+  <a href="zfsguru.php?bulletin=%%BULL_ID%%">%%BULL_TITLE%%</a>
+ </td>
+ <td class="right"><span class="minortext">%%BULL_CREATED%%</span></td>
+</tr>
+%%TABLE_BULLETINS_END%%
+</table>
+</div>
+
+<div class="%%CLASS_BULLETIN%%">
+<a href="zfsguru.php?bulletin">&laquo; Go back to bulletin overview</a><br /><br />
+<h1>%%BULLETIN_TITLE%%</h1>
+<div class="bulletin_body">%%BULLETIN_BODY%%</div>
+<span class="minortext">
+ <span style="color:#222">Created:</span> %%BULLETIN_CREATED%%
+  <span class="%%CLASS_MODIFIED%%"><br />
+  <span style="color:#222">Modified:</span>
+   %%BULLETIN_MODIFIED%%
+  </span>
+ </span>
+</div>
+

@@ -1,0 +1,141 @@
+<h1>Memory disks</h1>
+
+<div>
+<form enctype="multipart/form-data" method="post" action="disks.php?mem&submit">
+<input type="hidden" name="handle" value="disks_memory" />
+
+<p>
+ Memory disks can be used for various purposes, such as testing the performance
+ gain of separate log devices or network performance testing via Samba.
+</p>
+
+<table class="widetable hover disks_memory">
+<tr>
+ <th>Disk</th>
+ <th>Size (legacy)</th>
+ <th>Size (binary)</th>
+ <th>Sector</th>
+ <th>Backing</th>
+ <th style="width:1px"></th>
+</tr>
+%%TABLE_MEMDISKS%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark diskname">
+  <img src="theme/default/pango/disk-memdisk-16.png" alt=""
+   title="Memory disk - contents will be gone on reboot!" />
+  <b>%%DISK_NAME%%</b>
+ </td>
+ <td>%%DISK_SIZE_LEGACY%%</td>
+ <td>%%DISK_SIZE_BINARY%%</td>
+ <td class="%%DISK_CLASS_SECTOR%%">%%DISK_SIZE_SECTOR%%</td>
+ <td>%%DISK_BACKING%%</td>
+ <td>
+  <input type="submit" name="md_destroy_%%DISK_NAME%%" value="Destroy" />
+ </td>
+</tr>
+%%TABLE_MEMDISKS_END%%
+<tr class="%%CLASS_NOMEMDISKS%%">
+ <td class="center" colspan="6">
+ No memory disks have been configured yet.
+ </td>
+</tr>
+</table><br /><br />
+
+<div class="%%CLASS_VNODE_DESTROY%%">
+<h2>Destroying a file-backed memory disk</h2>
+<p>
+ <b class="red">Caution:</b> 
+ the memory disk you want to destroy is backed by an existing file:
+ <b>%%VNODE_FILE%%</b>
+</p>
+<input type="hidden" name="md_destroy_unit" value="%%VNODE_MDUNIT%%" />
+<input type="hidden" name="md_destroy_file" value="%%VNODE_FILE%%" />
+<input type="submit" name="md_destroy_vnode" 
+ value="Destroy memory disk including file" />
+<input type="submit" name="md_destroy_vnode_keepfile" 
+ value="Destroy memory disk but keep the file" />
+<input type="submit" name="md_donothing" value="Cancel - don't do anything" />
+<br /><br /><br />
+</div>
+
+<h2>Create new memory disk</h2>
+<table class="widetable">
+<tr>
+ <td class="dark bold">Memory disk number</td>
+ <td>
+  <select name="md_unit">
+   <option value="auto">Automatic assignment</option>
+%%TABLE_MD_UNITS%%
+   <option value="%%MD_UNIT_VALUE%%">%%MD_UNIT_NAME%%</option>
+%%TABLE_MD_UNITS_END%%
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark bold">Memory backing</td>
+ <td>
+  <input type="radio" name="md_type" value="swap" checked="checked" />swap 
+  backed (use RAM memory but fallback to swap when needed)<br />
+  <input type="radio" name="md_type" value="malloc" />memory backed
+  (no swapping)<br />
+  <input type="radio" name="md_type" value="vnode" />file backed
+  (requires file)<br />
+ </td>
+</tr><tr>
+ <td class="dark bold">File</td>
+ <td>
+  Full path to file: <input type="text" name="md_file" size="60" /><br />
+  <span class="minortext">
+   Only enter when using file backing.
+   If the file does not exist, it will be created.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark bold">Size</td>
+ <td>
+  <input type="text" name="md_size" value="1" />
+  <select name="md_size_unit">
+   <option value="">Sectors</option>
+   <option value="k">Kilobyte (KiB)</option>
+   <option value="m">Megabyte (MiB)</option>
+   <option value="g" selected="selected">Gigabyte (GiB)</option>
+   <option value="t">Terabyte (TiB)</option>
+  </select><br />
+  <span class="minortext">
+   (ignored when using file backed memory disk with existing file)
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark bold">Sector size (advanced)</td>
+ <td>
+  <select name="md_sectorsize">
+   <option value="512">512 bytes</option>
+   <option value="1024">1 KiB</option>
+   <option value="2048">2 KiB</option>
+   <option value="4096">4 KiB</option>
+   <option value="8192">8 KiB</option>
+   <option value="16384">16 KiB</option>
+   <option value="32768">32 KiB</option>
+   <option value="65536">64 KiB</option>
+   <option value="131072">128 KiB</option>
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark bold">Options</td>
+ <td>
+  <input type="checkbox" name="md_opt_reserve" />Reserve space at creation
+  <span class="minortext">(recommended for memory backing)</span><br />
+  <input type="checkbox" name="md_opt_compress" />Enable compression<br />
+  <input type="checkbox" name="md_opt_readonly" />Read-only memory disk
+  <span class="minortext">(useful for file backing)</span><br />
+ </td>
+</tr><tr>
+ <td class="dark bold"></td>
+ <td>
+  <input type="submit" name="md_create" value="Create memory disk" />
+ </td>
+</tr>
+</table>
+
+</form>
+</div>
+

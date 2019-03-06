@@ -1,0 +1,33 @@
+
+/* query service */
+
+table.qservice
+{
+width:60%;
+}
+
+div.qservice_panel
+{
+ztext-align:center;
+}
+
+div.qservice_panel a, div.qservice_panel a:visited
+{
+color:#262;
+font-weight:bold;
+text-decoration:none;
+}
+
+div.qservice_panel a:hover
+{
+color:#141;
+}
+
+/* service system image table */
+
+table.infopage_sysver
+{
+text-align:left;
+font-weight:normal;
+}
+

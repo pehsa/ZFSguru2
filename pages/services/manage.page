@@ -1,0 +1,111 @@
+
+<div class="%%CLASS_SERVICES%%">
+<table class="widetable flattable servicepanels">
+<tr>
+ <th colspan="3">ZFSguru service panels</th>
+</tr>
+%%TABLE_SERVICEPANELS%%
+<tr>
+ <td colspan="3">&nbsp;</td>
+</tr>
+<tr class="center">
+ <td>
+  <a class="%%CLASS_HIDDEN_ONE%%" href="services.php?panel=%%PANEL_ONE%%">
+  <img class="noborder" src="internal.php?servicebigicon=%%PANEL_ONE%%"
+   alt="" /></a>
+ </td>
+ <td>
+  <a class="%%CLASS_HIDDEN_TWO%%" href="services.php?panel=%%PANEL_TWO%%">
+  <img class="noborder" src="internal.php?servicebigicon=%%PANEL_TWO%%"
+   alt="" /></a>
+ </td>
+ <td>
+  <a class="%%CLASS_HIDDEN_THREE%%" href="services.php?panel=%%PANEL_THREE%%">
+  <img class="noborder" src="internal.php?servicebigicon=%%PANEL_THREE%%"
+   alt="" /></a>
+ </td>
+</tr><tr class="center">
+ <td><a href="services.php?panel=%%PANEL_ONE%%">%%PANEL_ONE_LONG%%</a></td>
+ <td><a href="services.php?panel=%%PANEL_TWO%%">%%PANEL_TWO_LONG%%</a></td>
+ <td><a href="services.php?panel=%%PANEL_THREE%%">%%PANEL_THREE_LONG%%</a></td>
+</tr>
+<tr>
+ <td colspan="3">&nbsp;</td>
+</tr>
+%%TABLE_SERVICEPANELS_END%%
+</table><br />
+</div>
+
+<div class="%%CLASS_SERVICES%%">
+<form enctype="multipart/form-data" method="post" 
+ action="services.php?manage&submit">
+<input type="hidden" name="handle" value="services_manage" />
+
+<h2>Manage services</h2>
+<p>The following services are installed:</p>
+
+<table class="widetable hover servicemanagetable">
+<tr>
+ <th>Name</th>
+ <th>Category</th>
+ <th>Upgrade</th>
+ <th>Status</th>
+ <th>Control</th>
+ <th>Autostart</th>
+</tr>
+%%TABLE_SERVICELIST%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark bold servicename">
+  <img src="%%SERVICE_ICON%%" alt="" />
+  <a href="services.php?manage&query=%%SERVICE_NAME%%">%%SERVICE_LONGNAME%%</a>
+ </td>
+ <td class="service_cat"><span>%%SERVICE_CAT%%</span></td>
+ <td class="serviceupgrade">
+  <a class="%%CLASS_UPGRADE%%" href="services.php?manage&query=%%SERVICE_NAME%%">
+   <img src="theme/default/pango/service-upgrade-16.png" alt="" />
+   <span class="%%CLASS_UPGRADE%% green">Upgrade available</span>
+  </a>
+  <span class="minortext %%CLASS_NOUPGRADE%%">-</span>
+  <span class="hidden">
+%%SERVICE_VER_EXT%% <span class="minortext">(%%SERVICE_VER_PROD%%)</span>
+  </span>
+ </td>
+ <td class="%%CLASS_STATUS%% bold">%%SERVICE_STATUS%%</td>
+ <td class="servicelist_stopstart">
+  <input class="%%CLASS_STARTBUTTON%%" name="svc_start_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-start-16.png" alt=""
+   title="Start service" />
+  <input class="%%CLASS_STOPBUTTON%%" name="svc_stop_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-stop-16.png" alt=""
+   title="Stop service" />
+ </td>
+ <td class="servicelist_autostart">
+  <input class="%%CLASS_AUTOSTART_Y%%" name="svc_autostart_n_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-autostart-14.png" alt=""
+   title="Autostart enabled; click to disable" />
+  <input class="%%CLASS_AUTOSTART_N%%" name="svc_autostart_y_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-noautostart-14.png" alt=""
+   title="Autostart disabled; click to automatically start" />
+  <img class="%%CLASS_AUTOSTART_P%%" title="incapable of autostart" alt="-" 
+   src="theme/default/pango/service-cantautostart-14.png" />
+ </td>
+</tr>
+%%TABLE_SERVICELIST_END%%
+</table>
+
+<p>
+<b>Note:</b> 
+Select a service by clicking on its name for more options.
+</p>
+
+</form>
+</div>
+
+<div class="%%CLASS_NOSERVICES%%">
+<h2>No services installed</h2>
+<p>
+ To add a new service, 
+ go to the <a href="services.php?manage&install">Install Services</a> page.
+</p>
+</div>
+

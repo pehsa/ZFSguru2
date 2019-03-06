@@ -1,0 +1,82 @@
+
+<h1>Upgrade pool %%POOL_NAME%%</h1>
+
+<p>
+ Upgrading a pool can be done at any time and the new features will be available
+ instantly.
+</p>
+<p>
+ <b class="red">Caution!</b><br />
+ Once you upgrade <b>you can never downgrade</b> again!
+ If you migrate to another system with a lower supported ZFS pool version, 
+ the pool will be inaccessible to that system.
+</p>
+
+<div>
+<form enctype="multipart/form-data" method="post"
+ action="pools.php?query=%%POOLNAME%%&upgrade">
+<input type="hidden" name="handle" value="pools_upgrade" />
+<input type="hidden" name="poolname" value="%%POOLNAME%%" />
+
+<table class="widetable hover">
+<tr>
+ <th>Version</th>
+ <th>Description</th>
+ <th>Upgrade</th>
+</tr>
+%%TABLE_SPAVERSIONS%%
+<tr>
+ <td>%%SPA_VER%%</td>
+ <td>%%SPA_DESC%%</td>
+ <td>
+  <span class="%%SPA_DOWNGRADE%% grey">
+   <i>downgrading is impossible</i>
+  </span>
+  <span class="%%SPA_UPGRADE%%">
+   <input type="radio" name="pool_newversion" value="%%SPA_VER%%" 
+   %%SPA_SELECT%% /> 
+   Upgrade to version <b>%%SPA_VER%%</b>
+  </span>
+  <span class="%%SPA_CURRENT%%">
+   <b>Current version</b>
+  </span>
+  <span class="%%SPA_SYSTEMLOW%% grey">
+   <i>not supported by system</i>
+  </span>
+ </td>
+</tr>
+%%TABLE_SPAVERSIONS_END%%
+<tr class="activerow">
+ <td><b>5000</b></td>
+ <td>
+  ZFS feature flags<br />
+  <span class="minortext">
+   Development on new ZFS features continues. 
+   v5000 adds <i>feature flags</i> such as the new LZ4-compression.
+  </span>
+ </td>
+ <td>
+  <span class="%%V5000_UPGRADE%%">
+   <input type="radio" name="pool_newversion" value="5000"
+    %%V5000_SELECT%% />
+   Upgrade to version <b>5000</b>
+  </span>
+  <span class="%%V5000_CURRENT%%">
+   <b>Current version</b>
+  </span>
+  <span class="grey %%V5000_NOSUPPORT%%">
+   <i>not supported by system</i>
+  </span>
+ </td>
+</tr>
+</table><br />
+
+<input class="%%CLASS_CANUPGRADE%% red" type="submit" name="submit_upgradepool" 
+ value="Upgrade pool" />
+<span class="%%CLASS_CANTUPGRADE%%">
+ No upgrade available
+</span>
+<input type="submit" name="submit_goback" value="Go back" />
+</form>
+</div>
+

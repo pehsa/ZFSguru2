@@ -1,0 +1,90 @@
+
+<div class="tower">
+<div class="tower-start">
+ <h1 class="tower-title">
+  <acronym title="Preboot eXecution Environment">PXE</acronym> network boot
+ </h1>
+</div>
+<div class="tower-base tower-info">
+ <div style="width:95%; text-align:left; margin:0 auto">
+  <p>
+   Preboot eXecution Environment (PXE) is a method of booting a computer
+   via the network and without requiring any local disks or USB stick.
+   Everything is done via the local network.
+  </p>
+  <p>
+   It works like this:<br />
+   <ul>
+    <li>A client computer on the local network tries to initiate <acronym 
+     title="Preboot eXecution Environment">PXE</acronym> network boot.</li>
+    <li>PXE assigns an IP address via DHCP but also the address and filename 
+     of the initial boot file.</li>
+    <li>PXE downloads the initial boot file using TFTP (Trivial FTP).</li>
+    <li>The client tries to boot that file, which is a boot manager that can
+     boot Linux and other stuff.</li>
+    <li>The boot manager will select an operating system to load and tries
+     to download kernel and initial ramdisk.</li>
+    <li>Finally, once the operating system has started, it will either use
+     NFS or iSCSI to get the real system disk over the network.</li>
+   </ul>
+  </p>
+  <p>
+   This allows you to use one server to host the system drives or many client
+   systems. Just remember that you need to configure the BIOS to enable the option
+   Network Option ROM or Network Boot ROM. It also needs to be selected in the
+   boot sequence.
+  </p>
+ </div>
+</div>
+<div class="tower-base">
+ <p>TFTP Toggle On/Off</p>
+</div>
+<div class="tower-base tower-error">
+ <p>Cannot enable: blabla error!</p>
+</div>
+<div class="tower-base">
+ <h2 class="tower-subtitle">Contents: 28M</h2>
+ <p>du -Ash pxe</p>
+</div>
+<div class="tower-base tower-advanced">
+ <h2 class="tower-subtitle">Advanced TFTP configuration</h2>
+ <div>
+
+<table class="widetable left">
+<tr><th colspan="3">Advanced TFTP configuration</th></tr>
+%%TABLE_TFTP_STRING%%
+<tr>
+ <td class="bold">%%TFTP_STRING_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="activate_tftp_%%TFTP_STRING_NAME%%"
+   %%TFTP_STRING_ACTIVATED%% />
+ </td>
+ <td>
+  <input type="text" name="string_tftp_%%TFTP_STRING_NAME%%"
+   value="%%TFTP_STRING_VALUE%%" style="width:400px" />
+ </td>
+</tr>
+%%TABLE_TFTP_STRING_END%%
+%%TABLE_TFTP_SWITCH%%
+<tr>
+ <td class="bold">%%TFTP_SWITCH_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="%%TFTP_SWITCH_NAME%%"
+   %%TFTP_SWITCH_ACTIVATED%% />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_TFTP_SWITCH_END%%
+</table><br />
+<input type="submit" name="submit_dnsmasq" value="Save changes" />
+
+ </div>
+</div>
+<div class="tower-end">
+ <p>
+  Remember: if you use a firewall, adjust your configuration to allow port 
+  <b>69</b>.
+ </p>
+</div>
+</div><!-- tower -->
+

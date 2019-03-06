@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<head>
+ <title>%%PAGE_TITLE%%</title>
+ <link rel="stylesheet" type="text/css" href="theme/default/common.css" />
+ <link rel="shortcut icon" href="%%THEMEPATH%%/guru20.png" type="image/x-icon" />
+ <meta http-equiv="content-type" 
+  content="application/xhtml+xml; charset=UTF-8" />
+ <!-- additional head elements provided by script -->
+%%HEAD%%
+</head>
+
+<body%%BODY%%>
+
+<div id="main">
+
+<div id="top">
+ <a id="logotitle" href="/">
+  <img src="%%THEMEPATH%%/guru20.png" alt="" />
+  <span id="logotitle-span">
+  <span id="logotitle-left">ZFS</span> 
+  <span id="logotitle-right">guru</span>
+  </span>
+ </a>
+ <span id="logoright">
+  version: %%PRODUCT_VERSION_STRING%%<br />
+  <a href="zfsguru.php?bulletin">%%LAYOUT_BULLETINS%% unread bulletins</a><br />
+  <a onclick="window.open(this.href,'_blank');return false;"
+   href="%%PRODUCT_URL%%">website</a>
+ </span>
+
+<div id="menu">
+<div class="menu-spacer">
+%%LAYOUT_MENU%%
+</div>
+</div><!-- menu -->
+
+</div><!-- top -->
+
+<div id="navtabs">
+%%LAYOUT_NAVTABS%%
+</div><!-- navtabs -->
+
+<div id="content">
+<!-- start of content -->
+
+%%LAYOUT_FEEDBACK%%
+
+%%LAYOUT_TABBAR%%
+
+%%CONTENT%%
+
+<!-- end of content -->
+
+</div><!-- content -->
+
+%%LAYOUT_TIMEKEEPER%%
+
+</div><!-- main -->
+
+</body>
+</html>

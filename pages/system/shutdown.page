@@ -1,0 +1,32 @@
+<h1>Shutdown system</h1>
+
+<div>
+<form enctype="multipart/form-data" action="system.php?shutdown&submit" 
+ method="post">
+<input type="hidden" name="handle" value="system_shutdown" />
+
+<div class="center">
+<table class="widetable center shutdown">
+<tr>
+ <td>
+  <input type="image" src="theme/default/pango/system-reboot-128.png" 
+   title="Reboot" name="reboot_system" />
+ </td>
+ <td>
+  <input type="image" src="theme/default/pango/system-shutdown-128.png"
+   title="Shutdown" name="powerdown_system" />
+ </td>
+</tr><tr>
+ <td>
+  <input type="submit" name="reboot_system" value="Reboot system" />
+ </td>
+ <td>
+  <input type="submit" name="powerdown_system" value="Power down system" />
+ </td>
+</tr>
+</table>
+</div>
+
+</form>
+</div>
+

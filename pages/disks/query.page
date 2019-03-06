@@ -1,0 +1,663 @@
+<script type="text/javascript">
+
+function selectHandler(prefix, chosenOption)
+{
+ if (chosenOption == "resize")
+ {
+  document.getElementById(prefix + '_size').style.display = "none";
+  document.getElementById(prefix + '_resize').style.display = "inline";
+  return;
+ }
+ document.getElementById(prefix + '_size').style.display = "inline";
+ document.getElementById(prefix + '_resize').style.display = "none";
+}
+
+function sizeUnit(prefix, chosenOption)
+{
+ document.getElementById('newseg_unit').value = chosenOption;
+ if (chosenOption == "SECT")
+ {
+  document.getElementById(prefix + '_newseg_sizeunit').selectedIndex = 0;
+  document.getElementById(prefix + '_size_sect').style.display = "inline";
+  document.getElementById(prefix + '_size_M').style.display = "none";
+  document.getElementById(prefix + '_size_G').style.display = "none";
+  return;
+ }
+ if (chosenOption == "1M")
+ {
+  document.getElementById(prefix + '_newseg_sizeunit_M').selectedIndex = 1;
+  document.getElementById(prefix + '_size_sect').style.display = "none";
+  document.getElementById(prefix + '_size_M').style.display = "inline";
+  document.getElementById(prefix + '_size_G').style.display = "none";
+  return;
+ }
+ if (chosenOption == "1G")
+ {
+  document.getElementById(prefix + '_newseg_sizeunit_G').selectedIndex = 2;
+  document.getElementById(prefix + '_size_sect').style.display = "none";
+  document.getElementById(prefix + '_size_M').style.display = "none";
+  document.getElementById(prefix + '_size_G').style.display = "inline";
+  return;
+ }
+}
+
+</script>
+
+<h1>Disk %%QUERY_DISKNAME%%</h1>
+
+<p class="hidden" style="margin:0 0 5px 0">
+ To view all disks again, go back to the <a href="disks.php">Disks overview</a>.
+</p>
+
+<table class="widetable hover disks_formatting">
+<tr>
+ <th>Disk</th>
+ <th>Label</th>
+ <th>Size (legacy)</th>
+ <th>Size (binary)</th>
+ <th>Sector</th>
+ <th style="width:55%">Identified as</th>
+</tr>
+%%TABLE_DISKS_PHYSDISKS%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark bold diskname">
+  <img src="theme/default/pango/disk-hdd-16.png" alt=""
+   class="%%CLASS_HDD%%" title="Harddrive" />
+  <img src="theme/default/pango/disk-ssd-16.png" alt=""
+   class="%%CLASS_SSD%%" title="Solid State Drive" />
+  <img src="theme/default/pango/disk-flash-16.png" alt=""
+   class="%%CLASS_FLASH%%" title="Flash drive" />
+  <img src="theme/default/pango/disk-memdisk-16.png" alt=""
+   class="%%CLASS_MEMDISK%%"
+   title="Memory disk - contents will be gone on reboot!" />
+  <img src="theme/default/pango/disk-usbstick-16.png" alt=""
+   class="%%CLASS_USBSTICK%%" title="USB stick" />
+  <img src="theme/default/pango/disk-network-16.png" alt=""
+   class="%%CLASS_NETWORK%%" title="Network drive" />
+  <a href="disks.php?query=%%DISK_NAME%%">%%DISK_NAME%%</a>
+ </td>
+ <td>%%DISK_LABEL%%</td>
+ <td>%%DISK_SIZE_LEGACY%%</td>
+ <td>%%DISK_SIZE_BINARY%%</td>
+ <td class="%%CLASS_SECTOR%%">%%DISK_SIZE_SECTOR%%</td>
+ <td class="disk_identstring">%%DISK_IDENTIFY%%</td>
+</tr>
+%%TABLE_DISKS_PHYSDISKS_END%%
+<tr class="displayalldisks">
+ <th colspan="6">
+  <a href="disks.php">Display all disks</a>
+ </th>
+</tr>
+</table><br />
+
+<h2>Partition map</h2>
+
+<div class="partition_map_top">
+ <a href="disks.php?query=%%QUERY_DISKNAME%%"
+  >Partition map of disk %%QUERY_DISKNAME%%</a>
+</div>
+<div class="partition_map">
+%%TABLE_PARTITION_MAP%%
+<div style="display:table-cell; width:%%PMAP_PCT%%%">
+ <a class="pmap_%%PMAP_TYPE%% %%PMAP_SEL%%" 
+  href="disks.php?query=%%QUERY_DISKNAME%%&seg=%%PMAP_ID%%">
+  %%PMAP_LABEL%%<br />
+  <span>%%PMAP_TYPE%%</span><br />
+  <span>%%PMAP_SIZE%%</span>
+ </a>
+</div>
+%%TABLE_PARTITION_MAP_END%%
+</div>
+
+<!-- segment options -->
+<div class="%%CLASS_SEGOPTIONS%% segmentoptions">
+<form enctype="multipart/form-data" method="post"
+ action="disks.php?query=%%QUERY_DISKNAME%%&segmentprocess">
+<input type="hidden" name="handle" value="disks_segmentprocess" />
+<input type="hidden" name="seg_diskname" value="%%QUERY_DISKNAME%%" />
+<input type="hidden" name="seg_segment" value="%%QUERY_SEGMENT%%" />
+<input type="hidden" name="seg_index" value="%%QUERY_INDEX%%" />
+<input type="hidden" name="seg_totalseg" value="%%QUERY_TOTALSEG%%" />
+<input type="hidden" name="newseg_unit" id="newseg_unit" value="SECT" />
+
+<!-- unpartitioned segment -->
+<div class="%%CLASS_SEGUNPARTITIONED%%">
+ <table class="widetable">
+ <tr><td style="width:50%; padding:10px">
+  <h2>Initialize disk</h2>
+  This disk is currently <u>not initialized</u> with a partition scheme.<br />
+  Before you can create partitions on this disk you will need to initialize it 
+  using a partition scheme. Note that doing so does overwrite data on the disk!
+  <br /><br />
+  <input type="radio" name="newscheme" value="gpt" checked="checked"
+   style="width:auto">
+   GPT partition scheme (highly recommended)<br />
+  <input type="radio" name="newscheme" value="mbr" style="width:auto">
+   MBR partition scheme<br />
+  <br />
+  <input type="checkbox" name="cb_newscheme_bootpart" checked="checked" 
+   style="width:auto" /> Create boot partition (GPT only)<br /><br />
+  <input type="submit" name="seg_submit_scheme" 
+   value="Create partition scheme" />
+ </td><td style="vertical-align:top; padding:10px">
+  <h2>GEOM label</h2>
+  Alternatively, you can place a GEOM label on this disk. This method will 
+  consume the whole disk, allowing no partitions to be created. It should be 
+  compatible with any other ZFS-capable platform but will not allow booting.
+  <br /><br />
+  <input type="radio" name="newscheme" value="geom" style="width:auto"> 
+  Place a GEOM label on this disk<br /><br />
+  <span class="grey">Label name:</span>
+  <input type="text" name="geomlabel" /><br /><br />
+  <input type="submit" name="seg_submit_scheme"
+   value="Create partition scheme" />
+ </td></tr>
+ </table>
+</div>
+
+<!-- GEOM label segment -->
+<div class="%%CLASS_SEGGEOM%%">
+ <h2>GEOM label</h2>
+ <p style="font-size:100% !important">
+  This disk contains a GEOM label. This chosen label will identify the disk 
+  throughout the ZFSguru web-interface.
+  <br /><br />
+  Disks formatted with a GEOM label contain no partitions and thus have only one
+  chunk of space available for a single task. GEOM labeled disks are also not 
+  bootable, but they are compatible with other ZFS-capable operating systems.
+ </p>
+ <p style="font-size:100% !important">
+  You can perform the following actions:
+ </p> 
+ <input type="radio" name="geom_action" value="" style="width:auto" 
+  checked="checked" /> Do nothing<br />
+ <input type="radio" name="geom_action" value="destroy" style="width:auto" /> 
+ Destroy GEOM label<br />
+ <input type="radio" name="geom_action" value="rename" style="width:auto" /> 
+ Change label name to:<br />
+ <br />
+ <input type="text" name="geom_labelname" value="%%SEG_GEOMLABEL%%" />
+ <br /><br />
+ <input type="submit" name="geom_submit" value="Save changes" />
+</div>
+
+<!-- GPT free segment -->
+<table class="widetable %%CLASS_SEGGPTFREE%%">
+<tr>
+ <td colspan="2" style="width:54%">Create new partition in free space</td>
+ <td>
+  <input type="checkbox" name="gpt_newseg_trim" style="width:auto; position:relative; top:2px">
+  TRIM erase the new partition, useful for
+  <acronym title="Solid State Drive">SSD</acronym>s
+ </td>
+</tr><tr>
+ <td>Type</td>
+ <td>
+  <select name="gpt_newseg_type" style="width:auto">
+%%TABLE_SEGGPT_TYPES%%
+   <option value="%%GPTTYPE_VAL%%" %%GPTTYPE_SEL%%>%%GPTTYPE_NAME%%</option>
+%%TABLE_SEGGPT_TYPES_END%%
+  </select>
+  <div id="newseg_label" class="inline">
+   with label: 
+   <input type="text" name="gpt_newseg_label" style="width:150px" autofocus />
+  </div>
+ </td>
+ <td>
+  Alignment:
+  <select name="gpt_newseg_alignment">
+   <option value="SECT">sector boundaries</option>
+   <option value="4K">4K boundaries</option>
+   <option value="1M" selected="selected">megabyte boundaries</option>
+  </select>
+ </td>
+</tr><tr>
+ <td>Size</td>
+ <td>
+  <div id="gpt_size_sect" class="inline">
+   <input type="text" name="gpt_newseg_size" value="%%NEWSEG_SECTORS%%" />
+   <select id="gpt_newseg_sizeunit" style="width:auto"
+    onchange="sizeUnit('gpt', this.options[this.selectedIndex].value);">
+    <option value="SECT" selected="selected">sectors</option>
+    <option value="1M" %%NEWSEG_ENABLE_M%%>MiB</option>
+    <option value="1G" %%NEWSEG_ENABLE_G%%>GiB</option>
+   </select>
+   <div id="gpt_slider_freespace"></div>
+   <script type="text/javascript">
+    form_widget_amount_slider('gpt_slider_freespace',document.forms[0].gpt_newseg_size,206,1,%%NEWSEG_SECTORS%%,"");
+   </script>
+  </div>
+  <div id="gpt_size_M" class="inline" style="display:none">
+   <input type="text" name="gpt_newseg_size_M" value="%%NEWSEG_SECTORS%%" />
+   <select id="gpt_newseg_sizeunit_M" style="width:auto"
+    onchange="sizeUnit('gpt', this.options[this.selectedIndex].value);">
+    <option value="SECT">sectors</option>
+    <option value="1M" selected="selected">MiB</option>
+    <option value="1G" %%NEWSEG_ENABLE_G%%>GiB</option>
+   </select>
+   <div id="gpt_slider_freespace_M"></div>
+   <script type="text/javascript">
+    form_widget_amount_slider('gpt_slider_freespace_M',document.forms[0].gpt_newseg_size_M,206,1,%%NEWSEG_MIB%%,"");
+   </script>
+  </div>
+  <div id="gpt_size_G" class="inline" style="display:none">
+   <input type="text" name="gpt_newseg_size_G" value="%%NEWSEG_SECTORS%%" />
+   <select id="gpt_newseg_sizeunit_G" style="width:auto"
+    onchange="sizeUnit('gpt', this.options[this.selectedIndex].value);">
+    <option value="SECT">sectors</option>
+    <option value="1M">MiB</option>
+    <option value="1G" selected="selected">GiB</option>
+   </select>
+   <div id="gpt_slider_freespace_G"></div>
+   <script type="text/javascript">
+    form_widget_amount_slider('gpt_slider_freespace_G',document.forms[0].gpt_newseg_size_G,206,1,%%NEWSEG_GIB%%,"");
+   </script> 
+  </div>
+ </td>
+</tr><tr>
+ <td>Location</td>
+ <td>
+  <input type="radio" name="gpt_newseg_location" value="begin" checked="checked" 
+   style="width:auto">Begin of free space
+  <input type="radio" name="gpt_newseg_location" value="end" style="width:auto">End
+  of free space
+ </td>
+ <td style="text-align:right">
+  <input type="submit" name="gpt_seg_submit_free" value="Create partition" />
+ </td>
+</tr>
+<tr class="pmap_destroyscheme %%CLASS_SEGDESTROYSCHEME%%">
+ <td colspan="3">
+  You can also 
+  <input type="submit" name="submit_destroyscheme"
+   value="Destroy partition scheme" />
+  if you want to reset this disk to an unformatted state.
+ </td>
+</tr>
+</table>
+
+<!-- GPT boot segment -->
+<div class="%%CLASS_SEGGPTBOOT%%">
+ <p style="font-size:100%">
+  This is a boot partition that allows booting directly from a ZFS pool.
+ </p>
+ <div class="%%CLASS_GPTBOOT_OK%%">
+  <p style="font-size:100%">
+   <img src="%%THEMEPATH%%/ok.png" alt="" style="vertical-align:middle" />
+   The boot code on this partition is <u>up to date</u> with the ZFSguru 
+   provided bootcode.
+  </p>
+  <p style="font-size:100%">
+   <b style="color:red">Caution:</b> the detection of bootcode is not always accurate!
+   Recommend clicking the Update bootcode button!
+  </p>
+ </div>
+ <div class="%%CLASS_GPTBOOT_OLD%%">
+  <p style="font-size:100%">
+   <img src="%%THEMEPATH%%/no.png" alt="" style="vertical-align:middle" />
+   This partition may contain <u>outdated bootcode</u>! 
+   The currently installed bootcode does not conform to
+   the bootcode provided by ZFSguru.
+  </p>
+ </div>
+ <div class="%%CLASS_GPTBOOT_NOERROR%%">
+  <table class="widetable">
+  <tr>
+   <th></th>
+   <th>Actual</th>
+   <th>ZFSguru shipped</th>
+   <th>System</th>
+  </tr><tr>
+   <td>Master Boot Record (MBR)</td>
+   <td>%%SIG_MBR%%</td>
+   <td>%%SIG_EXP_MBR%%</td>
+   <td>%%SIG_SYS_MBR%%</td>
+  </tr><tr>
+   <td>GPT ZFS bootcode</td>
+   <td>%%SIG_BOOTCODE%%</td>
+   <td>%%SIG_EXP_BOOTCODE%%</td>
+   <td>%%SIG_SYS_BOOTCODE%%</td>
+  </tr>
+  </table>
+ </div><br />
+ Would you like to: 
+ <input type="submit" name="seg_submit_bootcode" value="Update bootcode" />
+ or: 
+ <div class="inline %%CLASS_GPTBOOT_SYSBOOT%%">
+  <input style="width:auto; padding:0 20px" type="submit" 
+   name="seg_submit_bootcode_system" value="Update bootcode from system" />
+  or:
+ </div>
+ <input type="submit" name="seg_submit_bootcode_destroy" 
+  value="Destroy boot partition" />
+ <div class="%%CLASS_GPTBOOT_ERROR%%">
+  <b>Error:</b> cannot determine bootcode status of this partition.<br />
+  The partition is larger than 1 megabyte or the bootcode identification failed.
+  <br /><br />
+  Would you like to:
+  <input type="submit" name="seg_submit_bootcode_destroy"
+   value="Destroy boot partition" />
+ </div>
+</div>
+
+<!-- GPT data segment -->
+<table class="widetable %%CLASS_SEGGPTDATA%%">
+<tr>
+ <td>GPT label</td>
+ <td><input type="text" name="gpt_seg_label" value="%%SEG_GPTLABEL%%" 
+  %%SEG_GPTDISABLED%% /></td>
+ <td style="width:46%">Dangerous operations:</td>
+</tr><tr>
+ <td>GPT type</td>
+ <td>
+  <select name="gpt_seg_type">
+%%TABLE_SEGGPT_TYPES%%
+   <option value="%%GPTTYPE_VAL%%" %%GPTTYPE_SEL%%>%%GPTTYPE_NAME%%</option>
+%%TABLE_SEGGPT_TYPES_END%%
+  </select>
+ </td>
+ <td>
+  <select name="gpt_seg_operation" 
+   onchange="selectHandler('gpt', this.options[this.selectedIndex].value);">
+   <option value=""></option>
+   <option value="resize">Resize partition</option>
+   <option value="destroy">Destroy partition</option>
+   <option value="zerowrite">Zero-write partition</option>
+   <option value="randomwrite">Random-write partition</option>
+   <option value="trimerase">Erase partition with TRIM</option>
+  </select>
+ </td>
+</tr><tr>
+ <td style="vertical-align:top; padding-top:7px">Size</td>
+ <td>
+  <div id="gpt_size" class="inline">%%SEG_SIZE_BIN%% (%%SEG_SIZE%% bytes)</div>
+  <div id="gpt_resize" class="inline" style="display:none">
+  <input type="text" name="gpt_seg_resize_sect" size="16" value="%%SEG_SIZE_SECT%%" 
+   style="width:150px" /> sectors
+   <script type="text/javascript">
+    form_widget_amount_slider('gpt_resize',document.forms[0].gpt_seg_resize_sect,156,1,%%SEG_SIZE_SECT_MAX%%,"");
+   </script>
+  </div>
+ </td>
+ <td>
+  <input type="submit" name="seg_submit_gpt" value="Update partition" 
+   %%SEG_SUBMIT%% />
+ </td>
+</tr>
+</table>
+
+<!-- MBR free segment -->
+<table class="widetable %%CLASS_SEGMBRFREE%%">
+<tr>
+ <td colspan="2" style="width:54%">
+  Create new <u>MBR</u> partition in free space
+ </td>
+ <td>
+  <input type="checkbox" name="mbr_newseg_trim" style="width:auto">
+  TRIM erase the new partition, useful for
+  <acronym title="Solid State Drive">SSD</acronym>s
+ </td>
+</tr><tr>
+ <td>Size</td>
+ <td>
+  <div id="mbr_size_sect" class="inline">
+   <input type="text" name="mbr_newseg_size" value="%%NEWSEG_SECTORS%%" />
+   <select id="mbr_newseg_sizeunit" style="width:auto"
+    onchange="sizeUnit('mbr', this.options[this.selectedIndex].value);">
+    <option value="SECT" selected="selected">sectors</option>
+    <option value="1M" %%NEWSEG_ENABLE_M%%>MiB</option>
+    <option value="1G" %%NEWSEG_ENABLE_G%%>GiB</option>
+   </select>
+   <div id="mbr_slider_freespace"></div>
+   <script type="text/javascript">
+    form_widget_amount_slider('mbr_slider_freespace',document.forms[0].mbr_newseg_size,206,1,%%NEWSEG_SECTORS%%,"");
+   </script>
+  </div>
+  <div id="mbr_size_M" class="inline" style="display:none">
+   <input type="text" name="mbr_newseg_size_M" value="%%NEWSEG_SECTORS%%" />
+   <select id="mbr_newseg_sizeunit_M" style="width:auto"
+    onchange="sizeUnit('mbr', this.options[this.selectedIndex].value);">
+    <option value="SECT">sectors</option>
+    <option value="1M" selected="selected">MiB</option>
+    <option value="1G" %%NEWSEG_ENABLE_G%%>GiB</option>
+   </select>
+   <div id="mbr_slider_freespace_M"></div>
+   <script type="text/javascript">
+    form_widget_amount_slider('mbr_slider_freespace_M',document.forms[0].mbr_newseg_size_M,206,1,%%NEWSEG_MIB%%,"");
+   </script>
+  </div>
+  <div id="mbr_size_G" class="inline" style="display:none">
+   <input type="text" name="mbr_newseg_size_G" value="%%NEWSEG_SECTORS%%" />
+   <select id="mbr_newseg_sizeunit_G" style="width:auto"
+    onchange="sizeUnit('mbr', this.options[this.selectedIndex].value);">
+    <option value="SECT">sectors</option>
+    <option value="1M">MiB</option>
+    <option value="1G" selected="selected">GiB</option>
+   </select>
+   <div id="mbr_slider_freespace_G"></div>
+   <script type="text/javascript">
+    form_widget_amount_slider('mbr_slider_freespace_G',document.forms[0].mbr_newseg_size_G,206,1,%%NEWSEG_GIB%%,"");
+   </script>
+  </div>
+ </td>
+
+ <td>Alignment:
+  <select name="mbr_newseg_alignment">
+   <option value="SECT">sector boundaries</option>
+   <option value="4K">4K boundaries</option>
+   <option value="1M" selected="selected">megabyte boundaries</option>
+  </select>
+ </td>
+</tr><tr>
+ <td>Location</td>
+ <td>
+  <input type="radio" name="mbr_newseg_location" value="begin" checked="checked"
+   style="width:auto">Begin of free space
+  <input type="radio" name="mbr_newseg_location" value="end" 
+   style="width:auto">End of free space
+ </td>
+ <td>
+  <input type="submit" name="mbr_seg_submit_free" value="Create partition" />
+ </td>
+</tr>
+<tr class="pmap_destroyscheme %%CLASS_SEGDESTROYSCHEME%%">
+ <td colspan="3">
+  You can also
+  <input type="submit" name="submit_destroyscheme"
+   value="Destroy partition scheme" />
+  if you want to reset this disk to an unformatted state.
+ </td>
+</tr>
+</table>
+
+<!-- MBR data segment -->
+<table class="widetable %%CLASS_SEGMBRDATA%%">
+<tr>
+ <td colspan="2">MBR partitions do not support partition labels</td>
+ <td style="width:46%">Dangerous operations:</td>
+</tr><tr>
+ <td>Partition type</td>
+ <td>
+  <select name="mbr_seg_type">
+%%TABLE_SEGMBR_TYPES%%
+   <option value="%%MBRTYPE_VAL%%" %%MBRTYPE_SEL%%>%%MBRTYPE_NAME%%</option>
+%%TABLE_SEGMBR_TYPES_END%%
+  </select>
+ </td>
+ <td>
+  <select name="mbr_seg_operation" 
+   onchange="selectHandler('mbr', this.options[this.selectedIndex].value);">
+   <option value=""></option>
+   <option value="resize">Resize partition</option>
+   <option value="destroy">Destroy partition</option>
+   <option value="zerowrite">Zero-write partition</option>
+   <option value="randomwrite">Random-write partition</option>
+   <option value="trimerase">Erase partition with TRIM</option>
+  </select>
+ </td>
+</tr><tr>
+ <td style="vertical-align:top; padding-top:7px">Size</td>
+ <td>
+  <div id="mbr_size" class="inline">%%SEG_SIZE_BIN%% (%%SEG_SIZE%% bytes)</div>
+  <div id="mbr_resize" class="inline" style="display:none">
+  <input type="text" name="mbr_seg_resize_sect" size="16" value="%%SEG_SIZE_SECT%%"
+   style="width:150px" /> sectors
+   <script type="text/javascript">
+    form_widget_amount_slider('mbr_resize',document.forms[0].mbr_seg_resize_sect,156,1,%%SEG_SIZE_SECT_MAX%%,"");
+   </script>
+  </div>
+ </td>
+ <td>
+  <input type="submit" name="seg_submit_mbr" value="Update partition" 
+   class="%%SEG_SUBMIT%%" />
+ </td>
+</tr>
+</table>
+
+<!-- segment in use by ZFS -->
+<div class="colorbox_red seg_inuse %%CLASS_SEGINUSE%%"> 
+ This partition is currently <u>used and locked</u>
+ by ZFS pool <b>%%SEG_INUSEBYZFS%%</b>. 
+ You may not format a partition while in use by ZFS.
+ <br />
+ To unlock it, either destroy the pool 
+ or detach/remove the device on the 
+ <a href="pools.php?query=%%SEG_INUSEBYZFS%%">Pools</a> page.
+</div>
+
+<!-- segment mounted (in use by system) -->
+<div class="seg_inuse %%CLASS_SEGMOUNTED%%">
+ This partition is currently <u>mounted</u>
+ by the system.
+ You may not format a partition that is in use.<br /><br />
+ To unlock it, unmount the partition first. Mounted devices:
+ <br /><br />
+ <table class="widetable">
+ <tr>
+  <th>Device</th>
+  <th>Mountpoint</th>
+  <th>Options</th>
+ </tr>
+ %%TABLE_MOUNTEDDEVICES%%
+ <tr class="%%MD_CLASS%%">
+  <td>%%MD_DEVICE%%</td>
+  <td><a href="files.php?browse=%%MD_MOUNTPOINT%%">%%MD_MOUNTPOINT%%</a></td>
+  <td>%%MD_OPTIONS%%</td>
+ </tr>
+ %%TABLE_MOUNTEDDEVICES_END%%
+ </table>
+</div>
+
+<!-- unknown segment -->
+<div class="%%CLASS_SEGUNKNOWN%%">
+ <p style="font-size:100% !important;">
+  This is an <u>unknown partition segment</u>, 
+  not supported by ZFSguru partition map editor!
+ </p>
+</div>
+
+<!-- corrupt scheme -->
+<div class="%%CLASS_SEGCORRUPT%%">
+ <p style="font-size:100% !important;">
+  This disk is using a <u>corrupt partition scheme</u>!<br />
+  <br />
+  You should try fixing the partition scheme by clicking:
+  <input type="submit" name="seg_submit_recoverscheme" 
+   value="Recover partition scheme" />
+ </p>
+</div>
+
+<!-- end of segment options -->
+</form>
+</div>
+<div>
+ <a class="%%CLASS_SEGOPTIONS%% segmentdisplayed" 
+  href="disks.php?query=%%QUERY_DISKNAME%%">Hide segment options</a>
+</div>
+<div class="%%CLASS_SEGNOOPTIONS%% segmenthidden">
+Click a segment for formatting options
+</div>
+<br />
+
+<div class="%%FORMAT_CLASS%%">
+<h2>Quick format</h2>
+
+<p>
+Decide between GPT or GEOM and assign a chosen label name to easily identify
+the disk, and prepare the disk for a new pool configuration.
+</p>
+
+<form enctype="multipart/form-data" method="post"
+ action="disks.php?formatdisk">
+<input type="hidden" name="handle" value="disks_formatdisk" />
+<input type="hidden" name="formatdisk_diskname" value="%%QUERY_DISKNAME%%" />
+
+<table class="widetable">
+<tr>
+ <th colspan="3" class="center" style="width:50%">
+  GUID Partition Table (GPT)
+ </th>
+ <th colspan="3" class="center">GEOM label</th>
+</tr><tr>
+ <td colspan="3">
+  <span class="minortext">
+   <b><i>Advantages:</i></b>
+    bootable, multiple partitions and protects against some dangers<br />
+   <b><i>Disadvantages:</i></b>
+    incompatible with other platforms like Solaris
+  </span>
+ </td>
+ <td colspan="3">
+  <span class="minortext">
+   <b><i>Advantages:</i></b>
+    more compatible, works on Solaris and other platforms<br />
+   <b><i>Disadvantages:</i></b>
+    no protection, not bootable, no multiple partitions
+  </span>
+ </td>
+</tr><tr>
+ <td rowspan="2">
+  <input type="radio" name="format_type" value="gpt" 
+  %%FORMAT_GPTCHECKED%% /><b>GPT</b>
+ </td>
+ <td>GPT Label</td>
+ <td>
+  <input class="yellow" type="text" name="gpt_label" 
+   value="%%FORMAT_GPTLABEL%%" />
+ </td>
+ <td rowspan="2">
+  <input type="radio" name="format_type" value="geom" 
+  %%FORMAT_GEOMCHECKED%% /><b>GEOM</b>
+ </td>
+ <td colspan="2"><i>Dangerously Dedicated</i> using GEOM label</td>
+</tr><tr>
+ <td>Reserve Space</td>
+ <td>
+  <input type="text" class="right" name="gpt_reservespace" value="1" /> MiB
+ </td>
+ <td>GEOM label name</td>
+ <td>
+  <input class="yellow" type="text" name="geom_label" 
+   value="%%FORMAT_GEOMLABEL%%" />
+ </td>
+</tr><tr>
+ <td colspan="2"><input type="checkbox" name="zero_write" /> Zero-Write</td>
+ <td><input type="checkbox" name="random_write" /> Random Data</td>
+ <td colspan="2">
+  <input type="checkbox" name="secure_erase" /> TRIM entire surface
+ </td>
+ <td class="center">
+  <input type="submit" class="submit" name="format_disk" value="Format Disk" />
+ </td>
+</tr>
+</table>
+
+</form>
+
+<p>
+ <b>Caution:</b> formatting a disk will destroy (some) data residing on that 
+ disk, so use with care! Triple check whether you are working on the right disk.
+</p>
+
+</div>
+

@@ -1,0 +1,13 @@
+
+<h1>File browser</h1>
+
+<p>Working directory: <b>%%FILES_WD%%</b></p>
+
+<pre class="command_box">%%FILES_BROWSEBOX%%</pre>
+
+<p class="%%CLASS_AJAX%%">
+ <b>Note:</b> 
+ You are using the internal file browser. However, the 
+ <a href="files.php?browse">AJAX file browser</a> is also available!
+</p>
+

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# variables
+DEBUG="1"
+
+# input data
+SAMBAPATH=`pwd`
+#SAMBAPATH=`realpath ${1}`
+RV=${?}
+
+# debug
+if [ "${DEBUG}" -eq "1" ]
+then
+ echo "${0} ${1} ${2} ${3} ${4} ${5} ${6}" >> /tmp/dfree_debug
+ echo "${SAMBAPATH}" >> /tmp/dfree_debug
+ # test static output
+ # echo 500000 50000
+ # test null output
+ # exit 0
+fi
+
+# calculations
+let USED=`zfs get -o value -Hp used $SAMBAPATH` / 1024 > /dev/null
+let AVAIL=`zfs get -o value -Hp available $SAMBAPATH` / 1024 > /dev/null
+let TOTAL = $USED + $AVAIL > /dev/null
+
+# return result
+echo $TOTAL $AVAIL

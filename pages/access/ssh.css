@@ -1,0 +1,60 @@
+
+/* images */
+
+div.openssh_images
+{
+text-align:center;
+margin:0 auto;
+}
+
+div.openssh_images div
+{
+display:inline-block;
+width:300px;
+height:300px;
+overflow:hidden;
+background:#ccc;
+margin:0 4px;
+border:1px solid #aaa;
+box-model:border-box;
+}
+
+/* first image */
+
+div.openssh_images div:first-child img
+{
+width:300px;
+height:300px;
+}
+
+/* second image */
+
+div.openssh_images img
+{
+xwidth:300px;
+xheight:300px;
+}
+
+/* third image */
+
+div.openssh_images div:last-child img
+{
+}
+
+/* reset password box */
+
+table.openssh_resetpw
+{
+width:98%;
+}
+
+table.openssh_resetpw tr td
+{
+text-align:center;
+}
+
+input.sshinput
+{
+width:150px;
+}
+

@@ -1,0 +1,38 @@
+<h1>Network Interfaces</h1>
+
+<table class="widetable hover networklist">
+<tr>
+ <th>Interface</th>
+ <th>Identification</th>
+ <th>Status</th>
+ <th>IP address</th>
+ <th>MAC address</th>
+ <th>MTU</th>
+</tr>
+%%TABLE_NETWORK_IFLIST%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark networkname">
+  <img src="theme/default/pango/network-wired-22.png" alt="" 
+   class="%%CLASS_WIRED%%" title="Wired network interface" /> 
+  <img src="theme/default/pango/network-wireless-22.png" alt="" 
+   class="%%CLASS_WIRELESS%%" title="Wireless network interface" /> 
+  <img src="theme/default/pango/network-loopback-22.png" alt="" 
+   class="%%CLASS_LOOPBACK%%" title="System loopback adapter" /> 
+  <img src="theme/default/pango/network-other-22.png" alt=""
+   class="%%CLASS_OTHER%%" title="Other network interface" /> 
+  <b><a href="network.php?query=%%IF_NAME%%">%%IF_NAME%%</a></b>
+ </td>
+ <td class="network_identstring">%%IF_IDENT%%</td>
+ <td><b>%%IF_STATUS%%</b></td>
+ <td>%%IF_IP%%</td>
+ <td class="grey">%%IF_MAC%%</td>
+ <td>%%IF_MTU%%</td>
+</tr>
+%%TABLE_NETWORK_IFLIST_END%%
+</table>
+
+<p>
+<b>Note:</b> click on a network adapter to retrieve more information or
+change its settings.
+</p>
+

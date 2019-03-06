@@ -1,0 +1,290 @@
+<h1>Cache devices</h1>
+
+<p>
+ ZFS allows you to utilize <acronym title="Solid State Drive">SSD</acronym>s 
+ as cache devices, accelerating your pool performance. 
+ This feature is also known as <b>L2ARC</b> or Level 2 
+ <acronym title="Adaptive Replacement Cache">ARC</acronym>.
+ <span class="grey">[<a href="?cache&explain">more information</a>]</span>
+</p>
+
+<div class="%%CLASS_MOREINFO%%">
+<div class="cache_moreinfo">
+ <b>What are cache devices and why are they useful?</b><br />
+ ZFS allows you to utilize <acronym title="Solid State Drive">SSD</acronym>s
+ as cache devices, accelerating your pool performance.
+ Think of it as adding SSD acceleration to your pool. This does not affect
+ reading or writing of large files; harddrives are very good at that already.
+ But reading small files is something where mechanical harddrives have 
+ extremely poor performance, while SSDs excell in this area.
+ <br />
+ So what ZFS does is analyze your usage pattern for tiny blocks of 
+ data that would benefit from the SSD cache. Only so called 'random reads' or 
+ non-contiguous I/O reads will be cached. ZFS analyzes the behavior of your files 
+ accessed to determine which data goes to the SSD.
+ <br />
+ Cache devices first have to "warmed up". So they do not increase performance 
+ immediately. However, as the cache is filled with data using a realistic 
+ workload, you should begin to notice the effects.
+ <br /><br /><br />
+ <b>Cache = level 2 ARC</b><br />
+ Cache devices are most often referred to as level 2 
+ <acronym title="Adaptive Replacement Cache">ARC</acronym>, where level 1
+ refers to the caching in RAM memory. Just like in your processor, multiple 
+ layers of caching have a very high influence on overall performance. 
+ The fastest layer (level 1) is usually the smallest, and the other layers are 
+ all larger but slower than the first layer. This principle of multiple caching 
+ layers appears to be an effective way of scaling performance.
+ <br /><br /><br />
+ <b>When should I use cache devices?</b><br />
+ Whenever you have enough memory and when your data would benefit from caching.
+ Generally, cache devices do not affect large files which are accessed 
+ sequentially, meaning they are read or written from begin to end in one single 
+ pass. On the other hand, small files or random access in large files (like 
+ Virtual Machine images) would benefit a great deal from cache devices. Also 
+ metadata could be cached, allowing file searches and opening directories with 
+ a lot of small files to happen much faster.
+ <br /><br />
+ Examples which would benefit from caching:<br />
+ <ul>
+  <li>Launching applications directly from a mounted ZFS pool;</li>
+  <li>Running games directly from a mounted ZFS pool;</li>
+  <li>Running Virtual Machines with the data file located on ZFS;</li>
+  <li>Accessing small chunks in a large file, such as random reads from a 
+   .ISO image;</li>
+  <li>Running databases and other server applications;</li>
+  <li>Opening directories with lots of files.</li>
+ </ul>
+ <br /><br />
+ <b>What cache devices should I use?</b><br />
+ It is best to use SSDs with a high random read speed. These include controllers
+ from Intel, Marvell and Samsung in particular. SSDs with JMicron and Toshiba
+ controllers are less suitable as they lack 
+ <acronym title="Native Command Queueing">NCQ</acronym> which is required for 
+ high random read performance. Virtually all SSDs are suitable as cache device.
+ <br /><br /><br />
+ <b>Can I use more than one cache device?</b><br />
+ Yes, adding multiple cache devices works very well. Much like RAID0, striping 
+ cache devices increases performance, if your workload allows.
+ Furthermore, they do not have
+ to be of the same capacity or even performance level. By using multiple cache 
+ devices, you also spread the writes over multiple SSDs.
+ <br /><br /><br />
+ <b>What size should my level 2 cache be?</b><br />
+ 40GiB is already a very nice amount of level 2 cache, since it could accelerate 
+ several terabytes of mixed data.
+ <br /><br /><br />
+ <b><span>Beware:</span> level 2 cache costs you RAM too!</b><br />
+ Though the cache feature has many performance benefits, it is important to 
+ consider that you lose valuable RAM as well by having to store level 2 
+ allocation tables. Typically, each 40GiB of cache costs you 1GiB of RAM to
+ be used. If you lack sufficient RAM only a limited portion of your cache device
+ will be utilized.
+ <br /><br /><br />
+ <b>Does the cache feature cost me a lot of precious write cycles?</b><br />
+ SSDs currently use NAND chips and they have a limited number of 
+ program/erase-cycles. ZFS throttles the write speed to your devices meaning
+ they should not wear out very quickly. Still, it is recommended that you 
+ monitor the rate of write cycles, by looking at the relevant SMART attributes.
+ Also keep in mind that if you use multiple cache devices, the load is spread.
+ <br /><br /><br />
+ <b>Should I perform overprovisioning on my SSDs?</b><br />
+ Yes, when using an SSD as cache device it is highly recommended to leave a 
+ portion of space unused and never written to. This technique is called 
+ <i>overprovisioning</i> and it will enhance the lifespan of your SSD and 
+ helps to mitigate performance degradation. When using cache devices, 
+ using <b>20% to 40%</b> of overprovisioning is recommended.<br />
+ Overprovisioning on a brand new SSD is easy: just create a partition smaller 
+ than the full capacity, leaving a major portion of space unused and 
+ unpartitioned. When using an SSD which is already used, you should perform a 
+ TRIM or Secure Erase procedure first, or the space reserved by overprovisioning
+ won't work.
+ <br /><br /><br />
+ <b>Is there any risk associated to my pool?</b><br />
+ No. Thanks to the checksumming feature of ZFS, corruption on your SSD will be 
+ detected and the data will be read directly from disk instead. So adding a 
+ cache device should be without risk of any kind. Your pool will continue to 
+ function if your cache devices are offline or faulty.
+ <br /><br /><br />
+ <b>Can I use the same SSD(s) for both caching and logging?</b><br />
+ Yes. If you want both a separate log and cache, then using all SSDs for both 
+ tasks is actually recommended, because this spreads the writes over multiple
+ devices and allows for performance gains as well.
+ <br /><br />
+ <i>Example setup:</i><br />
+ Assume you have 2 SSDs, each 64GB. A good setup would be reserving 2GiB 
+ partition for the separate log feature, and 40GiB for the cache. The rest of 
+ the capacity will be used for overprovisioning. Since you have two SSDs, you 
+ add two log devices: two partitions of 2GiB makes a 4GiB log device when 
+ striping (RAID0) them and 2GiB when mirroring (RAID1) them.
+ <br />
+ In addition, you use the two larger partitions to add two cache devices to your
+ pool. Cache devices can only be striped, since redundancy here is irrelevant.
+ Two partitions of 40GiB makes 80GiB total cache. This 
+ would consume between 1 and 2 gigabyte of RAM memory when fully utilized.
+ <br /><br />
+ <span class="grey">
+  [<a href="?cache&pool=%%QUERYPOOL%%">hide this box</a>]
+ </span>
+</div>
+</div><br />
+
+<h2>Step 1: select a pool</h2>
+<p>
+ Select a pool which you want to accelerate using one or more cache devices.
+</p>
+
+<table class="widetable hover pools">
+<tr>
+ <th>Pool name</th>
+ <th><acronym title="Storage Pool Allocator version">SPA</acronym></th>
+ <th>Redundancy</th>
+ <th>Capacity</th>
+ <th>Used</th>
+ <th>Free</th>
+ <th>Status</th>
+</tr>
+%%TABLE_POOL_POOLLIST%%
+<tr class="%%POOLLIST_CLASS%%">
+ <td class="dark bold pool_name">
+  <img src="theme/default/pango/pool-22.png" alt="" title="ZFS pool" />
+  <a class="%%POOLLIST_SPA_OK%%" 
+   href="pools.php?cache&pool=%%POOLLIST_POOLNAME%%">%%POOLLIST_POOLNAME%%</a>
+  <span class="%%POOLLIST_SPA_LOW%%">%%POOLLIST_POOLNAME%%</span>
+ </td>
+ <td>%%POOLLIST_SPA%% 
+  <span class="%%POOLLIST_SPA_OK%%">
+   <img src="%%THEMEPATH%%/ok.png" alt="" />
+  </span>
+  <span class="%%POOLLIST_SPA_LOW%% red">
+   <img src="%%THEMEPATH%%/no.png" alt="" />
+   MUST BE 10+ !!
+  </span>
+ </td>
+ <td>%%POOLLIST_REDUNDANCY%%</td>
+ <td>%%POOLLIST_SIZE%%</td>
+ <td>%%POOLLIST_USED%%</td>
+ <td>%%POOLLIST_FREE%%</td>
+ <td class="%%POOLLIST_STATUSCLASS%%">%%POOLLIST_STATUS%%</td>
+</tr>
+%%TABLE_POOL_POOLLIST_END%%
+</table><br /><br />
+
+<div class="%%CLASS_STEP2%%">
+<form enctype="multipart/form-data" method="post"
+ action="pools.php?cache&pool=%%QUERYPOOL%%&submit">
+<input type="hidden" name="handle" value="pool_cache" />
+<input type="hidden" name="pool" value="%%QUERYPOOL%%" />
+<input type="hidden" name="selecteddevices" value="%%SELECTEDDEVICES%%" />
+
+<h2>Step 2: select a cache device</h2>
+<div class="%%CLASS_STEP2_NOW%%">
+<p>
+ Select an SSD device or partition to use as cache device.
+ You can select multiple disks or partitions to use in RAID0 configuration.
+ No redundancy is required or supported.
+</p>
+<p>
+%%MEMBERDISKS%%
+</p>
+<input type="submit" name="select_memberdisks" 
+ value="Use selected disks as cache" /><br /><br />
+</div>
+<div class="%%CLASS_STEP3%%">
+<p>
+ You have selected the following cache devices:
+</p>
+<table class="widetable">
+<tr>
+ <th style="width:20%">Device</th>
+ <th style="width:10%">Size</th>
+ <th colspan="2">Memory requirements</th>
+</tr>
+%%TABLE_PERFORMANCE%%
+<tr>
+ <td><b>%%PERF_DISKNAME%%</b></td>
+ <td>%%PERF_SIZEBINARY%%</td>
+ <td colspan="2"></td>
+</tr>
+%%TABLE_PERFORMANCE_END%%
+<tr>
+ <td><i>Total</i></td>
+ <td><b>%%TOTALSIZE%%<b></td>
+ <td><b>%%MEMREQ%%</b> additional memory required</td>
+ <td class="grey center">
+  [<a href="pools.php?cache&pool=%%QUERYPOOL%%">Change device selection</a>]
+ </td>
+</tr>
+</table>
+<div class="colorbox_amber %%CLASS_STEP2_LOWMEM%%">
+ <b>Caution:</b> your RAM memory is limited in size to accomodate this much 
+ L2ARC cache. Your device(s) may not be fully utilized. You need approximately 
+ 1 GiB of RAM memory per X gigabyte of L2ARC cache. Consider adding more RAM!
+ This is just a warning, you can continue adding cache to your pool.
+</div>
+<br /><br />
+</div>
+
+<div class="%%CLASS_STEP3%%">
+<h2>Step 3: test performance</h2>
+
+<p class="%%CLASS_STEP3_TEST%%">
+ A random read test is recommended to verify your devices are suitable to 
+ function as caching device. No data is written during the benchmark.
+</p>
+<table class="widetable">
+<tr>
+ <th style="width:20%">Device</th>
+ <th style="width:10%">Size</th>
+ <th>Performance analysis</th>
+ <th>Test score</th>
+ <th>Compared to an average harddrive</th>
+</tr>
+%%TABLE_PERFORMANCE%%
+ <td class="bold">%%PERF_DISKNAME%%</td>
+ <td>%%PERF_SIZEBINARY%%</td>
+ <td class="bold">
+  <span class="blue %%CLASS_TESTED_TEST%%">Test performance</span>
+  <span class="blue %%CLASS_TESTED_RUN%%">Testing now...</span>
+  <span class="green %%CLASS_TESTED_OK%%">Suitable as cache device</span>
+  <span class="red %%CLASS_TESTED_SLOW%%">Too slow for cache device</span>
+ </td>
+ <td>Score: %%PERF_SCORE%%</td>
+ <td>factor <b>%%PERF_HDDCOMPARE%%</b> faster random read performance</td>
+</tr>
+%%TABLE_PERFORMANCE_END%%
+</table>
+<div class="colorbox_blue %%CLASS_STEP3_TEST%%">
+ Click the <b>Test performance</b> button to verify your devices are suitable
+ for caching:
+ <input type="submit" name="perform_benchmark" value="Test performance" />
+</div>
+<div class="colorbox_blue %%CLASS_STEP3_TESTING%%">
+ <img src="%%THEMEPATH%%/bip.gif" alt="" />
+ <b>Please wait:</b> your devices are being performance tested.
+ This page will automatically refresh.
+</div>
+<div class="colorbox_green %%CLASS_STEP3_FAST%%">
+ <b>Success:</b> your devices appear to be fast enough for caching.
+ <input type="submit" name="perform_benchmark" value="Test again" />
+</div>
+<div class="colorbox_red %%CLASS_STEP3_SLOW%%">
+ <b>Caution:</b> at least one device did not meet the prefined performance
+ target (score: 1000). This device is not suitable for accelerating your pool.
+ <input type="submit" name="perform_benchmark" value="Test again" />
+</div>
+</div><br />
+
+<div class="%%CLASS_STEP4%%">
+<h2>Final step: add devices to pool</h2>
+<input type="checkbox" name="cb_trim_erase" checked="checked" /> 
+ TRIM erase selected devices before adding as cache (recommended)
+<div class="colorbox_blue">
+ Ready to <b>add cache</b> to your pool: 
+ <input type="submit" name="add_l2arc" 
+  value="Add cache devices to pool '%%QUERYPOOL%%'" />
+</div>
+</div>
+
+</form>
+</div>

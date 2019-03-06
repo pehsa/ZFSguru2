@@ -1,0 +1,146 @@
+
+<div class="tower">
+<div class="tower-start">
+ <h1 class="tower-title">
+  <acronym title="Dynamic Host Configuration Protocol">DHCP</acronym> server
+ </h1>
+</div>
+<div class="tower-base tower-info">
+ <div style="width:95%; text-align:left; margin:0 auto">
+  <p>
+   Dynamic Host Configuration Protocol (DHCP) is used by many networks to
+   automatically assign an IP address to other computers on the network.
+   Besides assigning IP addresses, DHCP can also provide clients with
+   information on default route (gateway) and DNS servers.
+  <p>
+   In many networks at home, the internet modem serves as DHCP server. This
+   causes your computers to automatically get IP information from your modem,
+   without you requiring to enter IP address information manually. If you
+   desire, you can use ZFSguru to serve DHCP requests on the network.
+  </p>
+  <p>
+   <b>Warning:</b> you should <b>never run more than one DHCP server</b> on the same
+   network. Doing so might disrupt connectivity as the two servers might serve
+   conflicting network addresses.
+  </p>
+ </div>
+</div>
+<div class="tower-base">
+<p>DHCP Toggle On/Off</p>
+</div>
+<div class="tower-base tower-error">
+ <p>Cannot enable: blabla error!</p>
+</div>
+%%TABLE_DHCP_IF%%
+<div class="tower-base">
+ <h2 class="tower-subtitle">DHCP on interface 
+  <b style="color:#111">%%DHCP_IF_NAME%%</b> %%DHCP_IF_CONNECTED%%
+ </h2>
+ <p>Own IPv4: %%DHCP_IF_INET4%% (netmask: %%DHCP_IF_MASK4%%)</p>
+ <p>Own IPv6: %%DHCP_IF_INET6%% (netmask: %%DHCP_IF_MASK6%%)</p>
+ <table class="center" cellspacing="4px">
+ <tr>
+  <th>IP</th>
+  <th>Start IP</th>
+  <th>-</th>
+  <th>End IP</th>
+ </tr>
+  <td><b>IPv4</b></td>
+  <td>
+   <input type="text" name="dhcpstart_ip4_1_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpstart_ip4_2_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpstart_ip4_3_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpstart_ip4_4_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />
+  </td>
+  <td>-</td>
+  <td>
+   <input type="text" name="dhcpend_ip4_1_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpend_ip4_2_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpend_ip4_3_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpend_ip4_4_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />
+  </td>
+ </tr><tr>
+  <td rowspan="2"><b>IPv6</b></td>
+  <td>
+   <input type="text" name="dhcpstart_ip6_1_%%DHCP_IF_NAME%%" value="%%DHCP_IF_IPv6%%" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_2_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_3_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_4_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+  <td>-</td>
+  <td>
+   <input type="text" name="dhcpend_ip6_1_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_2_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_3_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_4_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+ </tr><tr>
+  <td>
+   <input type="text" name="dhcpstart_ip6_5_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_6_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_7_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_8_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+  <td>-</td>
+  <td>
+   <input type="text" name="dhcpend_ip6_5_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_6_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_7_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_8_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+ </tr>
+ </table>
+</div>
+%%TABLE_DHCP_IF_END%%
+
+
+<div class="tower-base">
+ <h2 class="tower-subtitle">Static DHCP</h2>
+</div>
+
+<div class="tower-base tower-advanced">
+<h2 class="tower-subtitle">Advanced DHCP configuration</h2>
+<table class="widetable left">
+%%TABLE_DHCP_STRING%%
+<tr>
+ <td class="bold">%%DHCP_STRING_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="activate_dhcp_%%DHCP_STRING_NAME%%"
+   %%DHCP_STRING_ACTIVATED%% />
+ </td>
+ <td>
+  <input type="text" name="string_dhcp_%%DHCP_STRING_NAME%%"
+   value="%%DHCP_STRING_VALUE%%" style="width:400px" />
+ </td>
+</tr>
+%%TABLE_DHCP_STRING_END%%
+%%TABLE_DHCP_SWITCH%%
+<tr>
+ <td class="bold">%%DHCP_SWITCH_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="%%DHCP_SWITCH_NAME%%"
+   %%DHCP_SWITCH_ACTIVATED%% />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_DHCP_SWITCH_END%%
+</table><br />
+<input type="submit" name="submit_dnsmasq" value="Save changes" />
+ </div>
+
+<div class="tower-end">
+ <p>
+  Remember: if you use a firewall, adjust your configuration to allow port
+  <b>67 + 68</b>.
+ </p>
+</div>
+</div><!-- tower -->
+

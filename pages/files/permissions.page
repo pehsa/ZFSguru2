@@ -1,0 +1,115 @@
+
+<div class="%%CLASS_OWNERSHIP%%">
+<h1>Ownership</h1>
+<form enctype="multipart/form-data" method="post"
+ action="files.php?permissions&submit">
+<input type="hidden" name="handle" value="permissions_ownership" />
+<p class="%%CLASS_HIDESYSTEM%%">
+ Displaying system user and group accounts. 
+ <a href="files.php?permissions&ownership">Hide system accounts</a>.
+</p>
+<p class="%%CLASS_DISPLAYSYSTEM%%">
+ This page can be used to reset the ownership of a filesystem and its contents.
+ <a href="files.php?permissions&ownership&displaysystem">Display system accounts</a>.
+</p>
+<table class="widetable hover permissions">
+<tr>
+ <th>Filesystem</th>
+ <th>Mountpoint</th>
+ <th>Owner</th>
+ <th>Group</th>
+ <th style="width:15px">Change</th>
+ <th>New owner</th>
+ <th>New group</th>
+</tr>
+%%TABLE_OWNERSHIP%%
+<tr>
+ <td><a href="files.php?query=%%OWN_FS%%">%%OWN_FS%%</a></td>
+ <td><a href="files.php?browse=%%OWN_MP%%">%%OWN_MP%%</a></td>
+ <td>%%OWN_OWNER%%</td>
+ <td>%%OWN_GROUP%%</td>
+ <td style="text-align:center">
+  <input type="checkbox" name="ownership_change_%%OWN_FS%%" />
+ </td>
+ <td>
+  <select name="ownership_user_%%OWN_FS%%">
+   <option value=""></option>
+   %%USERLIST%%
+  </select>
+ </td>
+ <td>
+  <select name="ownership_group_%%OWN_FS%%">
+   <option value=""></option>
+   %%GROUPLIST%%
+  </select>
+ </td>
+</tr>
+%%TABLE_OWNERSHIP_END%%
+</table>
+<p style="background:#ddd; padding:10px; border:1px solid #aaa">
+Reset owner for: 
+<input type="radio" name="ownership_action" value="everything" 
+ checked="checked" />
+ Everything in directory and subdirectories
+<input type="radio" name="ownership_action" value="directory" />
+ Everything in directory
+<input type="radio" name="ownership_action" value="filesystem" />
+ Filesystem only 
+<input type="submit" name="submit_ownership" value="Reset ownership"
+ style="float:right" />
+</p>
+</form>
+</div>
+
+<div class="%%CLASS_CHMOD%%">
+<h1>Advanced</h1>
+<p>
+ This page allows you to reset permissions of files contained by a filesystem.
+ Use with care!
+</p>
+<form enctype="multipart/form-data" method="post"
+ action="files.php?permissions&submit">
+<input type="hidden" name="handle" value="permissions_advanced" />
+<table class="widetable hover permissions">
+<tr>
+ <th>Filesystem</th>
+ <th>Mountpoint</th>
+ <th>Permissions</th>
+ <th style="width:15px">Change</th>
+ <th>Reset persmissions to</th>
+</tr>
+%%TABLE_OWNERSHIP%%
+<tr>
+ <td><a href="files.php?query=%%OWN_FS%%">%%OWN_FS%%</a></td>
+ <td><a href="files.php?browse=%%OWN_MP%%">%%OWN_MP%%</a></td>
+ <td class="center">%%OWN_PERMS%%</td>
+ <td class="center">
+  <input type="checkbox" name="advanced_change_%%OWN_FS%%" />
+ </td>
+ <td>
+  <select name="advanced_permissions_%%OWN_FS%%">
+   <option value="777@666">chmod 777 on directories; 666 on files = read+write for everyone</option>
+   <option value="775@664">chmod 775 on directories; 664 on files = other users can't write</option>
+   <option value="755@644">chmod 755 on directories; 644 on files = only owner may write; others may read</option>
+   <option value="770@660">chmod 770 on directories; 660 on files = other users can't read or write</option>
+   <option value="700@600">chmod 700 on directories; 600 on files = only owner access</option>
+  </select>
+ </td>
+</tr>
+%%TABLE_OWNERSHIP_END%%
+</table>
+<p style="background:#ddd; padding:10px; border:1px solid #aaa">
+Reset permissions for:
+<input type="radio" name="advanced_action" value="everything"
+ checked="checked" />
+ Everything in directory and subdirectories
+<input type="radio" name="advanced_action" value="directory" />
+ Everything in directory
+<input type="radio" name="advanced_action" value="filesystem" />
+ Filesystem only 
+<input type="submit" name="submit_advanced" value="Reset permissions" 
+ style="float:right" />
+</p>
+</form>
+</div>
+

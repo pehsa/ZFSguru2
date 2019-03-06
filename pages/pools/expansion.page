@@ -1,0 +1,75 @@
+<h1>Expansion</h1>
+
+<div>
+<form enctype="multipart/form-data" action="pools.php?expansion&submit"
+ method="post">
+<input type="hidden" name="handle" value="pools_expandpool" />
+<input type="hidden" name="exp_current_redundancy" 
+ value="%%POOL_REDUNDANCY%%" />
+
+<table id="zpool_expand" class="widetable">
+<tr>
+ <td style="width:25%" class="dark">Pool to expand</td>
+ <td>
+  <select class="yellow" name="exp_zpool_name">
+   %%POOL_SELECTBOX%%
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Redundancy level</td>
+ <td>
+  <select name="exp_zpool_redundancy" required>
+   <option value="" class="italic">*** select redundancy level ***</option>
+   <option value="stripe">Single disk or multiple disks in RAID0</option>
+   <option value="mirror">Single mirror with 2 or more devices</option>
+   <option value="mirror2">Multiple mirrors in groups of 2</option>
+   <option value="mirror3">Multiple mirrors in groups of 3</option>
+<!--   <option value="mirror4">Multiple mirrors in groups of 4</option>-->
+   <option value="raidz1">RAID-Z1 - single parity like RAID5</option>
+   <option value="raidz2">RAID-Z2 - double parity like RAID6</option>
+   <option value="raidz3">RAID-Z3 - triple parity</option>
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Member disks</td>
+ <td>
+  %%POOL_MEMBERDISKS%%
+ </td>
+</tr><tr>
+ <td class="dark">Sector size override</td>
+ <td>
+  <select name="exp_zpool_sectorsize">
+   <option value="">No sector size override (normal harddrives)</option>
+   <option value="4096" selected>Optimize for 4K harddrives aka 'Advanced Format'</option>
+   <option value="8192">Optimize for 8K Solid State Drives</option>
+  </select><br />
+  <span class="minortext">
+   Recommended for all devices, except older harddrives.
+   Beware: the usable storage capacity drops with sector override!
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Mixed redundancy</td>
+ <td><input type="checkbox" name="exp_mixed_redundancy" />
+  Select when expanding with a different 
+  redundancy type, disk size or disk count.
+ </td>
+</tr>
+</table>
+
+<table class="flattable createpoolbutton">
+<tr>
+ <td class="right"><img src="theme/default/dragon-right.png" alt="" /></td>
+ <td style="width:1px">
+  <input type="submit" name="submit_expandzpool" class="createpoolbutton"
+   %%POOL_EXPANDDISABLE%% value="Expand pool" />
+ </td>
+ <td class="left"><img src="theme/default/dragon-left.png" alt="" /></td>
+</tr></table>
+
+<table class="widetable">
+</table>
+
+</form>
+</div>
+

@@ -1,0 +1,88 @@
+
+/* filesystem create */
+
+table.fscreate
+{
+border:1px solid #ccc;
+background-image: -moz-linear-gradient(#ccc, #888);
+background-image: -webkit-linear-gradient(#ccc, #888);
+background-image: -o-linear-gradient(#ccc, #888);
+background-image: -ms-linear-gradient(#ccc, #888);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#888888');
+background-image: linear-gradient(#ccc, #888);
+}
+
+table.fscreate tr td
+{
+text-align:center;
+background-image: -moz-linear-gradient(#eee, #bbb);
+background-image: -webkit-linear-gradient(#eee, #bbb);
+background-image: -o-linear-gradient(#eee, #bbb);
+background-image: -ms-linear-gradient(#eee, #bbb);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#bbbbbb');
+background-image: linear-gradient(#eee, #bbb);
+}
+
+table.fscreate tr:hover td
+{
+cursor:default;
+background-image: -moz-linear-gradient(#ddd, #aaa);
+background-image: -webkit-linear-gradient(#ddd, #aaa);
+background-image: -o-linear-gradient(#ddd, #aaa);
+background-image: -ms-linear-gradient(#ddd, #aaa);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dddddd', endColorstr='#aaaaaa');
+background-image: linear-gradient(#ddd, #aaa);
+}
+
+
+/* filesystems table */
+
+tr.filesystem_root td
+{
+}
+
+tr.filesystem_system td
+{
+}
+
+
+/* filesystem name (image + clickable hyperlink) */
+
+td.fs_name
+{
+vertical-align:middle;
+}
+
+td.fs_name img
+{
+height:22px;
+margin:4px 3px 4px 4px;
+vertical-align:middle;
+}
+
+
+/* hide system filesystems row */
+
+tr.hidegurufs
+{
+line-height:85%;
+}
+
+tr.hidegurufs th
+{
+background:#444 !important;
+}
+
+tr.hidegurufs th a, tr.hidegurufs th a:visited
+{
+color:#eee !important;
+font-size:85%;
+text-decoration:none;
+}
+
+tr.hidegurufs th a:hover
+{
+color:#fff !important;
+text-decoration:underline;
+}
+

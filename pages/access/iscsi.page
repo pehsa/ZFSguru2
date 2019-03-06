@@ -1,0 +1,161 @@
+
+<h1>iSCSI</h1>
+<p>
+ iSCSI is block-level storage over ethernet.
+</p>
+
+<div class="colorbox_red %%CLASS_NOTRUNNING%%">
+ <b>iSCSI</b> service is currently <b>not running</b>. 
+ Enable <a href="services.php?manage&system">automatic start</a>
+ of this service and reboot the system.
+</div>
+<div class="colorbox_amber %%CLASS_NOAUTOSTART%%">
+ <b>iSCSI</b> service is configured to <b>not automatically start</b>. 
+ To use iSCSI you should <a href="services.php?manage&system"
+ >enable automatic start</a> and reboot the system.
+</div>
+
+<div>
+<form enctype="multipart/form-data" method="post"
+ action="services.php?nfs&submit">
+<input type="hidden" name="handle" value="services_nfs_remove" />
+<table class="widetable hover">
+<tr>
+ <th>ZFS filesystem</th>
+ <th>Mountpoint</th>
+ <th>sharenfs setting</th>
+ <th>showmount output</th>
+ <th style="width:1px"></th>
+</tr>
+<tr class="%%CLASS_NONFSSHARES%%">
+ <td colspan="5">No shared NFS filesystems detected!</td>
+</tr>
+%%TABLE_NFS_SHARELIST%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="bold fs_name emboss">
+  <img src="theme/default/pango/fs-poolfs-22.png" alt=""
+   class="%%CLASS_FSPOOL%%" title="Pool filesystem" />
+  <img src="theme/default/pango/fs-normal-22.png" alt=""
+   class="%%CLASS_FSNORMAL%%" title="Filesystem" />
+  <img src="theme/default/pango/fs-grey-22.png" alt=""
+   class="%%CLASS_FSGREY%%" title="Filesystem (inherited)" />
+  <a href="services.php?nfs&query=%%NFS_FSNAME%%">%%NFS_FSNAME%%</a>
+ </td>
+ <td><acronym title="%%NFS_MOUNTPOINT%%">%%NFS_MOUNTPSHORT%%</acronym></td>
+ <td>%%NFS_SHARESETTING%%</td>
+ <td>%%NFS_SHAREACCESS%%</td>
+ <td style="width:1px; text-align:right">
+  <input type="checkbox" name="cb_nfsremove_%%NFS_FSNAME%%" />
+ </td>
+</tr>
+%%TABLE_NFS_SHARELIST_END%%
+<tr>
+ <th colspan="5" class="right">
+  <input type="submit" name="nfs_unshare_selected" 
+   value="Remove selected NFS shares" />
+ </th>
+</tr>
+</table>
+</form>
+</div>
+
+<div id="nfsnewshare-button" class="%%CLASS_NOQUERY%%">
+ <br />
+ <input type="button" onclick="nfsNewShare();"
+  value="Create new NFS share" />
+</div>
+
+<div id="nfsnewshare" class="hidden">
+<br />
+<h2>Create new NFS share</h2>
+<form enctype="multipart/form-data" method="post"
+ action="services.php?nfs&submit">
+<input type="hidden" name="handle" value="services_nfs_create" />
+<table class="widetable">
+<tr>
+ <td>ZFS filesystem</td>
+ <td>
+  <select name="nfs_create_share_nfsfs_hide" required
+   class="yellow" id="nfs_create_share_nfsfs_hide" pattern=".+">
+   <option value=""></option>
+%%NFS_ZFSFSLIST_HIDE%%
+  </select>
+  <select name="nfs_create_share_nfsfs_nohide" style="display:none"
+   class="yellow" id="nfs_create_share_nfsfs_nohide" pattern=".+">
+   <option value=""></option>
+%%NFS_ZFSFSLIST_NOHIDE%%
+  </select>
+  &nbsp; <input type="checkbox" name="nfs_hide_sharedfilesystems" checked 
+  onchange="nfsHideSharedFilesystems(this)" /> 
+  Hide filesystems already shared by NFS
+ </td>
+</tr><tr>
+ <td>NFS share profile</td>
+ <td>
+  <select name="nfs_share_profile" class="yellow profilebox">
+   <option value="public">Public (WAN)</option>
+   <option value="protected" selected="selected">Protected (LAN)</option>
+   <option value="noaccess">No access</option>
+  </select>
+ </td>
+</tr><tr>
+ <td></td>
+ <td>
+  <input type="submit" name="nfs_create_share" value="Create new NFS share" />
+ </td>
+</tr>
+</table>
+</form>
+</div>
+
+<div class="%%CLASS_QUERY%%">
+<br />
+<h2>NFS share: <span style="color:#444">%%QUERY_FSNAME%%</span></h2>
+<table class="widetable">
+<tr>
+ <td style="width:25%">ZFS filesystem</td>
+ <td><a href="files.php?query=%%QUERY_FSNAME%%">%%QUERY_FSNAME%%</a></td>
+</tr><tr>
+ <td>Mountpoint</td>
+ <td><a href="files.php?browse=%%QUERY_MP%%">%%QUERY_MP%%</a></td>
+</tr><tr>
+ <td>Sharenfs setting</td>
+ <td>%%QUERY_SHARENFS%%</td>
+</tr><tr>
+ <td>Showmount output</td>
+ <td>%%QUERY_SHOWMOUNT%%</td>
+</tr>
+</table>
+
+<br />
+<h2>NFS configuration</h2>
+<form enctype="multipart/form-data" method="post"
+ action="services.php?nfs&submit">
+<input type="hidden" name="handle" value="services_nfs_modify" />
+<input type="hidden" name="nfs_fsname" value="%%QUERY_FSNAME%%" />
+<table class="widetable">
+%%TABLE_NFS_SHARECONF%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="bold" style="width:25%">%%CONFIG_NAME%%</td>
+ <td>
+  <input type="checkbox" name="cb_nfsoption_%%CONFIG_NAME%%" %%CONFIG_CHECKED%% />
+  <input type="text" name="text_nfsoption_%%CONFIG_NAME%%" 
+   value="%%CONFIG_VALUE%%" size="30" />
+ </td>
+ <td>
+  <span class="minortext">
+   %%CONFIG_DESC%%
+  </span>
+ </td>
+</tr>
+%%TABLE_NFS_SHARECONF_END%%
+<tr class="dark">
+ <th colspan="3" class="center">
+  <input type="submit" name="submit_nfs_updateconfig"
+   value="Update NFS share configuration" />
+ </th>
+</tr>
+</table>
+</form>
+</div>
+

@@ -1,0 +1,171 @@
+
+<h1>Install new services</h1>
+
+<!-- navigation box -->
+<div class="svc_navibox">
+ Navigation: 
+ <a href="services.php?manage&install">Categories</a> 
+  <span class="%%CLASS_NAV_HASCAT%%"> &bull; </span>
+ <a href="services.php?manage&install&cat=%%NAV_CATSHORT%%">%%NAV_CATLONG%%</a> 
+  <span class="%%CLASS_NAV_HASSVC%%"> &bull; </span>
+ <a href="services.php?manage&install&service=%%NAV_SVCSHORT%%">%%NAV_SVCLONG%%</a> 
+</div>
+
+<!-- list of categories -->
+<table class="widetable hover services_install %%CLASS_CATEGORIES%%">
+<tr>
+ <th>Category</th>
+ <th># services</th>
+ <th>Description</th>
+</tr>
+%%TABLE_CATEGORIES%%
+<tr>
+ <td class="dark">
+  <a href="services.php?manage&install&cat=%%CAT_SHORTNAME%%">%%CAT_LONGNAME%%</a>
+ </td>
+ <td>%%CAT_SERVICECOUNT%%</td>
+ <td>%%CAT_DESCRIPTION%%</td>
+</tr>
+%%TABLE_CATEGORIES_END%%
+</table>
+
+<!-- services in category -->
+<table class="widetable hover services_install %%CLASS_SERVICES%%">
+<tr>
+ <th>%%NAV_CATLONG%% services</th>
+ <th>Description</th>
+</tr>
+%%TABLE_SERVICES%%
+<tr>
+ <td class="dark">
+  <a href="services.php?manage&install&service=%%SVC_SHORTNAME%%">%%SVC_LONGNAME%%</a>
+ </td>
+ <td>%%SVC_DESCRIPTION%%</td>
+</tr>
+%%TABLE_SERVICES_END%%
+</table>
+
+<!-- service information page (download/install/uninstall functionality) -->
+<div class="%%CLASS_INFOPAGE%%">
+
+<!-- title -->
+<h2 class="center black" style="margin-top:20px">%%NAV_SVCLONG%% service</h2>
+<h3 class="center red %%CLASS_NOTINSTALLED%%" style="font-size:85%">NOT INSTALLED</h3>
+<h3 class="center green %%CLASS_INSTALLED%%" style="font-size:90%">INSTALLED</h3>
+
+<!-- notes -->
+<div class="service_infopage">%%INFOPAGE_NOTES%%</div>
+
+<!-- action box -->
+<div class="infopage_action center">
+<form enctype="multipart/form-data" method="post"
+ action="services.php?manage&install&submit">
+<input type="hidden" name="handle" value="services_infopage" />
+<input type="hidden" name="service_name" value="%%NAV_SVCSHORT%%" />
+
+<div class="%%CLASS_NOTINSTALLEDUNAVAIL%%">
+ This service is currently <u>not installed</u> and is also <u>not available</u>
+ for your current system version (<b>%%INFOPAGE_SYSVER%%</b>) and platform 
+ (<b>%%INFOPAGE_PLATFORM%%</b>).
+</div>
+
+<div class="%%CLASS_NOTCOMPATIBLE%%">
+ Not compatible with current web-interface version.
+ If you want to use this service, you have to
+ <a href="system.php?update">update your web-interface</a> first.
+</div>
+
+<div class="%%CLASS_NOTINSTALLED1%%">
+ This service is currently <u>not installed</u>. 
+ It must be downloaded before it can be installed (<b>%%INFOPAGE_DOWNSIZE%%</b>).
+ <br /><br />
+ <input type="submit" name="download_svc" 
+  value="Download %%NAV_SVCLONG%% (%%INFOPAGE_DOWNSIZE%%)" /> 
+</div>
+
+<div class="%%CLASS_NOTINSTALLED2%%">
+<p>
+ <b>Unsatisfied dependencies:</b>
+ before you can install this service,
+ you must first install the following dependencies:
+ %%INFOPAGE_DEPLIST%%
+ These will open in a new browser tab. After having installed all dependencies,
+ return to this tab and <a href="services.php?install&service=%%NAV_SVCSHORT%%"
+ >click here to refresh the page</a>.
+</p>
+</div>
+
+<p class="%%CLASS_NOTINSTALLED3%%">
+ This service is currently <u>not installed</u> but
+ <u>ready for installation</u>.<br /><br />
+ <input type="submit" name="install_svc" value="Install %%NAV_SVCLONG%%" />
+ <b>(click only once!)</b>
+</p>
+
+<div class="%%CLASS_DOWNLOADING%%">
+ <img class="infopage_progress" src="%%THEMEPATH%%/progressbar.gif" alt="" />
+ <br /><br />
+ Currently <u>downloading</u> this service 
+ (<b>%%INFOPAGE_DOWNPCT%%%</b> of <b>%%INFOPAGE_DOWNSIZE%%</b>)
+</div>
+
+<div class="%%CLASS_INSTALLING%%">
+ <img class="infopage_progress" src="%%THEMEPATH%%/progressbar.gif" alt="" />
+ <br /><br />
+ Currently <u>installing</u> this service
+</div>
+
+<div class="service_infopage_installed %%CLASS_INSTALLED%%">
+ <p>
+  This service is currently <u>installed</u> - 
+  <a href="services.php?manage&query=%%NAV_SVCSHORT%%"
+  >begin using this service</a>.
+ </p>
+
+ <div class="%%CLASS_NEEDDEPENDINS%%">
+ <p>
+  <b>Warning:</b>
+  this service is installed but <u>required dependencies</u> are not installed!
+  This may cause the service to malfunction. Please install:
+  <br /><br />
+  %%INFOPAGE_DEPLIST%%
+ </p>
+ </div>
+
+ <div class="%%CLASS_UPGRADE1%%">
+  You can <b>upgrade</b> this service to a newer version!
+  <br /><br />
+  <input type="submit" name="download_svc" 
+   value="Download %%NAV_SVCLONG%% version %%UPGRADE_VER%%" />
+ </div>
+
+ <div class="%%CLASS_UPGRADE2%%">
+  You can <b>upgrade</b> this service to a newer version!
+  <br /><br />
+  <input type="submit" name="upgrade_svc"
+   value="Upgrade %%NAV_SVCLONG%% to version %%UPGRADE_VER%%" />
+ </div>
+
+ <!-- uninstall button -->
+ <div>
+  <input type="submit" name="uninstall_svc" value="Uninstall %%NAV_SVCLONG%%" />
+  <p class="%%CLASS_INSTALLEDUNAVAIL%%">
+  <span class="red">Warning:</span> this service is currently installed, 
+  but no longer available for download. 
+  If you uninstall now, you may not be able to reinstall later.
+  </p>
+ </div>
+
+</div><!-- installed svc -->
+</form>
+</div><!-- infopage_action -->
+
+<!-- availability chart -->
+<div class="availabilitychart">
+<table class="widetable hover">
+%%INFOPAGE_AVAILCHART%%
+</table>
+</div><!-- availability chart -->
+
+</div><!-- div.service_infopage -->
+

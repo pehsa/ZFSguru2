@@ -1,0 +1,126 @@
+
+<div class="tower">
+<div class="tower-start">
+ <h1 class="tower-title">
+  <acronym title="Domain Name System">DNS</acronym> server
+ </h1>
+</div>
+<div class="tower-base tower-info">
+ <div style="width:95%; text-align:left; margin:0 auto">
+  <p>
+   Domain Name System (DNS) is what makes google.com translate into an IP 
+   address your computer can find on the internet. Without DNS, you cannot 
+   resolve human friendly names into IP addresses.
+  </p>
+  <p>
+   In many networks at home, you will be assigned DNS servers from your 
+   Internet Service Provider (ISP). In most cases your internet modem is 
+   configured to assign you DNS and other information through DHCP.
+  </p>
+  <p>
+   If you enable a DNS server, there will be no conflict on the network.
+   However, you must actively enable the use of the DNS service or utilise DHCP 
+   to do so. On <b>Windows</b> you must disable DHCP (automatic IP) to override 
+   the DNS server. On <b>Linux</b> and <b>UNIX</b> (including ZFSguru) you can 
+   set the DNS servers in <mono>/etc/resolv.conf</mono>.
+  </p>
+ </div>
+</div>
+<div class="tower-base tower-switch">
+
+ <div class="tower-switch-1">
+  <div class="tower-switch-2"></div>
+  <div class="tower-switch-on">On</div>
+  <div class="tower-switch-off">Off</div>
+ </div>
+
+</div>
+<div class="tower-base tower-error">
+ <p>Cannot enable: blabla error!</p>
+</div>
+<div class="tower-base">
+ <h2 class="tower-subtitle">Upstream nameservers</h2>
+ <table style="margin:0 auto; text-align:left" cellpadding="4px">
+ <tr>
+  <td>Primary</td>
+  <td><input type="text" name="dns_ns1" /></td>
+ </tr><tr>
+  <td>Secondary</td>
+  <td><input type="text" name="dns_ns2" /></td>
+ </tr><tr>
+  <td>Tertiary</td>
+  <td><input type="text" name="dns_ns3" /></td>
+ </tr>
+ </table><br />
+</div>
+<div class="tower-base">
+ <h2 class="tower-subtitle">Override DNS</h2>
+  <table class="widetable left" style="width:60%; margin:0 auto">
+  <tr class="center">
+   <th>Host name</th>
+   <th>IP address</th>
+   <th></th>
+  </tr>
+%%TABLE_DNS_OVERRIDE%%
+  <tr>
+   <td>
+    <input type="text" name="dns_override_host" value="%%DNS_OVERRIDE_HOST%%" />
+   </td><td>
+    <input type="text" name="dns_override_ip" value="%%DNS_OVERRIDE_IP%%" />
+   </td><td>
+    <input type="submit" value="remove" 
+     name="submit_network_dns_override_removehost_%%DNS_OVERRIDE_HOSTB64%%" />
+   </td>
+  </tr>
+%%TABLE_DNS_OVERRIDE_END%%
+  <tr>
+   <td>
+    <input type="text" name="dns_override_newhost" />
+   </td><td>
+    <input type="text" name="dns_override_newip" />
+   </td><td>
+    <input type="submit" value="add"
+     name="submit_network_dns_override_add" />
+   </td>
+  </tr>
+ </table>
+</div>
+<div class="tower-base tower-advanced">
+<h2 class="tower-subtitle">Advanced DNS configuration</h2>
+
+<table class="widetable left">
+%%TABLE_DNS_STRING%%
+<tr>
+ <td class="bold">%%DNS_STRING_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="activate_dns_%%DNS_STRING_NAME%%"
+   %%DNS_STRING_ACTIVATED%% />
+ </td>
+ <td>
+  <input type="text" name="string_dns_%%DNS_STRING_NAME%%"
+   value="%%DNS_STRING_VALUE%%" style="width:400px" />
+ </td>
+</tr>
+%%TABLE_DNS_STRING_END%%
+%%TABLE_DNS_SWITCH%%
+<tr>
+ <td class="bold">%%DNS_SWITCH_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="%%DNS_SWITCH_NAME%%"
+   %%DNS_SWITCH_ACTIVATED%% />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_DNS_SWITCH_END%%
+</table><br />
+<input type="submit" name="submit_dnsmasq" value="Save changes" />
+
+</div>
+<div class="tower-end">
+ <p>
+  Remember: if you use a firewall, adjust your configuration to allow port
+  <b>53</b>.
+ </p>
+</div>
+</div><!-- tower -->
+

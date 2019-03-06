@@ -1,0 +1,133 @@
+<script type="text/javascript">
+
+function selectHandler(prefix, chosenOption)
+{
+ if (chosenOption == "formatgpt")
+ {
+  document.getElementById(prefix).style.display = "inline";
+ }
+ else
+ {
+  document.getElementById(prefix).style.display = "none";
+ }
+}
+
+</script>
+
+<h1>Disk formatting</h1>
+
+<p style="margin:0 0 5px 0">
+ Detected <b>%%DISKS_DISKCOUNT%%</b> disks,
+ select a disk for formatting options.
+</p>
+
+<div>
+<form enctype="multipart/form-data" method="post" 
+ action="disks.php?massprocess">
+<input type="hidden" name="handle" value="disks_massprocess" />
+
+<table class="widetable hover disks_formatting">
+<tr>
+ <th><a href="disks.php?sort=disk%%SORT_DISK%%">Disk</a></th>
+ <th><a href="disks.php?sort=label%%SORT_LABEL%%">Label</a></th>
+ <th><a href="disks.php?sort=size%%SORT_SIZE%%">Size (legacy)</a></th>
+ <th><a href="disks.php?sort=size%%SORT_SIZE%%">Size (binary)</a></th>
+ <th><a href="disks.php?sort=sector%%SORT_SECTOR%%">Sector</a></th>
+ <th style="width:auto">
+  <a href="disks.php?sort=ident%%SORT_IDENT%%">Identified as</a>
+ </th>
+ <th></th>
+</tr>
+%%TABLE_PHYSDISKS%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark bold diskname">
+  <img src="theme/default/pango/disk-hdd-16.png" alt="" 
+   class="%%CLASS_HDD%%" title="Harddrive" />
+  <img src="theme/default/pango/disk-ssd-16.png" alt=""
+   class="%%CLASS_SSD%%" title="Solid State Drive" />
+  <img src="theme/default/pango/disk-flash-16.png" alt=""
+   class="%%CLASS_FLASH%%" title="Flash drive" />
+  <img src="theme/default/pango/disk-memdisk-16.png" alt=""
+   class="%%CLASS_MEMDISK%%"
+   title="Memory disk - contents will be gone on reboot!" />
+  <img src="theme/default/pango/disk-usbstick-16.png" alt=""
+   class="%%CLASS_USBSTICK%%" title="USB stick" />
+  <img src="theme/default/pango/disk-network-16.png" alt=""
+   class="%%CLASS_NETWORK%%" title="Network drive" />
+  <a href="disks.php?query=%%DISK_NAME%%">%%DISK_NAME%%</a>
+ </td>
+ <td>%%DISK_LABEL%%</td>
+ <td>%%DISK_SIZE_LEGACY%%</td>
+ <td>%%DISK_SIZE_BINARY%%</td>
+ <td class="%%CLASS_SECTOR%%">%%DISK_SIZE_SECTOR%%</td>
+ <td class="disk_identstring">%%DISK_IDENTIFY%%</td>
+ <td><input type="checkbox" name="selectdisk_%%DISK_NAME%%" /></td>
+</tr>
+%%TABLE_PHYSDISKS_END%%
+<tr class="massprocess">
+ <td colspan="7">With selected disks do the following: 
+  <select name="massprocess_action"
+ onchange="selectHandler('labelspan', this.options[this.selectedIndex].value);">
+   <option value=""></option>
+   <option value="formatgpt">format with GPT</option>
+   <option value="formatmbr">format with MBR</option>
+   <option value="delete">Zero-write partition areas</option>
+   <option value="zerowrite">Zero-write entire disk</option>
+   <option value="randomwrite">Random-write entire disk</option>
+   <option value="trimerase">TRIM-erase entire disk</option>
+  </select>
+  <span id="labelspan" style="display:none">
+   with label prefix: 
+   <input type="text" name="massprocess_label" style="width:100px" />
+   and start counting at:
+   <select name="massprocess_count">
+    %%MASSPROCESS_COUNT%%
+   </select>
+  </span>
+  <input type="submit" name="submit_massprocess" value="do it!" />
+ </td>
+</tr>
+</table>
+
+</form>
+</div>
+
+<div class="colorbox_red %%CLASS_LABELCONFLICT%%">
+<b>Danger: conflicting disk labels have been detected!</b><br />
+ This happens when two or more disks share the same label name.
+ You should rename your disks so each have a label name that is unique.
+</div>
+
+<div class="colorbox_red %%CLASS_NODEVNODE%%">
+<b>Warning: disk without device node</b><br />
+ At least one disk does not have a valid device node.
+ You should <b>reboot the system</b> to see if this message goes away.<br />
+ If not, then please ask for assistance on the ZFSguru support forum,
+ click the website link at the top right corner.
+</div>
+
+<div class="colorbox_amber %%CLASS_NOLABELDEV%%">
+<b>Warning: disk not using its GPT label</b><br />
+ At least one disk is currently not using the label name assigned to it.
+ This can happen in two ways:<br /><br />
+ <b>1) ZFS is using the raw device node</b>
+ of the affected disk(s), like ada0p2.<br />
+ If the raw device node is in use, the GPT label entry in /dev/gpt disappears.
+ This can be corrected by replacing the affected disks using a temporary disk
+ of larger or equal size on the
+ <a href="pools.php">Pools</a> page. When ZFS finishes synchronizing,
+ your original GPT-labeled disk is free again and can be used to replace the
+ temporary disk.
+ After this procedure,
+ ZFS should be using the original disk with its GPT label instead of the
+ raw device node.
+ <br />
+ Please note that ZFS works just fine with the raw device nodes, but a label
+ looks better!
+ <br /><br />
+ <b>2) You recently renamed a GPT partition.</b>
+ In that case, you should reboot the system for the changes to take effect.
+ <br /><br />
+ <b>Affected disk labels:</b> %%NOLABELDEV_LABELS%%
+</div>
+

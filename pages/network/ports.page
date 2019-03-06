@@ -1,0 +1,29 @@
+
+<h1>Network ports in use</h1>
+
+<table class="widetable hover">
+<tr>
+ <th>Port</th>
+ <th>Application</th>
+ <th><acronym title="Process ID">PID</acronym></th>
+ <th>Protocol</th>
+ <th>Local</th>
+ <th>Remote</th>
+ <th>User</th>
+</tr>
+<tr class="%%CLASS_NOPORTS%%">
+ <td colspan="3">No open ports found!</td>
+</tr>
+%%TABLE_NETWORK_PORTS%%
+<tr>
+ <td>%%NP_PORT%%</td>
+ <td>%%NP_COMMAND%%</td>
+ <td>%%NP_PID%%</td>
+ <td>%%NP_PROTO%%</td>
+ <td>%%NP_LOCAL%%</td>
+ <td>%%NP_ADDRESS%%</td>
+ <td>%%NP_USER%%</td>
+</tr>
+%%TABLE_NETWORK_PORTS_END%%
+</table>
+

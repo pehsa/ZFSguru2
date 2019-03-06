@@ -1,0 +1,22 @@
+
+<h1>Rename pool %%POOL_NAME%%</h1>
+
+<p class="renamewarning">
+ <b>Warning</b><br />
+ renaming a pool will unmount and export all datasets controlled by this pool.
+ <br />
+ This should not be performed on pools that are in use, such as the system pool.
+</p>
+
+<div>
+<form enctype="multipart/form-data" method="post" 
+ action="pools.php?query=%%POOLNAME%%&rename">
+<input type="hidden" name="handle" value="pools_rename" />
+<input type="hidden" name="poolname" value="%%POOLNAME%%" />
+
+New name: <input type="text" name="pool_newname" value="%%POOLNAME%%" />
+
+<input class="red" type="submit" name="submit_renamepool" value="Rename pool" />
+<input type="submit" name="submit_goback" value="Go back" />
+</form>
+</div>

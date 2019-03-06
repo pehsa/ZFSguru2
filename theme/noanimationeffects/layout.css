@@ -1,0 +1,285 @@
+
+/* layout */
+
+html
+{
+margin:0;
+padding:0;
+min-height:100%;
+}
+
+body
+{
+margin:0;
+padding:0;
+font-family:sans-serif;
+font-size:0.8em;
+min-height:100%;
+background:#555;
+background-image: -moz-linear-gradient(100% 100% 90deg, #555, #888);
+background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#888), to(#555));
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#555555');
+}
+
+#main
+{
+width:1000px;
+text-align:center;
+margin:0 auto;
+}
+
+#top
+{
+color:#444;
+background:#eee;
+text-align:left;
+margin:1em 0 0 0;
+padding:5px 0 1px 0;
+border-radius:10px;
+-moz-border-radius:10px;
+-webkit-border-radius:10px;
+background-image: -moz-linear-gradient(100% 100% 90deg, #aaa, #fff);
+background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#aaa));
+/* IE gradient intentionally omitted here */
+}
+
+#top img
+{
+border:0;
+}
+
+#logotitle
+{
+padding:0 30px;
+letter-spacing:2px;
+font-weight:bold;
+font-size:230%;
+text-decoration:none;
+text-shadow:0px -1px 1px rgba(0,0,0,1.5);
+}
+
+#logotitle:hover
+{
+color:#666;
+}
+
+#logotitle:hover #logotitle-span
+{
+text-decoration:underline;
+}
+
+#logotitle-left
+{
+color:#444;
+letter-spacing:2px;
+}
+
+#logotitle-right
+{
+color:#fff;
+font-style:italic;
+}
+
+#logoright
+{
+font-size:90%;
+color:#666;
+float:right;
+margin:8px 10px 0 0;
+}
+
+#logoright a, #logoright a:visited
+{
+color:#444;
+text-decoration:none;
+}
+
+#logoright a:hover
+{
+text-decoration:underline;
+}
+
+#menu
+{
+display:block;
+clear:both;
+min-height:15px;
+margin-top:0px;
+text-align:left;
+box-sizing:border-box;
+border-bottom:1px solid #666;
+border-radius:10px;
+-moz-border-radius:10px;
+-webkit-border-radius:10px;
+}
+
+div.menu-spacer
+{
+margin:0px 0 0px 20px;
+letter-spacing:2px;
+}
+
+#menu a, #menu a:visited
+{
+display:table-cell;
+padding:2px 8px;
+color:#222;
+text-decoration:none;
+text-transform:lowercase;
+font-variant:small-caps;
+font-size:110%;
+}
+
+#menu a:hover
+{
+color:#000 !important;
+text-shadow:1px 1px 1px #000 !important;
+}
+
+#menu a.menu-active, #menu a.menu-active:visited
+{
+color:#a00;
+text-shadow:1px 1px 1px #f00;
+}
+
+#menu a.menu-active:hover
+{
+}
+
+#navtabs
+{
+display:block;
+position:relative;
+top:1px;
+text-align:left;
+margin-top:1em;
+padding-left:6px;
+}
+
+#navtabs div
+{
+display:table-cell;
+width:5px;
+}
+
+#navtabs a.navtab-active
+{
+background:#fff !important;
+border:1px solid #ddd !important;
+border-bottom:1px solid #fff !important;
+font-weight:bold;
+}
+
+#navtabs a, #navtabs a:visited
+{
+display:table-cell;
+color:#444;
+text-decoration:none;
+margin-left:5px;
+margin-right:10px;
+padding:5px 8px;
+background:#ccc;
+border:1px solid #ddd;
+border-radius:10px 10px 0 0;
+-moz-border-radius:10px 10px 0 0;
+-webkit-border-radius:10px 10px 0 0;
+font-size:90%;
+}
+
+#navtabs a:hover
+{
+background:#fff !important;
+border-bottom:1px solid #fff !important;
+text-decoration:underline;
+}
+
+#content
+{
+clear:both;
+text-align:left;
+background:#fefefe;
+background-image: -moz-linear-gradient(100% 100% 90deg, #eee, #fff);
+background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#eee));
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee');
+border-top:1px solid #ddd;
+border-left:1px solid #aaa;
+border-right:1px solid #666;
+border-bottom:1px solid #666;
+border-radius:10px;
+-moz-border-radius:10px;
+-webkit-border-radius:10px;
+padding:25px 25px 25px 25px;
+margin:0 0 20px 0;
+}
+
+
+/* tab bar */
+
+p.tabbar
+{
+padding-bottom:10px;
+}
+
+p.tabbar a, p.tabbar a:visited, p.tabbar a:link
+{
+color:#000;
+background:#eee;
+border:1px solid #aaa;
+padding:4px;
+text-decoration:none;
+}
+
+p.tabbar a:hover
+{
+text-decoration:underline;
+}
+
+p.tabbar a.activebar, p.tabbar a.activebar:visited
+{
+color:#b00;
+}
+
+/* timekeeper */
+
+#timekeeper
+{
+position:relative;
+width:1000px;
+height:20px;
+margin:20px auto;
+border:1px solid #000;
+box-sizing:content-box;
+overflow:hidden;
+background:#f1f1f1;
+opacity:0.05;
+transition:opacity 0.8s;
+}
+ 
+#timekeeper:hover
+{
+opacity:1;
+}
+
+#timekeeper div
+{
+position:absolute;
+height:20px;
+}
+
+#timekeeper div:hover
+{
+background:#ccc !important;
+}
+
+#timekeeper-total
+{
+display:inline-block;
+position:relative;
+top:-19px;
+margin:0 auto;
+cursor:default;
+color:#444;
+font-size:0.75em;
+}
+
+/* end of layout style sheet */

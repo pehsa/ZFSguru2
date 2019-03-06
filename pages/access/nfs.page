@@ -1,0 +1,468 @@
+
+<div class="colorbox_red %%CLASS_NOTRUNNING%%">
+ <b>NFS</b> is currently <b>not running</b>.
+ Enable <a href="services.php?manage&system">automatic start</a>
+ of this service and reboot the system.
+</div>
+<div class="colorbox_amber %%CLASS_NOAUTOSTART%%">
+ <b>NFS</b> is configured to <b>not automatically start</b>.
+ To use NFS you should <a href="services.php?manage&system"
+ >enable automatic start</a> and reboot the system.
+</div>
+
+<h1>NFS shares</h1>
+
+<div class="widget_itemlist">
+ <a id="nfsnewshare-button" class="widget_itemlist_item %%CLASS_NOQUERY%%" 
+  href="access.php?nfs&newshare" onclick="nfsNewShare(); return false;">
+  <div class="widget_itemlist_images">
+   <img class="widget_itemlist_default" 
+    src="theme/default/pango/samba-share-64.png" alt="" />
+   <img class="widget_itemlist_new" 
+    src="theme/default/pango/x/tab-new.png" alt="" />
+  </div>
+  <span class="widget_itemlist_name">New share</span><br />
+  <span class="widget_itemlist_desc">click for options</span>
+ </a><a class="widget_itemlist_item %%CLASS_QUERYPARENT%%" href="access.php?nfs">
+  <div class="widget_itemlist_images">
+   <img class="widget_itemlist_default" 
+    src="theme/default/pango/share-goback-64.png" alt="" />
+  </div>
+  <span class="widget_itemlist_name">Go back</span><br />
+  <span class="widget_itemlist_desc">display shares</span>
+ </a><a class="widget_itemlist_item %%CLASS_QUERYCHILD%%" 
+  href="access.php?nfs&q=%%QUERY_PARENT%%">
+  <div class="widget_itemlist_images">
+   <img class="widget_itemlist_default" 
+    src="theme/default/pango/share-gohome-64.png" alt="" />
+  </div>
+  <span class="widget_itemlist_name">Go back</span><br />
+  <span class="widget_itemlist_desc">display parent</span>
+ </a>%%TABLE_NFS_ITEMS%%<a class="widget_itemlist_item" 
+ href="access.php?nfs&q=%%SHARE_NAME%%">
+ <div class="widget_itemlist_images widget_itemlist_item_%%SHARE_CLASS%%">
+  <img class="widget_itemlist_default" alt="" 
+   src="theme/default/pango/samba-share-64.png" />
+  <img class="widget_itemlist_protected %%SHARE_PROTECTED%%" 
+   src="theme/default/pango/x/samba-lock-protected-16.png" alt="" />
+  <img class="widget_itemlist_private %%SHARE_PRIVATE%%" 
+   src="theme/default/pango/x/samba-lock-private-16.png" alt="" />
+  <img class="widget_itemlist_custom %%SHARE_CUSTOM%%" 
+   src="theme/default/pango/x/samba-lock-custom-16.png" alt="" />
+  <img class="widget_itemlist_noaccess %%SHARE_NOACCESS%%" 
+   src="theme/default/pango/x/samba-lock-noaccess-16.png" alt="" />
+  <img class="widget_itemlist_problem %%SHARE_PROBLEM%%" 
+   src="theme/default/pango/x/samba-share-problem-32.png" alt="" />
+  <img class="widget_itemlist_default %%SHARE_PROBLEM%%" 
+   src="theme/default/pango/x/software-update-urgent-3.png" alt="" />
+  <img class="widget_itemlist_delete %%SHARE_SHARED%%"
+   src="theme/default/pango/samba-group-delete-16.png" alt="" 
+   onclick="if (confirm('Are you sure?')) window.location.href = 
+   'access.php?nfs&removenfs=%%SHARE_NAME%%'; return false" />
+ </div>
+ <span class="widget_itemlist_name">%%SHARE_SHORTNAME%%</span><br />
+ <span class="widget_itemlist_desc %%SHARE_PUBLIC%%">public</span>
+ <span class="widget_itemlist_desc %%SHARE_PROTECTED%%">protected</span>
+ <span class="widget_itemlist_desc %%SHARE_PRIVATE%%">private</span>
+ <span class="widget_itemlist_desc %%SHARE_CUSTOM%%">custom</span>
+ <span class="widget_itemlist_desc %%SHARE_NOACCESS%%">no access</span>
+ <span class="widget_itemlist_desc %%SHARE_PROBLEM%%">problem detected!</span>
+ <span class="widget_itemlist_desc %%SHARE_NOTSHARED%%">not shared</span>
+</a>%%TABLE_NFS_ITEMS_END%%
+</div><!-- div.widget_itemlist -->
+
+<!-- new share -->
+<div id="nfsnewshare" class="%%CLASS_NEWSHARE%%">
+<form enctype="multipart/form-data" method="post"
+ action="access.php?nfs&submit">
+<input type="hidden" name="handle" value="access_nfs_newshare" />
+<br />
+<h2>Create new NFS share</h2>
+<table class="widetable">
+<tr>
+ <th></th>
+ <th>Value</th>
+</tr>
+<tr>
+ <td style="width:200px">Share filesystem</td>
+ <td>
+ <select name="nfs_newshare_fs" class="yellow" 
+  id="nfs_create_share_nfsfs_hide" pattern=".+" required>
+   <option value=""></option>
+%%NFS_ZFSFSLIST%%
+  </select>
+ </td>
+</tr><tr>
+ <td>Easy permissions</td>
+ <td>
+  <input type="checkbox" name="nfs_newshare_ep" checked /> 
+   Resolve permission problems<br />
+  <span class="minortext">
+   Allows mounting of subdirectories and 
+   maps all access to the share (UID #1000) user.
+  </span>
+ </td>
+</tr><tr>
+ <td>Access profile</td>
+ <td>
+  <select name="nfs_newshare_profile" class="profilebox"
+   id="newshare_accessprofile" onchange="nfsNewShareProfile(this)">
+   <option value="public">Public</option>
+   <option value="protected" selected="selected">Protected</option>
+   <option value="private">Private</option>
+  </select>
+ </td>
+</tr><tr>
+ <td>Access description</td>
+ <td>
+  <span class="minortext">
+   <span class="hidden" id="newshare_span_public">
+    Allows access from all IP addressess, including the internet (dangerous!)
+   </span>
+   <span class="normal" id="newshare_span_protected">
+    Allows access from local IP addressess only, 10.x.x.x and 192.168.x.x.
+   </span>
+  </span>
+  <span class="hidden" id="newshare_span_private">
+   Exclusive access for this IP address:
+   <input class="txt" name="nfs_newshare_privateip" style="width:200px" 
+    value="%%NFS_DEFAULTIP%%" />
+  </span>
+ </td>
+</tr><tr>
+ <td></td>
+ <td>
+  <input type="submit" name="submit_access_nfs_newshare" 
+   value="Create new NFS share" />
+ </td>
+</tr>
+</table>
+</form>
+</div><!-- div.nfsnewshare -->
+
+<div id="extratabbar" class="extratabbar %%CLASS_QUERY%%">
+ <div class="et_row">
+  <div class="et_text">Share: %%QUERY_FSNAME%%</div>
+  <div class="et_tab_active" id="et_query_share_fs"><a href="#"
+   onclick="return extraTab(this)">Filesystems (%%QUERY_CHILDREN%%)</a></div>
+  <div id="et_query_share_access"><a href="#"
+   onclick="return extraTab(this)">Access control</a></div>
+  <div class="et_tab" id="et_query_share_advanced"><a href="#"
+   onclick="return extraTab(this)">Advanced</a></div>
+  <div class="et_tab" id="et_query_share_howtoaccess"><a href="#"
+   onclick="return extraTab(this)">How to access</a></div>
+ </div>
+</div>
+
+<div id="query_share_fs" class="%%CLASS_QUERY%%">
+<form enctype="multipart/form-data" method="post"
+ action="access.php?nfs&submit">
+<input type="hidden" name="handle" value="access_nfs_massaction" />
+<table class="widetable hover">
+<tr>
+ <th>ZFS filesystem</th>
+ <th>Mountpoint</th>
+ <th>Access profile</th>
+ <th><acronym title="Easy Permissions">EP</acronym></th>
+ <th style="width:1px"></th>
+</tr>
+<tr class="%%CLASS_NONFSSHARES%%">
+ <td colspan="5">No shared NFS filesystems detected!</td>
+</tr>
+%%TABLE_NFS_CHILDREN%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="bold fs_name emboss">
+  <img src="theme/default/pango/fs-poolfs-22.png" alt=""
+   class="%%CLASS_FSPOOL%%" title="Pool filesystem" />
+  <img src="theme/default/pango/fs-normal-22.png" alt=""
+   class="%%CLASS_FSNORMAL%%" title="Filesystem shared explicitly" />
+  <img src="theme/default/pango/fs-grey-22.png" alt=""
+   class="%%CLASS_FSGREY%%" title="Filesystem shared by inheritance" />
+  <a href="access.php?nfs&q=%%NFS_FSNAME%%">%%NFS_FSNAME%%</a>
+ </td>
+ <td><acronym title="%%NFS_MOUNTPOINT%%">%%NFS_MOUNTPSHORT%%</acronym></td>
+ <td class="%%CHILD_PROF_CLASS%% bold">%%CHILD_PROFILE%%</td>
+ <td>
+  <img class="%%CHILD_EP_Y%%" src="theme/default/ok.png" alt="Y" 
+   title="Enabled" />
+  <img class="%%CHILD_EP_N%%" src="theme/default/no.png" alt="N" 
+   title="Disabled" />
+ </td>
+ <td style="width:1px; text-align:right">
+  <input type="checkbox" name="cb_nfsfs_%%NFS_FSNAME%%" />
+ </td>
+</tr>
+%%TABLE_NFS_CHILDREN_END%%
+<tr>
+ <th colspan="5" class="right">
+  <span style="font-weight:normal; font-style:italic;"
+   >Do the following with the selected shares: </span>
+  <select name="nfs_massaction" class="center" onchange="nfsMassAction(this)">
+   <option value="" disabled>-- Unshare --</option>
+   <option value="inherit">Stop sharing by inheritance</option>
+   <option value="off">Stop sharing explicitly</option>
+   <option value="" disabled>-- Share --</option>
+   <option value="public">Activate profile: public access</option>
+   <option value="protected">Activate profile: protected access</option>
+   <option value="private">Activate profile: private access</option>
+   <option value="" disabled>-- Easy Permissions --</option>
+   <option value="epoff">Disable Easy Permissions</option>
+   <option value="epon">Enable Easy Permissions</option>
+   <option value="resetpermissions">Reset permissions of all files</option>
+   <option value="" disabled>-- Read-only --</option>
+   <option value="setro">Read-Only access</option>
+   <option value="setrw">Read+Write access</option>
+  </select>
+  <input type="text" name="nfs_massaction_privateip" id="nfs_ma_pi" 
+   class="hidden" style="width:99px; text-align:center" 
+   value="%%NFS_DEFAULTIP%%" />
+  <input type="submit" name="submit_access_nfs_massaction" value="Go" />
+ </th>
+</tr>
+</table><br />
+</form>
+<form enctype="multipart/form-data" method="post"
+ action="access.php?nfs&submit">
+<input type="hidden" name="handle" value="access_nfs_changeprofile" />
+<input type="hidden" name="nfs_changeprofile_fs" value="%%QUERY_FSNAME%%" />
+<h2>Access profile</h2>
+<p class="%%CLASS_SHARED%%">
+ The current access profile for this share is:
+ <b class="%%CLASS_MP_PUBLIC%%">public</b><b
+ class="%%CLASS_MP_PROTECTED%%">protected</b><b
+ class="%%CLASS_MP_PRIVATE%%">private</b>.
+</p>
+<p class="%%CLASS_NOTSHARED%%">
+ This filesystem is <b>not shared</b> with NFS.
+</p>
+<div class="colorbox_grey">
+ <span class="%%CLASS_SHARED%%">Change profile to:</span>
+ <span class="%%CLASS_NOTSHARED%%">Share with NFS:</span>
+ <select name="nfs_changeprofile_profile" class="profilebox"
+  onchange="nfsModifyShareProfile(this)">
+  <option value="public" %%CHECK_MP_PUBLIC%%>Public</option>
+  <option value="protected" %%CHECK_MP_PROTECTED%%>Protected</option>
+  <option value="private" %%CHECK_MP_PRIVATE%%>Private</option>
+  <option value="notshared" %%CHECK_MP_NOTSHARED%%>Not shared</option>
+ </select>
+ <input type="submit" name="submit_access_nfs_changeprofile" value="Set" />
+ <span class="minortext">
+  <span class="%%CLASS_MP_PUBLIC%%" id="modshare_span_public">
+   Allows access from all IP addressess, including the internet (dangerous!)
+  </span>
+  <span class="%%CLASS_MP_PROTECTED%%" id="modshare_span_protected">
+   Allows access from local IP addressess only, 10.x.x.x and 192.168.x.x.
+  </span>
+ </span>
+ <span class="%%CLASS_MP_PRIVATE%%" id="modshare_span_private">
+  &bullet; Exclusive access for this IP address:
+  <input class="txt" name="nfs_changeprofile_privateip" style="width:200px"
+   value="%%NFS_DEFAULTIP%%" />
+ </span>
+</div>
+</form>
+</div><!-- div.query_share_fs -->
+
+
+<!-- extratab: access control -->
+<div id="query_share_access" class="hidden">
+<form enctype="multipart/form-data" method="post"
+ action="access.php?nfs&submit">
+<input type="hidden" name="handle" value="access_nfs_accesscontrol" />
+<input type="hidden" name="nfs_ac_fs" value="%%QUERY_FSNAME%%" />
+<h2>NFS share: <span style="color:#444">%%QUERY_FSNAME%%</span></h2>
+<table class="widetable hover">
+<tr>
+ <td style="width:25%">ZFS filesystem</td>
+ <td>
+  <a href="files.php?query=%%QUERY_FSNAME%%">%%QUERY_FSNAME%%</a> 
+  mounted on <a href="files.php?browse=%%QUERY_MP%%">%%QUERY_MP%%</a>
+ </td>
+</tr><tr>
+ <td>Access profile</td>
+ <td>
+  <b class="%%CLASS_MP_PUBLIC%%">public</b><b
+  class="%%CLASS_MP_PROTECTED%%">protected</b><b
+  class="%%CLASS_MP_PRIVATE%%">private</b>
+ </td>
+</tr><tr>
+ <td>Read/Write mode</td>
+ <td>
+  <b class="%%CLASS_AC_RO%%"><span class="red">Enabled!</span> 
+   Only read access is possible to this share.</b>
+  <span class="%%CLASS_AC_RW%%">Read+Write access.</span>
+  <input type="submit" name="submit_access_nfs_ac_readwrite" 
+   class="%%CLASS_AC_RO%%" value="Allow Read+Write access" />
+  <input type="submit" name="submit_access_nfs_ac_readonly" 
+   class="%%CLASS_AC_RW%%" value="Limit access to Read-Only" />
+ </td>
+</tr><tr>
+ <td>Easy Permissions</td>
+ <td>
+  <span class="red %%CLASS_EP_N%%">
+   Easy Permissions are <b>disabled</b> for this NFS share.
+   <input type="submit" name="submit_access_nfs_ep_enable"
+    value="Enable Easy Permissions"
+    onclick="return confirm('Are you sure?');" />
+  </span>
+  <span class="green %%CLASS_EP_Y%%">
+   Easy Permissions are <b>enabled</b> for this NFS share.
+   <input type="submit" name="submit_access_nfs_ep_disable"
+    value="Disable Easy Permissions"
+    onclick="return confirm('Are you sure?');" />
+  </span>
+ </td>
+</tr><tr class="%%CLASS_EP_Y%%">
+ <td>Reset permissions</td>
+ <td>
+  <span class="%%CLASS_EP_Y%%">
+   Try resetting the permissions of all files if you are having permission
+   problems:
+   <input type="submit" name="submit_access_nfs_resetpermissions"
+    value="Reset permissions"
+    onclick="return confirm('Are you sure?');" />
+  </span>
+ </td>
+</tr>
+</table><br />
+<h2>Access control</h2>
+<table class="widetable hover">
+<tr>
+ <th>IP address</th>
+ <th colspan="2">Security mask</th>
+ <th style="width:150px"></th>
+</tr>
+%%TABLE_NFS_ACCESSCONTROL%%
+<tr>
+ <td>%%NFS_AC_IP%%</td>
+ <td>
+  %%NFS_AC_PREFIX%% 
+  <span class="minortext %%NFS_AC_PREFIX32%%"
+   >(only the specified IP has access)</span>
+  <span class="red %%NFS_AC_PREFIX0%%">&bullet; ALL IPs ALLOWED!</span>
+ </td>
+ <td>
+  <input type="submit" name="submit_access_nfs_acremove_%%NFS_AC_B64%%" 
+   value="Remove" />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_NFS_ACCESSCONTROL_END%%
+<tr class="%%CLASS_AC_N%%">
+ <td colspan="4" class="center">
+  No network configuration found. 
+  Warning: this means that all IPs are allowed!
+ </td>
+</tr><tr>
+ <td>
+  <b>Add IP: </b><input type="text" name="ac_new_ip" style="width:110px" />
+ </td>
+ <td>
+  <select name="ac_new_prefix">
+   <option value="" disabled>-- Common security masks --</option>
+   <option value="32">/32 (one IP allowed)</option>
+   <option value="24">/24 (255 IPs allowed; 1.2.3.x)</option>
+   <option value="16">/16 = (65534 IPs allowed; 1.2.x.x)</option>
+   <option value="8">/8 = (16.7 million IPs allowed; 1.x.x.x)</option>
+   <option value="0">/0 = (all IPs allowed; x.x.x.x)</option>
+   <option value="" disabled>-- Uncommon masks --</option>
+   <option value="32">/32</option>
+   <option value="31">/31</option>
+   <option value="30">/30</option>
+   <option value="29">/29</option>
+   <option value="28">/28</option>
+   <option value="27">/27</option>
+   <option value="26">/26</option>
+   <option value="25">/25</option>
+   <option value="24">/24</option>
+   <option value="23">/23</option>
+   <option value="22">/22</option>
+   <option value="21">/21</option>
+   <option value="20">/20</option>
+   <option value="19">/19</option>
+   <option value="18">/18</option>
+   <option value="17">/17</option>
+   <option value="16">/16</option>
+   <option value="15">/15</option>
+   <option value="14">/14</option>
+   <option value="13">/13</option>
+   <option value="12">/12</option>
+   <option value="11">/11</option>
+   <option value="10">/10</option>
+   <option value="9">/9</option>
+   <option value="8">/8</option>
+   <option value="7">/7</option>
+   <option value="6">/6</option>
+   <option value="5">/5</option>
+   <option value="4">/4</option>
+   <option value="3">/3</option>
+   <option value="2">/2</option>
+   <option value="1">/1</option>
+   <option value="0">/0</option>
+  </select>
+ </td>
+ <td class="left">
+  <input type="submit" name="submit_access_nfs_acnew" value="Add IP to list" />
+ </td>
+ <td></td>
+</tr>
+</table>
+</form>
+</div><!-- div.query_share_access -->
+
+<div id="query_share_advanced" class="hidden">
+<h2>Advanced NFS configuration</h2>
+<form enctype="multipart/form-data" method="post"
+ action="access.php?nfs&submit">
+<input type="hidden" name="handle" value="access_nfs_advanced" />
+<input type="hidden" name="nfs_fsname" value="%%QUERY_FSNAME%%" />
+<table class="widetable hover">
+%%TABLE_NFS_SHARECONF%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="bold" style="width:25%">%%CONFIG_NAME%%</td>
+ <td>
+  <input type="checkbox" 
+   name="cb_nfsoption_%%CONFIG_NAME%%" %%CONFIG_CHECKED%% />
+  <input type="text" name="text_nfsoption_%%CONFIG_NAME%%"
+   value="%%CONFIG_VALUE%%" size="30" class="%%CLASS_SHOWTEXT%%" />
+  <span class="%%CLASS_NETWORK%%">see the Access control tab</span>
+ </td>
+ <td>
+  <span class="minortext">
+   %%CONFIG_DESC%%
+  </span>
+ </td>
+</tr>
+%%TABLE_NFS_SHARECONF_END%%
+<tr class="dark">
+ <th colspan="3" class="center">
+  <input type="submit" name="submit_nfs_updateconfig"
+   value="Update NFS configuration" />
+ </th>
+</tr>
+</table>
+</form>
+</div><!-- query share advanced -->
+
+<div id="query_share_howtoaccess" class="hidden">
+<h2>How to access?</h2>
+<p>
+ To mount an NFS share on a UNIX-like system, use the following command:<br />
+</p>
+<pre class="bold">
+ sudo mount %%NFS_SERVERIP%%:%%QUERY_MP%% /mnt
+</pre>
+<p>
+ Adjust the mountpoint <tt class="bold" style="font-size:125%">/mnt</tt>
+ to your needs accordingly. To automatically mount NFS shares, 
+ edit your <tt class="bold" style="font-size:125%">/etc/fstab</tt> file
+ or use a script.
+</p>
+<p>
+ Windows users may need to tweak their system to use local file locking.
+ More information 
+ <a href="https://technet.microsoft.com/en-us/library/cc772500.aspx"
+  target="_blank">here</a>.
+</p>
+</div><!-- query share howtoaccess -->
+

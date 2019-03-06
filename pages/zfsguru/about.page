@@ -1,0 +1,14 @@
+<h1>About ZFSguru</h1>
+
+<p>
+ ZFSguru is a <b>multifunctional server appliance</b> with a strong emphasis on storage.
+</p>
+
+<p>
+ ZFSguru began as simple web-interface frontend to ZFS, but has since grown into a FreeBSD derivative with its own infrastructure. The scope of the project has also grown with the inclusion of add-on packages that add functionality beyond the traditional NAS functionality found in similar product like FreeNAS and NAS4Free.
+</p>
+
+<p>
+ ZFSguru aims to be a true multifunctional server appliance that is extremely easy to set up and can unite both novice and more experienced users in a single user interface. The modular nature of the project combats the danger of bloat, whilst still allowing extended functionality to be easily deployed.
+</p>
+

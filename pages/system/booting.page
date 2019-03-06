@@ -1,0 +1,95 @@
+<h1>Booting</h1>
+
+<p>
+ ZFSguru supports multiple installations to the same pool or across multiple 
+ pools. However, only one may be active at boot-time.
+ <a class="%%CLASS_EXPERT%%" href="system.php?booting">Normal mode</a>
+ <a class="%%CLASS_NORMAL%%" href="system.php?booting&expertmode">Expert mode</a>
+</p>
+
+<div>
+<form enctype="multipart/form-data"
+ action="system.php?booting&submit" method="post">
+<input type="hidden" name="handle" value="system_bootfs" />
+
+<table class="widetable hover pool_list">
+<tr class="center">
+ <th class="left"><acronym title="Boot filesystem">Bootfs</acronym></th>
+ <th>Size</th>
+ <th>Pool</th>
+ <th>Boot status</th>
+ <th><acronym 
+   title="Activate this installation for future booting">Activate</acronym>
+ </th>
+ <th><acronym title="Permanently remove the installation to save disk space"
+  >Delete</acronym></th>
+</tr>
+%%TABLE_BOOTLIST%%
+<tr class="%%CLASS_BOOTLIST%% center">
+ <td class="bold left">%%BOOTLIST_BOOTFS%%</td>
+ <td>%%BOOTLIST_SIZE%%</td>
+ <td class="pool_name">
+  <img src="theme/default/pango/pool-22.png" alt="" title="ZFS pool" />
+  <a href="pools.php?query=%%BOOTLIST_POOLNAME%%">%%BOOTLIST_POOLNAME%%</a>
+ </td>
+ <td class="%%CLASS_BOOTSTATUS%%">%%BOOTLIST_STATUS%%</td>
+ <td>
+  <input type="submit" name="activate_bootfs_%%B64_BOOTFS%%" 
+   value="Activate" class="%%CLASS_ACTIVATE%%" />
+  <input type="submit" name="inactivate_bootfs_%%B64_BOOTFS%%"
+   value="Inactivate" class="%%CLASS_INACTIVATE%%" />
+  <span class="%%CLASS_NOINACTIVATE%%">-</span>
+ </td>
+ <td>
+  <input type="submit" name="delete_bootfs_%%B64_BOOTFS%%"
+   value="Delete" class="%%CLASS_CANDELETE%%" onclick="return confirm('Permanently delete %%BOOTLIST_BOOTFS%% ?')" />
+  <span class="%%CLASS_NOINACTIVATE%%">-</span>
+ </td>
+</tr>
+%%TABLE_BOOTLIST_END%%
+<tr>
+ <td colspan="9" class="center">
+  <a href="system.php?install">Add new installation</a>
+ </td>
+</tr>
+</table>
+
+</form>
+</div>
+
+<div class="%%CLASS_ADV_NOBOOT%% colorbox_blue">
+ You have not yet installed ZFSguru to any pool. 
+ Please follow the instructions on the <a href="system.php?install">Install</a>
+ page to start your first installation!
+</div>
+
+<div class="%%CLASS_ADV_ONEBOOT%% colorbox_green">
+ You have <b>one</b> installation of ZFSguru. If you desire a second installation, 
+ just follow the instructions on the <a href="system.php?install">Install</a>
+ page.
+</div>
+
+<div class="%%CLASS_ADV_MULTIBOOT%% colorbox_green">
+ You have <b>multiple</b> installations of ZFSguru. 
+ You can switch between them by clicking the activate button and rebooting.
+</div>
+
+<div class="%%CLASS_ADV_CONFLICT%% colorbox_amber">
+ <b>Warning:</b> you have <b>more than one bootable pool</b>.
+ This can lead to problems when booting, and as such in normal cases
+ you should never have more than one activated boot filesystem.
+ <br /><br />
+ However, if you use a USB-stick with ZFSguru installed to it to perform 
+ installations to other systems, you end up with both a bootable USB stick
+ and a bootable target pool. In this case, you should remove the USB stick
+ before the next boot phase begins.
+</div>
+
+<div class="%%CLASS_ADV_EXPERT%% colorbox_amber">
+ Warning: <b>expert mode</b> is currently enabled. 
+ This allows you to do things which might result in an unbootable system.
+ <br />
+ Please be careful and <a href="system.php?booting">disable expert mode</a> 
+ again to protect against user mistakes.
+</div>
+

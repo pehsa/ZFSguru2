@@ -1,0 +1,76 @@
+
+<h1>Create pool with specific version</h1>
+<p>
+ 
+</p>
+<p>
+ <b class="red">Caution:</b> 
+ once you choose a version, <b>you can never downgrade</b> again!<br />
+ You can upgrade at any time.
+ If you migrate to another system with a lower supported ZFS pool version, 
+ the pool will be inaccessible to that system.
+</p>
+
+<div>
+<form enctype="multipart/form-data" method="post"
+ action="pools.php?version">
+<input type="hidden" name="handle" value="pools_version" />
+
+<h2>Storage Pool Allocator (SPA)</h2>
+
+<table class="widetable hover">
+<tr>
+ <th style="width:10%">Version</th>
+ <th>Description</th>
+ <th style="width:30%"></th>
+</tr>
+%%TABLE_SPAVERSIONS%%
+<tr>
+ <td>%%SPA_VER%%</td>
+ <td>%%SPA_DESC%%</td>
+ <td>
+  <span class="%%SPA_CANSELECT%%">
+   <input type="radio" name="spa_version" value="%%SPA_VER%%" 
+   %%SPA_SELECT%% /> 
+   use version <b>%%SPA_VER%%</b>
+  </span>
+  <span class="%%SPA_SYSTEMLOW%% grey">
+   <i>not supported by system</i>
+  </span>
+ </td>
+</tr>
+%%TABLE_SPAVERSIONS_END%%
+</table><br />
+
+<h2>ZFS POSIX Layer (ZPL)</h2>
+
+<table class="widetable hover">
+<tr>
+ <th style="width:10%">Version</th>
+ <th>Description</th>
+ <th style="width:30%"></th>
+</tr>
+%%TABLE_ZPLVERSIONS%%
+<tr>
+ <td>%%ZPL_VER%%</td>
+ <td>%%ZPL_DESC%%</td>
+ <td>
+  <span class="%%ZPL_CANSELECT%%">
+   <input type="radio" name="zpl_version" value="%%ZPL_VER%%"
+   %%ZPL_SELECT%% />
+   use version <b>%%ZPL_VER%%</b>
+  </span>
+  <span class="%%ZPL_SYSTEMLOW%% grey">
+   <i>not supported by system</i>
+  </span>
+ </td>
+</tr>
+%%TABLE_ZPLVERSIONS_END%%
+</table><br />
+
+
+<input type="submit" name="submit_version" value="Select version" />
+<input type="submit" name="submit_goback" value="Go back" />
+</form>
+</div>
+

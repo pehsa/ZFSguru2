@@ -1,0 +1,15 @@
+
+p.renamewarning
+{
+border:2px solid #802;
+padding:8px;
+color:#400;
+background:#edd;
+background-image: -moz-linear-gradient(#edd, #b99);
+background-image: -webkit-linear-gradient(#edd, #b99);
+background-image: -o-linear-gradient(#edd, #b99);
+background-image: -ms-linear-gradient(#edd, #b99);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eedddd', endColorstr='#bb9999');
+background-image: linear-gradient(#edd, #b99);
+}
+

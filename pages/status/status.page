@@ -1,0 +1,174 @@
+
+<div class="colorbox_%%STATUS_COLOR%% status_headbox">
+ <div>
+  <img id="bsddaemon" src="theme/default/pango/bsd-daemon-face-64.png" alt="" />
+ </div>
+ <div>
+  Powered by <b>%%PRODUCT_NAME%%</b> version 
+  <b>%%PRODUCT_VERSION_STRING%%</b><br />
+  
+  <span class="%%CLASS_SYSIMG_OFFICIAL%%">
+   <img src="theme/default/pango/status-green-16.png" alt="" />
+   Running official system image 
+   <b title="checksum: %%SYSTEM_SHA512%%">%%SYSTEM_VERSION%%</b> 
+   featuring FreeBSD %%BSD_VERSION%% 
+   with ZFS v%%ZFS_SPA%%.<br />
+  </span>
+  <span class="%%CLASS_SYSIMG_UNKNOWN%%">
+   <img src="theme/default/pango/status-red-16.png" alt="" />
+   Running an 
+   <b title="checksum: %%SYSTEM_SHA512%%">unofficial</b> 
+   system image featuring FreeBSD %%BSD_VERSION%% 
+   with ZFS v%%ZFS_SPA%%.<br />
+  </span>
+
+  <span class="%%CLASS_DIST_GREEN%%">
+   <img src="theme/default/pango/status-green-16.png" alt="" />
+   Running <b>%%DIST_NAME%%</b> distribution.
+  </span>
+  <span class="%%CLASS_DIST_AMBER%%">
+   <img src="theme/default/pango/status-amber-16.png" alt="" />
+   Running <b>%%DIST_NAME%%</b> distribution.
+  </span>
+  <span class="%%CLASS_DIST_RED%%">
+   <img src="theme/default/pango/status-red-16.png" alt="" />
+   Running <b>%%DIST_NAME%%</b> distribution.
+  </span>
+  <span class="%%CLASS_DIST_LIVECD%%">
+   <img id="livecdicon" src="theme/default/pango/livecd-16.png" alt="" />
+   Running from <b>LiveCD</b> - not installed yet!
+  </span>
+  <span class="%%CLASS_DIST_USB%%">
+   <img id="usbicon" src="theme/default/pango/disk-usbstick-16.png" alt="" />
+   Running from <b>USB-stick</b> - not installed yet!
+  </span>
+  <span class="%%CLASS_DIST_UNKNOWN%%">
+   <img src="theme/default/pango/status-red-16.png" alt="" />
+   Running an <b>unknown distribution</b>.
+  </span>
+ </div>
+</div>
+
+<h2>Hardware</h2>
+
+<table class="widetable hover status_hardware">
+<tr class="%%CLASS_VM_ESXI%%">
+ <td><img src="theme/default/pango/vm-esxi-16.png" alt="" /></td>
+ <td>Virtualized under <b>VMware ESXi</b>!</td>
+</tr><tr class="%%CLASS_VM_ESXI_VTD%%">
+ <td><img src="theme/default/pango/vm-esxi-16.png" alt="" /></td>
+ <td>Virtualized under <b>VMware ESXi</b> using vt-d passthrough!</td>
+</tr><tr class="%%CLASS_VM_ESXI_VTD%%">
+ <td><img src="theme/default/pango/vm-esxi-16.png" alt="" /></td>
+ <td>Virtualized under <b>VMware ESXi</b> using vt-d passthrough!</td>
+</tr><tr class="%%CLASS_VM_QEMU%%">
+ <td><img src="theme/default/pango/vm-qemu-16.png" alt="" /></td>
+ <td>Virtualized under <b>QEMU</b>!</td>
+</tr><tr class="%%CLASS_VM_VBOX%%">
+ <td><img src="theme/default/pango/vm-vbox-16.png" alt="" /></td>
+ <td>Virtualized under <b>VirtualBox</b>!</td>
+</tr><tr class="%%CLASS_VM_VMWARE%%">
+ <td><img src="theme/default/pango/vm-vmware-16.png" alt="" /></td>
+ <td>Virtualized under <b>VMware Workstation</b>!</td>
+</tr><tr class="%%CLASS_VM_XEN%%">
+ <td><img src="theme/default/pango/vm-xen-16.png" alt="" /></td>
+ <td>Virtualized under <b>Xen</b>!</td>
+</tr><tr>
+ <td style="width:1px"><img src="theme/default/pango/cpu-16.png" alt="" /></td>
+ <td>%%PROCESSOR_ARCH%% %%PROCESSOR_COUNTSTR%% <b>%%PROCESSOR_STRING%%</b> - 
+  Running at <b>%%CPU_FREQ%%</b> <span class="grey">MHz</span>
+  <div class="%%CPU_FREQ_SCALING%% inline">
+   ( scales from <b>%%CPU_FREQ_MIN%%</b> <span class="grey">MHz</span>
+     to <b>%%CPU_FREQ_MAX%%</b> <span class="grey">MHz</span> )
+  </span>
+ </td>
+</tr><tr>
+ <td><img src="theme/default/pango/disk-memdisk-16.png" alt="" /></td>
+ <td><b>%%MEMORY_INSTALLED%%</b> physical memory, 
+  <span class="grey">%%MEMORY_USABLE%% usable</span></td>
+</tr><tr class="%%CLASS_HDD%%hidden">
+ <td><img src="theme/default/pango/disk-hdd-16.png" alt="" /></td>
+ <td><b>%%COUNT_HDD%%</b> normal harddrives</td>
+</tr><tr class="%%CLASS_SSD%%hidden">
+ <td><img src="theme/default/pango/disk-ssd-16.png" alt="" /></td>
+ <td><b>%%COUNT_SSD%%</b> solid state drives</td>
+</tr><tr class="%%CLASS_FLASH%%hidden">
+ <td><img src="theme/default/pango/disk-flash-16.png" alt="" /></td>
+ <td><b>%%COUNT_FLASH%%</b> flash drives</td>
+</tr><tr class="%%CLASS_USBSTICK%%hidden">
+ <td><img src="theme/default/pango/disk-usbstick-16.png" alt="" /></td>
+ <td><b>%%COUNT_USBSTICK%%</b> USB sticks</td>
+</tr><tr class="%%CLASS_NETWORK%%hidden">
+ <td><img src="theme/default/pango/disk-network-16.png" alt="" /></td>
+ <td><b>%%COUNT_NETWORK%%</b> network drives</td>
+</tr><tr>
+ <td><img src="theme/default/pango/network-wired-16.png" alt="" /></td>
+ <td><b>%%NETWORK_SPEED%%</b> networking</td>
+</tr>
+</table><br />
+
+<h2>Sensors</h2>
+
+<table class="widetable hover">
+<tr>
+ <td style="width:25%">CPU temperature</td>
+ <td>
+%%TABLE_STATUS_CPUTEMP%%
+<b>%%CPUTEMP_CPUNR%%:</b> %%CPUTEMP_TEMP%% <span class="grey">&deg;C</span> 
+ &nbsp; 
+%%TABLE_STATUS_CPUTEMP_END%%
+ <span class="%%CPUTEMP_NOSENSOR%% minortext">no sensor</span>
+ </td>
+</tr><tr class="%%CLASS_TEMP0%%">
+ <td>BIOS temperature #1</td>
+ <td>%%SENSOR_TEMP0%% <span class="grey">&deg;C</span></td>
+</tr><tr class="%%CLASS_TEMP1%%">
+ <td>BIOS temperature #2</td>
+ <td>%%SENSOR_TEMP1%% <span class="grey">&deg;C</span></td>
+</tr><tr class="%%CLASS_TEMP2%%">
+ <td>BIOS temperature #3</td>
+ <td>%%SENSOR_TEMP2%% <span class="grey">&deg;C</span></td>
+</tr><tr class="%%CLASS_FAN0%%">
+ <td>CPU fan</td>
+ <td>%%SENSOR_FAN0%% <span class="grey">rpm</span></td>
+</tr><tr class="%%CLASS_VCORE0%%">
+ <td>VCORE0</td>
+ <td>%%SENSOR_VCORE0%% <span class="grey">V</span></td>
+</tr><tr class="%%CLASS_VCORE1%%">
+ <td>VCORE1</td>
+ <td>%%SENSOR_VCORE1%% <span class="grey">V</span></td>
+</tr><tr class="%%CLASS_V33%%">
+ <td>+3.3 volt</td>
+ <td>%%SENSOR_V33%% <span class="grey">V</span></td>
+</tr><tr class="%%CLASS_V50%%">
+ <td>+5.0 volt</td>
+ <td>%%SENSOR_V50%% <span class="grey">V</span></td>
+</tr><tr class="%%CLASS_V120%%">
+ <td>+12 volt</td>
+ <td>%%SENSOR_V120%% <span class="grey">V</span></td>
+</tr><tr>
+ <td>Current CPU usage</td>
+ <td>%%SYSTEM_CPUUSAGE%%</td>
+</tr><tr>
+ <td>Load averages</td>
+ <td>%%SYSTEM_LOADAVG%%</td>
+</tr><tr>
+ <td>System time</td>
+ <td><span class="minortext">%%SYSTEM_TIME%%</span></td>
+</tr><tr>
+ <td>Uptime</td>
+ <td>%%SYSTEM_UPTIME%%</td>
+</tr>
+</table>
+
+<p class="%%CLASS_NEED_MBMON%%">
+<b>Note:</b> 
+To display voltage sensors, your system needs to have <b>mbmon</b> installed. 
+You can try to install it by executing <b>pkg add -r mbmon</b> as root.
+</p>
+
+<p class="%%CLASS_MBMON_NOSENSOR%%">
+<b>Note:</b>
+no voltage sensors are available on your system.
+</p>
+

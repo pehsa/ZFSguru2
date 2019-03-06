@@ -1,0 +1,335 @@
+
+<div class="%%CLASS_TAB_DNSMASQ%%">
+<h1>DNSmasq</h1>
+<p>
+ DNSmasq is a service that runs on the background (a <i>daemon</i>) which serves
+ DNS inquiries from your local network. In addition to providing DNS service,
+ it also also offers DHCP and TFTP functionality. You can configure which
+ services you want to be active at any time.
+</p>
+<p>
+ <b>DNS</b><br />
+ Domain Name System (DNS) is what makes your computer translate google.com into
+ an IP address. Basically it allows you to find computers on the internet using
+ a humanly acceptable name. Everyone uses DNS on their computers; without it
+ the ability to utilise the internet is severely limited.
+</p>
+<p>
+ Usually, your internet modem uses DHCP to assign you a DNS server, but you can
+ instead use your own server as forward DNS server, acting as cache in between
+ your regular DNS servers provided by your Internet Service Provider (ISP).
+</p>
+<p>
+ <b>DHCP</b><br />
+ Dynamic Host Configuration Protocol (DHCP) is very common; virtually everyone
+ has used it. At home most frequently. Your internet modem will assign IP
+ addresses and other network information to all connected computers on the local
+ network. This is done using DHCP. If you wish, you can let DNSmasq configure
+ DHCP instead of your internet modem. Or you can let DNSmasq act as backup
+ DHCP server acting as a 'relay slave' for your primary DHCP server.
+</p>
+<p>
+ <b>TFTP</b><br />
+ The Trivial File Transfer Protocol (TFTP) is a simplified version of
+ <acronym title="File Transfer Protocol">FTP</acronym>. As the name implies, it
+ allows transferring of files between two computers. TFTP is used most 
+ frequently by network booting and other services.
+</p>
+<p>
+ <b>PXE</b><br />
+ The Preboot eXecution Environment (PXE) allows booting from the network without
+ any local drives present; so called diskless boot. It allows computers on 
+ the network to boot from a central server that provides the boot files over
+ the network. This can be Ubuntu Linux or other operating systems that support
+ PXE.
+ Comes complete with PXELinux and is ready for use.
+</p>
+</div>
+
+<div class="%%CLASS_TAB_DNS%%">
+<h1>DNS</h1>
+<div class="tower">
+<div class="tower-start">
+ <p class="tower-title">Domain Name System</p>
+</div>
+<div class="tower-base tower-switch">
+ <p>DNS Toggle On/Off</p>
+</div>
+<div class="tower-base tower-error">
+ <p>Cannot enable: blabla error!</p>
+</div>
+<div class="tower-base">
+ <p class="tower-subtitle">Upstream nameservers</p>
+ <table style="margin:0 auto; text-align:left" cellpadding="4px">
+ <tr>
+  <td>Primary</td>
+  <td><input type="text" name="dns_ns1" /></td>
+ </tr><tr>
+  <td>Secondary</td>
+  <td><input type="text" name="dns_ns2" /></td>
+ </tr><tr>
+  <td>Tertiary</td>
+  <td><input type="text" name="dns_ns3" /></td>
+ </tr>
+ </table><br />
+</div>
+<div class="tower-base">
+ <p class="tower-subtitle">Override DNS</p>
+</div>
+<div class="tower-base tower-advanced">
+<p class="tower-subtitle">Advanced DNS configuration</p>
+
+<table class="widetable left">
+%%TABLE_DNS_STRING%%
+<tr>
+ <td class="bold">%%DNS_STRING_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="activate_dns_%%DNS_STRING_NAME%%"
+   %%DNS_STRING_ACTIVATED%% />
+ </td>
+ <td>
+  <input type="text" name="string_dns_%%DNS_STRING_NAME%%"
+   value="%%DNS_STRING_VALUE%%" style="width:400px" />
+ </td>
+</tr>
+%%TABLE_DNS_STRING_END%%
+%%TABLE_DNS_SWITCH%%
+<tr>
+ <td class="bold">%%DNS_SWITCH_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="%%DNS_SWITCH_NAME%%"
+   %%DNS_SWITCH_ACTIVATED%% />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_DNS_SWITCH_END%%
+</table><br />
+<input type="submit" name="submit_dnsmasq" value="Save changes" />
+
+</div>
+<div class="tower-end">
+ <p>
+  Remember: if you use a firewall, adjust your configuration to allow port
+  <b>53</b>.
+ </p>
+</div>
+</div><!-- tower -->
+</div>
+
+
+<div class="%%CLASS_TAB_DHCP%%">
+<h1>DHCP</h1>
+<div class="tower">
+<div class="tower-start">
+ <p class="tower-title">Dynamic Host Configuration Protocol</p>
+</div>
+<div class="tower-base">
+<p>DHCP Toggle On/Off</p>
+</div>
+<div class="tower-base tower-error">
+ <p>Cannot enable: blabla error!</p>
+</div>
+%%TABLE_DHCP_IF%%
+<div class="tower-base">
+ <p class="tower-subtitle">DHCP on interface 
+  <b style="color:#111">%%DHCP_IF_NAME%%</b> %%DHCP_IF_CONNECTED%%</p>
+ <p>Own IPv4: %%DHCP_IF_INET4%% (netmask: %%DHCP_IF_MASK4%%)</p>
+ <p>Own IPv6: %%DHCP_IF_INET6%% (netmask: %%DHCP_IF_MASK6%%)</p>
+ <table class="center" cellspacing="4px">
+ <tr>
+  <th>IP</th>
+  <th>Start IP</th>
+  <th>-</th>
+  <th>End IP</th>
+ </tr>
+  <td><b>IPv4</b></td>
+  <td>
+   <input type="text" name="dhcpstart_ip4_1_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpstart_ip4_2_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpstart_ip4_3_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpstart_ip4_4_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />
+  </td>
+  <td>-</td>
+  <td>
+   <input type="text" name="dhcpend_ip4_1_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpend_ip4_2_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpend_ip4_3_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />.<input 
+    type="text" name="dhcpend_ip4_4_%%DHCP_IF_NAME%%" 
+    value="" size="3" maxlength="3" style="width:30px" />
+  </td>
+ </tr><tr>
+  <td rowspan="2"><b>IPv6</b></td>
+  <td>
+   <input type="text" name="dhcpstart_ip6_1_%%DHCP_IF_NAME%%" value="%%DHCP_IF_IPv6%%" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_2_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_3_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_4_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+  <td>-</td>
+  <td>
+   <input type="text" name="dhcpend_ip6_1_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_2_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_3_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_4_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+ </tr><tr>
+  <td>
+   <input type="text" name="dhcpstart_ip6_5_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_6_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_7_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpstart_ip6_8_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+  <td>-</td>
+  <td>
+   <input type="text" name="dhcpend_ip6_5_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_6_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_7_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+   <input type="text" name="dhcpend_ip6_8_%%DHCP_IF_NAME%%" value="" size="4" maxlength="4" style="width:40px" />
+  </td>
+ </tr>
+ </table>
+</div>
+%%TABLE_DHCP_IF_END%%
+
+
+<div class="tower-base">
+ <p class="tower-subtitle">Static DHCP</p>
+</div>
+
+<div class="tower-base tower-advanced">
+<p class="tower-subtitle">Advanced DHCP configuration</p>
+<table class="widetable left">
+%%TABLE_DHCP_STRING%%
+<tr>
+ <td class="bold">%%DHCP_STRING_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="activate_dhcp_%%DHCP_STRING_NAME%%"
+   %%DHCP_STRING_ACTIVATED%% />
+ </td>
+ <td>
+  <input type="text" name="string_dhcp_%%DHCP_STRING_NAME%%"
+   value="%%DHCP_STRING_VALUE%%" style="width:400px" />
+ </td>
+</tr>
+%%TABLE_DHCP_STRING_END%%
+%%TABLE_DHCP_SWITCH%%
+<tr>
+ <td class="bold">%%DHCP_SWITCH_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="%%DHCP_SWITCH_NAME%%"
+   %%DHCP_SWITCH_ACTIVATED%% />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_DHCP_SWITCH_END%%
+</table><br />
+<input type="submit" name="submit_dnsmasq" value="Save changes" />
+ </div>
+
+<div class="tower-end">
+ <p>
+  Remember: if you use a firewall, adjust your configuration to allow port
+  <b>67 + 68</b>.
+ </p>
+</div>
+</div><!-- tower -->
+</div>
+
+<div class="%%CLASS_TAB_TFTP%%">
+<h1>TFTP</h1>
+<div class="tower">
+<div class="tower-start">
+ <p class="tower-title">
+  Trivial <acronym title="File Transfer Protocol">FTP</acronym>
+ </p>
+</div>
+<div class="tower-base">
+<p>TFTP Toggle On/Off</p>
+</div>
+<div class="tower-base tower-error">
+ <p>Cannot enable: blabla error!</p>
+</div>
+<div class="tower-base">
+ <p class="tower-subtitle">Contents: 28M</p>
+ <p>du -Ash pxe</p>
+</div>
+<div class="tower-base tower-advanced">
+ <p class="tower-subtitle">Advanced TFTP configuration</p>
+ <div>
+
+<table class="widetable left">
+<tr><th colspan="3">Advanced TFTP configuration</th></tr>
+%%TABLE_TFTP_STRING%%
+<tr>
+ <td class="bold">%%TFTP_STRING_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="activate_tftp_%%TFTP_STRING_NAME%%"
+   %%TFTP_STRING_ACTIVATED%% />
+ </td>
+ <td>
+  <input type="text" name="string_tftp_%%TFTP_STRING_NAME%%"
+   value="%%TFTP_STRING_VALUE%%" style="width:400px" />
+ </td>
+</tr>
+%%TABLE_TFTP_STRING_END%%
+%%TABLE_TFTP_SWITCH%%
+<tr>
+ <td class="bold">%%TFTP_SWITCH_NAME%%</td>
+ <td style="width:10px">
+  <input type="checkbox" name="%%TFTP_SWITCH_NAME%%"
+   %%TFTP_SWITCH_ACTIVATED%% />
+ </td>
+ <td></td>
+</tr>
+%%TABLE_TFTP_SWITCH_END%%
+</table><br />
+<input type="submit" name="submit_dnsmasq" value="Save changes" />
+
+ </div>
+</div>
+<div class="tower-end">
+ <p>
+  Remember: if you use a firewall, adjust your configuration to allow port 
+  <b>69</b>.
+ </p>
+</div>
+</div><!-- tower -->
+</div>
+
+<div class="%%CLASS_TAB_PXE%%">
+<h1>PXE</h1>
+<p>
+ Preboot eXecution Environment (PXE) is a method of booting a computer
+ via the network and without requiring any local disks or USB stick.
+ Everything is done via the local network.
+</p>
+<p>
+ It works like this:<br />
+ <ul>
+  <li>A client computer on the local network tries to initiate PXE network boot.</li>
+  <li>PXE assigns an IP address via DHCP but also the address and filename of 
+   the initial boot file.</li>
+  <li>PXE downloads the initial boot file using TFTP (Trivial FTP).</li>
+  <li>The client tries to boot that file, which is a boot manager that can
+   boot Linux and other stuff.</li>
+  <li>The boot manager will select an operating system to load and tries
+   to download kernel and initial ramdisk.</li>
+  <li>Finally, once the operating system has started, it will either use
+   NFS or iSCSI to get the real system disk over the network.</li>
+ </ul>
+</p>
+<p>
+ This allows you to use one server to host the system drives or many client 
+ systems. Just remember that you need to configure the BIOS to enable the option
+ Network Option ROM or Network Boot ROM. It also needs to be selected in the 
+ boot sequence.
+</p>
+</div>
+

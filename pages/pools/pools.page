@@ -1,0 +1,99 @@
+<h1>ZFS pool configuration</h1>
+
+<p>
+ Detected <b>%%POOL_COUNT%%</b> ZFS pool%%POOL_COUNT_STRING%%, 
+ select a pool for more options.
+ Beware: capacities on this page are listed differently than 
+ the files page!
+</p>
+
+<table class="widetable hover pool_list">
+<tr>
+ <th>Pool name</th>
+ <th><acronym title="Storage Pool Allocator version">SPA</acronym></th>
+ <th>Redundancy</th>
+ <th>Capacity</th>
+ <th>Used</th>
+ <th>Free</th>
+ <th>Status</th>
+</tr>
+%%TABLE_POOLLIST%%
+<tr class="%%POOLLIST_CLASS%%">
+ <td class="dark bold pool_name">
+  <img src="theme/default/pango/pool-22.png" alt="" title="ZFS pool" />
+  <a href="pools.php?query=%%POOLLIST_POOLNAME%%">%%POOLLIST_POOLNAME%%</a>
+ </td>
+ <td>%%POOLLIST_SPA%%</td>
+ <td>%%POOLLIST_REDUNDANCY%%</td>
+ <td>%%POOLLIST_SIZE%%</td>
+ <td>%%POOLLIST_USED%%</td>
+ <td>%%POOLLIST_FREE%%</td>
+ <td class="%%POOLLIST_STATUSCLASS%%">%%POOLLIST_STATUS%%</td>
+</tr>
+%%TABLE_POOLLIST_END%%
+</table>
+
+<p>
+ If your pool is not listed, it may simply not be known to the system yet. 
+ To search for pools that can be imported, click one of the buttons below.
+</p>
+
+<div id="importpool">
+<form enctype="multipart/form-data"
+ action="pools.php?import" method="post">
+<input type="hidden" name="handle" value="pools_importpool" />
+<div id="importpool_search">
+<table>
+<tr>
+ <td class="importpool_search_img">
+  <img src="theme/default/pango/pool-import-22.png" alt="" />
+ </td>
+ <td class="importpool_search_text">
+  <span>Import pool</span>
+ </td>
+ <td class="importpool_search_buttons">
+  <input type="submit" name="import_pool" value="Search for hidden pools" />
+ </td>
+ <td class="importpool_search_buttons">
+  <input type="submit" name="import_pool_deleted" 
+   value="Search for deleted pools" />
+ </td>
+</tr>
+</table>
+</div>
+<div id="importpool_list" class="%%CLASS_IMPORTABLE%%">
+ <div>
+  <table>
+  %%TABLE_IMPORTPOOL%%
+  <tr>
+   <td class="importpool_list_img">
+    <img src="theme/default/pango/pool-import-%%IMPORT_IMG%%-24.png" alt="" />
+   </td>
+   <td class="importpool_list_button">
+    <input type="submit" value="Import pool %%IMPORT_POOLNAME%%" 
+     name="import_%%IMPORT_TYPE%%_%%IMPORT_ID%%" />
+   </td>
+   <td class="importpool_list_data">
+    <pre>%%IMPORT_POOLDATA%%</pre>
+   </td>
+  </tr>
+  <tr class="importpool_list_boundary %%IMPORT_BOUNDARY%%">
+   <td colspan="3"></td>
+  </tr>
+  %%TABLE_IMPORTPOOL_END%%
+  </table>
+ </div>
+</div>
+<div id="importpool_found" class="%%CLASS_IMPORTABLE%%">
+ <div>
+  <b>Importable pools found!</b>
+  Click on a pool to import it.
+ </div>
+</div>
+<div id="importpool_none" class="%%CLASS_NOIMPORTABLES%%">
+ <div>
+  No importable pools have been found!
+ </div>
+</div>
+</form>
+</div>

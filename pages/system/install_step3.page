@@ -1,0 +1,320 @@
+
+<h1>ZFSguru installation</h1>
+
+<a class="installstep" href="system.php?install">Step 1:
+Chosen version <b>%%INSTALL_VERSION%%</b></a>
+<a class="installstep" href="system.php?install&version=%%INSTALL_VERSION%%&source=%%INSTALL_SOURCE%%">Step 2:
+Chosen target <b>%%INSTALL_TARGET%%</b></a>
+<a class="installstep activestep" 
+href="system.php?install&version=%%INSTALL_VERSION%%&source=%%INSTALL_SOURCE%%&target=%%INSTALL_TARGET%%">
+Step 3: Select distribution</a>
+
+<p>
+ Select a distribution to configure its options before installing. <a 
+ href="system.php?install&version=%%INSTALL_VERSION%%&source=%%INSTALL_SOURCE%%&target=%%INSTALL_TARGET%%"
+ class="%%CLASS_DIST%%">Show the comparison table</a>
+</p>
+
+<div class="squareboxcontainer widesquareboxcontainer" style="text-align:center">
+
+ <a href="system.php?install&version=%%INSTALL_VERSION%%&source=%%INSTALL_SOURCE%%&target=%%INSTALL_TARGET%%&dist=RoZ" 
+ class="squarebox %%CLASS_ROZ_ACTIVE%% %%CLASS_ROZ_DISABLED%%"><span class="title">&nbsp;</span><img 
+ src="/theme/default/pango/storage-devices/zfspool-64.png" alt="broken image" 
+ title="Root on ZFS" /><span class="devicename">Root on ZFS</span><span class="spaceavailable"></span></a>
+ <a href="system.php?install&version=%%INSTALL_VERSION%%&source=%%INSTALL_SOURCE%%&target=%%INSTALL_TARGET%%&dist=RoR"
+ class="squarebox %%CLASS_ROR_ACTIVE%% %%CLASS_ROR_DISABLED%%"><span class="title">&nbsp;</span><img 
+ src="/theme/default/pango/storage-devices/flash-64.png" alt="broken image"  
+ title="Root on RAM" /><span class="devicename">Root on RAM</span><span class="spaceavailable"></span></a>
+ <a href="system.php?install&version=%%INSTALL_VERSION%%&source=%%INSTALL_SOURCE%%&target=%%INSTALL_TARGET%%&dist=RoM"
+ class="squarebox %%CLASS_ROM_ACTIVE%% %%CLASS_ROM_DISABLED%%"><span class="title">&nbsp;</span><img 
+ src="/theme/default/pango/storage-devices/usb-64.png" alt="broken image"  
+ title="Root on Media" /><span class="devicename">Root on Media</span><span class="spaceavailable"></span></a>
+ <!-- other/unused/unsuitable devices should be listed in grey -->
+
+</div><!-- div.squareboxcontainer -->
+
+<!-- Distribution comparison -->
+<h2 class="%%CLASS_NODIST%%">Comparison of available distributions</h2>
+<table class="widetable hover %%CLASS_NODIST%%">
+<tr>
+ <th></th>
+ <th>Root on ZFS</th>
+ <th>Root on RAM</th>
+ <th>Root on Media</th>
+</tr><tr>
+ <td>Well suited for</td>
+ <td>ZFS pool on Solid State Disk</td>
+ <td>High RAM system</td>
+ <td>Low RAM system</td>
+</tr><tr>
+ <td>Less suited for</td>
+ <td>USB stick or other flash</td>
+ <td>Low RAM system</td>
+ <td>High RAM system</td>
+</tr><tr>
+ <td>RAM requirement</td>
+ <td>Low: 256MiB</td>
+ <td>High: 2GiB</td>
+ <td>Low: 256MiB</td>
+</tr><tr>
+ <td>Boot performance</td>
+ <td>Good: 1 minute</td>
+ <td>Slow: 5+ minutes</td>
+ <td>Good: 1+ minutes</td>
+</tr><tr>
+ <td>Performance after boot</td>
+ <td>Good</td>
+ <td>Very good</td>
+ <td>Mediocre</td>
+</tr><tr>
+ <td>Mutations saved</td>
+ <td>Always</td>
+ <td>Requires migration pack</td>
+ <td>Requires migration pack</td>
+</tr>
+</table><!-- comparison -->
+
+<!-- start of form -->
+<form enctype="multipart/form" method="post"
+action="system.php?install&startinstall">
+<input type="hidden" name="handle" value="system_install" />
+
+<!-- Distribution: Root-on-ZFS (RoZ) -->
+<div class="%%CLASS_ROZ%%">
+<h2 style="color:#444">Root on ZFS</h2>
+<p>
+ Installs directly to a ZFS pool.
+</p>
+<table class="widetable %%CLASS_oldroz%%">
+<tr>
+ <th colspan="2">Root-on-ZFS options</th>
+</tr><tr>
+ <td class="dark" style="width:25%">Target pool</td>
+ <td>
+  <a class="bold" href="pools.php?query=%%ROZ_POOLNAME%%">%%ROZ_POOLNAME%%</a>
+  has <b>%%ROZ_SPACEAVAIL%%</b> free space, while between <b>%%ROZ_SPACEMIN%%</b>
+  and <b>%%ROZ_SPACEMAX%%</b> is needed.
+ </td>
+</tr><tr>
+ <td class="dark" style="width:25%">Target filesystem</td>
+ <td>
+  %%ROZ_TARGETPREFIX%%
+  <input type="text" name="targetfs" value="%%ROZ_TARGETFS%%" />
+  <span class="red %%CLASS_TARGETINUSE%%">
+   <br />
+   Target filesystem exists; you must choose a different name!
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Protection</td>
+ <td>
+  <select name="copies">
+   <option value="1">Copies=1, no additional protection</option>
+   <option value="2">Copies=2, additional protection against bad blocks</option>
+   <option value="3">Copies=3, formidable protection against bad blocks</option>
+  </select><br />
+  <span class="minortext">
+   Offers additional protection, recommended for single disk pools.
+   Only applies to ZFSguru operating system.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Compression</td>
+ <td>
+  <select name="compression">
+   <option value="off">No compression</option>
+   <option value="lz4" %%ROZ_LZ4%%>LZ4 (very fast, v5000)</option>
+   <option value="lzjb" %%ROZ_LZJB%%>LZJB (fast)</option>
+   <option value="gzip-1">GZIP-1</option>
+   <option value="gzip-2">GZIP-2</option>
+   <option value="gzip-3">GZIP-3</option>
+   <option value="gzip-4">GZIP-4</option>
+   <option value="gzip-5">GZIP-5</option>
+   <option value="gzip">GZIP-6 (default gzip)</option>
+   <option value="gzip-7">GZIP-7</option>
+   <option value="gzip-8">GZIP-8</option>
+   <option value="gzip-9">GZIP-9 (slowest)</option>
+  </select><br />
+  <span class="minortext">
+   <b>Recommended:</b>
+   LZ4 or LZJB compression is recommended.
+   Only applies to ZFSguru operating system.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Swap volume</td>
+ <td>
+  <select name="configureswap_size">
+   <option value="0">Do not create a swap volume</option>
+%%TABLE_ROZ_SWAPSIZE%%
+   <option value="%%SWAP_VALUE%%" %%SWAP_SELECTED%%>%%SWAP_NAME%%</option>
+%%TABLE_ROZ_SWAPSIZE_END%%
+  </select><br />
+  <span class="minortext">
+   <b>Recommended:</b>
+   highly recommended to allow for low memory conditions.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Filesystem layout</td>
+ <td>
+  <select name="filesystem_layout">
+   <option value="one">One filesystem for the operating system (recommended)</option>
+   <option value="usr-var">Multiple filesystems (/usr and /var)</option>
+   <option value="usr-var-varlog">Multiple filesystems (/usr, /var and /var/log)</option>
+   <option value="usr-var-varlog+quota">Multiple filesystems with a quota on /var/log</option>
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Boot delay</td>
+ <td>
+  <input type="checkbox" name="cam_boot_delay" checked="checked" />
+  Delay booting to allow (USB) device detection:
+  <select name="cam_boot_delay_sec">
+   <option value="1">1 second</option>
+   <option value="2" selected>2 seconds (default)</option>
+   <option value="4">4 seconds</option>
+   <option value="6">6 seconds</option>
+   <option value="8">8 seconds</option>
+   <option value="10">10 seconds</option>
+   <option value="12">12 seconds</option>
+   <option value="15">15 seconds</option>
+   <option value="20">20 seconds</option>
+   <option value="30">30 seconds</option>
+   <option value="60">60 seconds</option>
+  </select><br />
+  <span class="minortext">
+   <b>Note:</b>
+   only required if your system refuses to boot after installation.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Retain system image</td>
+ <td>
+  <input type="checkbox" name="copysysimg" />
+  Retain system image, requiring <b>%%ROZ_SPACEMIN%%</b> of additional space.<br />
+  <span class="minortext">
+   <b>Note:</b>
+   only useful if you want to install the same system version again in the
+   future.
+  </span>
+ </td>
+</tr>
+</table>
+</div><!-- RoZ -->
+
+<!-- Distribution: Root-on-RAM (RoR) -->
+<div class="%%CLASS_ROR%%">
+<h2 style="color:#444">Root on RAM</h2>
+<p>
+ Runs the entire operating system in RAM memory, thus not requiring a disk after booting. This makes the operating system more resilient against disk failures, and can speed up system responsiveness when heavy I/O occurs.
+</p>
+<table class="widetable">
+<tr>
+ <th class="dark" colspan="2">General options</th>
+</tr><tr>
+ <td class="dark">Boot delay</td>
+ <td>
+  <input type="checkbox" name="cam_boot_delay" checked="checked" />
+  Delay booting to allow (USB) device detection:
+  <select name="ror_cam_boot_delay_sec">
+   <option value="1">1 second</option>
+   <option value="2" selected="selected=">2 seconds (safe default)</option>
+   <option value="4">4 seconds</option>
+   <option value="6">6 seconds</option>
+   <option value="8">8 seconds</option>
+   <option value="10">10 seconds</option>
+   <option value="12">12 seconds (maximum reported required setting)</option>
+   <option value="15">15 seconds</option>
+   <option value="20">20 seconds</option>
+   <option value="30">30 seconds</option>
+   <option value="60">60 seconds</option>
+  </select><br />
+  <span class="minortext">
+   <b>Note:</b>
+   only required if your system refuses to boot after installation.
+  </span>
+ </td>
+</tr>
+</table><br />
+</div><!-- RoR -->
+
+<!-- Distribution: Root-on-Media (RoM) -->
+<div class="%%CLASS_ROM%%">
+ <h2 style="color:#444">Root on Media</h2>
+ <p>
+  Keeps the media mounted and uses read-only access to run the operating system. All changes are stored in RAM. Suitable for low memory devices.
+ </p>
+
+<table class="widetable">
+<tr>
+ <th class="dark" colspan="2">General options</th>
+</tr><tr>
+ <td class="dark">Boot delay</td>
+ <td>
+  <input type="checkbox" name="cam_boot_delay" checked="checked" />
+  Delay booting to allow (USB) device detection:
+  <select name="rom_cam_boot_delay_sec">
+   <option value="1">1 second</option>
+   <option value="2" selected="selected=">2 seconds (safe default)</option>
+   <option value="4">4 seconds</option>
+   <option value="6">6 seconds</option>
+   <option value="8">8 seconds</option>
+   <option value="10">10 seconds</option>
+   <option value="12">12 seconds (maximum reported required setting)</option>
+   <option value="15">15 seconds</option>
+   <option value="20">20 seconds</option>
+   <option value="30">30 seconds</option>
+   <option value="60">60 seconds</option>
+  </select><br />
+  <span class="minortext">
+   <b>Note:</b> 
+   only required if your system refuses to boot after installation.
+  </span>
+ </td>
+</tr>
+</table><br />
+
+</div><!-- RoM -->
+
+<!-- raw disk options -->
+<table class="widetable %%CLASS_RAWDISK%%" style="width:60%; margin: 10px 0">
+<tr>
+ <th colspan="2">Raw disk options</th>
+</tr><tr>
+ <td class="dark" style="width:35%">MBR bootcode</td>
+ <td>
+  <select name="path_boot_mbr">
+   <option value="/boot/pmbr">Protected MBR (/boot/pmbr)</option>
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Boot loader</td>
+ <td>
+  <select name="path_boot_loader">
+   <option value="/boot/gptboot">GPT boot (/boot/gptboot)</option>
+  </select>
+ </td>
+</tr>
+</table>
+
+<!-- submit button -->
+<div class="%%CLASS_DIST%%">
+<input type="hidden" name="version" value="%%INSTALL_VERSION%%" />
+<input type="hidden" name="source" value="%%INSTALL_SOURCE%%" />
+<input type="hidden" name="target" value="%%INSTALL_TARGET%%" />
+<input type="hidden" name="dist" value="%%INSTALL_DIST%%" />
+<table class="flattable installbutton">
+<tr>
+ <td class="right"><img src="theme/default/dragon-right.png" alt="" /></td>
+ <td style="width:1px">
+  <input type="submit" name="install_%%INSTALL_DIST%%"
+  class="installbutton" value="Install %%PRODUCT_NAME%%" />
+ </td>
+ <td class="left"><img src="theme/default/dragon-left.png" alt="" /></td>
+</tr></table><br />
+<div class="install-latin">vivat crescat floreat</div>
+</div>
+
+</form><!-- end of form -->
+

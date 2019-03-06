@@ -1,0 +1,106 @@
+
+div.tower
+{
+cursor:default;
+text-align:center;
+margin:0 auto;
+}
+
+div.tower-start
+{
+padding:10px 20px;
+border:1px solid #144;
+border-radius:15px 15px 0 0;
+font-family:serif;
+color:#401;
+color:#144;
+color:#333;
+background:#555;
+background-image: -moz-linear-gradient(#888, #555);
+background-image: -webkit-linear-gradient(#888, #555);
+background-image: -o-linear-gradient(#888, #555);
+background-image: -ms-linear-gradient(#888, #555);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#555555');
+background-image: linear-gradient(#e48, #925);
+background-image: linear-gradient(#4cd, #09849d);
+background-image: linear-gradient(#eee, #999);
+}
+
+div.tower-base
+{
+margin:0 auto;
+padding:4px 20px;
+border-top:1px solid #eee;
+border-left:1px solid #666;
+border-right:1px solid #666;
+border-bottom:1px solid #666;
+background:#555;
+background-image: -moz-linear-gradient(#888, #555);
+background-image: -webkit-linear-gradient(#888, #555);
+background-image: -o-linear-gradient(#888, #555);
+background-image: -ms-linear-gradient(#888, #555);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#555555');
+background-image: linear-gradient(#eee, #aaa);
+}
+
+div.tower-base:hover
+{
+background-image: linear-gradient(#f1f1f1, #bbb);
+}
+
+div.tower-error
+{
+color:#622;
+background-image: linear-gradient(#daa, #d77);
+font-weight:bold;
+border-color:#944;
+border-top:1px solid #edd;
+}
+
+div.tower-error:hover
+{
+background-image: linear-gradient(#ebb, #e88);
+}
+
+div.tower-end
+{
+margin-bottom:40px;
+padding:4px 20px;
+border-top:1px solid #bbb;
+border-left:1px solid #333;
+border-right:1px solid #333;
+border-bottom:1px solid #333;
+border-radius:0 0 15px 15px;
+background:#555;
+background-image: -moz-linear-gradient(#888, #555);
+background-image: -webkit-linear-gradient(#888, #555);
+background-image: -o-linear-gradient(#888, #555);
+background-image: -ms-linear-gradient(#888, #555);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#555555');
+background-image: linear-gradient(#888, #555);
+}
+
+div.tower-end:hover
+{
+background-image: linear-gradient(#999, #666);
+}
+
+p.tower-title
+{
+padding:0;
+margin:0;
+font-weight:bold;
+font-size:280%;
+letter-spacing:2px;
+}
+
+p.tower-subtitle
+{
+color:#444;
+padding:0;
+margin:12px 0;
+font-weight:bold;
+font-size:160%;
+letter-spacing:1px;
+}
+

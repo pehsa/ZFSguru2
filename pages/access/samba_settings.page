@@ -1,0 +1,241 @@
+
+<div class="colorbox_red %%CLASS_SAMBA_NOTRUNNING%%">
+ <b>Samba</b> is currently <b>not running</b>.
+ Please <a href="services.php?manage&system">start Samba</a> 
+ before managing user accounts!
+</div>
+<div class="colorbox_red %%CLASS_SAMBA_CORRUPTCONFIG%%">
+ Your <b>Samba configuration file</b> is corrupt or cannot be read properly.
+</div>
+
+<h1>Samba settings</h1>
+<form enctype="multipart/form-data" method="post"
+ action="access.php?samba&settings&submit">
+<input type="hidden" name="handle" value="access_samba_settings" />
+<table class="widetable sambasettings">
+<tr>
+ <th style="width:25%">Global settings</th>
+ <th style="width:35%"></th>
+ <th></th>
+</tr>
+<tr>
+ <td>Version</td>
+ <td colspan="2" class="bold">Samba v%%SAMBA_VERSION%%</td>
+</tr>
+<tr>
+ <td>Workgroup</td>
+ <td><input type="text" name="global-workgroup"
+   value="%%SAMBA_WORKGROUP%%" /></td>
+ <td><span class="minortext">
+  Set this to whatever you set your Windows computers to.</span>
+ </td>
+</tr>
+<tr>
+ <td>NetBIOS name</td>
+ <td><input type="text" name="global-netbios name"
+   value="%%SAMBA_NETBIOSNAME%%" /></td>
+ <td><span class="minortext">
+   This server is currently available as 
+   <b class="black">\\%%SAMBA_NETBIOSNAME%%</b> on Windows</span>
+ </td>
+</tr>
+<tr>
+ <td>Server comment</td>
+ <td><input type="text" name="global-server string"
+   value="%%SAMBA_SERVERCOMMENT%%" /></td>
+ <td><span class="minortext">
+  Set to anything you want, some special characters like spaces allowed.</span>
+ </td>
+</tr>
+</table><br />
+
+<table class="widetable sambasettings">
+<tr>
+ <th style="width:25%">Performance settings</th>
+ <th style="width:35%"></th>
+ <th></th>
+</tr>
+<tr>
+ <td>Asynchronous read</td>
+ <td>
+  <input type="text" name="global-aio read size" value="%%SAMBA_ASYNC_READ%%" /> 
+  bytes
+ </td>
+ <td><span class="minortext">
+  Reads larger than this value will be performed asynchronously.</span>
+ </td>
+</tr>
+<tr>
+ <td>Asynchronous write</td>
+ <td>
+  <input type="text" name="global-aio write size" value="%%SAMBA_ASYNC_WRITE%%" /> 
+  bytes
+ </td>
+ <td><span class="minortext">
+  Writes larger than this value will be performed asynchronously.</span>
+ </td>
+</tr>
+<tr>
+ <td>Asynchronous write-behind</td>
+ <td>
+  <span class="%%SAMBA_ASYNCWB_ON%% bold">Enabled</span>
+  <input class="%%SAMBA_ASYNCWB_ON%% autowidth" type="checkbox"
+   name="cbglobal0-aio write behind" /> 
+  <span class="%%SAMBA_ASYNCWB_ON%%">Disable</span>
+  <span class="%%SAMBA_ASYNCWB_OFF%% bold">Disabled</span>
+  <input class="%%SAMBA_ASYNCWB_OFF%% autowidth" type="checkbox"
+   name="cbglobal1-aio write behind" /> 
+  <span class="%%SAMBA_ASYNCWB_OFF%%">Enable</span>
+ </td>
+ <td><span class="minortext">
+  Enabling write buffering in RAM can improve performance.</span>
+ </td>
+</tr>
+<tr>
+ <td>Sendfile</td>
+ <td>
+  <span class="%%SAMBA_SENDFILE_ON%% bold">Enabled</span>
+  <input class="%%SAMBA_SENDFILE_ON%% autowidth" type="checkbox"
+   name="cbglobal0-use sendfile" /> 
+  <span class="%%SAMBA_SENDFILE_ON%%">Disable</span>
+  <span class="%%SAMBA_SENDFILE_OFF%% bold">Disabled</span>
+  <input class="%%SAMBA_SENDFILE_OFF%% autowidth" type="checkbox"
+   name="cbglobal1-use sendfile" /> 
+  <span class="%%SAMBA_SENDFILE_OFF%%">Enable</span>
+ </td>
+ <td><span class="minortext">
+  Test which works fastest for you.</span>
+ </td>
+</tr>
+</table><br />
+
+<table class="widetable sambasettings">
+<tr>
+ <th style="width:25%">Advanced settings</th>
+ <th class="right" style="padding-right:10px">
+  <span class="minortext">
+   Warning: do not change unless you know what they do!</span>
+ </th>
+ <th style="width:10px"></th>
+</tr>
+<tr>
+ <td>Security model</td>
+ <td>
+  <select name="global-security">
+   <option value="user">User-level security</option>
+   <option value="share" %%CLASS_SM_SHARE%%>Share-level security</option>
+   <option value="domain" %%CLASS_SM_DOMAIN%%>Domain-level security</option>
+   <option value="ads" %%CLASS_SM_ADS%%>Active Directory security</option>
+   <option value="server" %%CLASS_SM_SERVER%%>Server-level security</option>
+  </select>
+ </td>
+ <td></td>
+</tr>
+<tr>
+ <td>Authentication backend</td>
+ <td>
+  <select name="global-passdb backend">
+   <option value="tdbsam">TDB SAM (default)</option>
+   <option value="ldapsam" %%CLASS_AB_LDAPSAM%%>LDAP SAM</option>
+   <option value="smbpasswd" %%CLASS_AB_SMBPASSWD%%>smbpasswd (legacy)</option>
+  </select>
+ </td>
+ <td></td>
+</tr><tr>
+ <td>File permissions</td>
+ <td>
+  <select name="special-permissions">
+   <option value="0666/0777">(666/777) Maximum compatibility</option>
+   <option value="0660/0770" %%OPT_PERMISSIONS_0660%%
+    >(660/770) Recommended default (user+group)</option>
+   <option value="0600/0700" %%OPT_PERMISSIONS_0600%%
+    >(600/700) Maximum security (user-only)</option>
+   <option value="%%SPECIAL_PERMISSIONS%%" class="%%CLASS_OPT_PERMISSIONS%%"
+    %%OPT_PERMISSIONS_CUSTOM%%>Custom (%%SPECIAL_PERMISSIONS%%)</option>
+  </select>
+ </td>
+ <td></td>
+</tr><tr>
+ <td>ZFS disk space reporting</td>
+ <td>
+  <input type="checkbox" name="cbspecial_dfree" %%CB_SPECIAL_DFREE%% />
+  Special fix for ZFS filesystems to report correct disk space
+ </td>
+ <td></td>
+</tr>
+%%TABLE_SAMBA_EXTRAGLOBALS%%
+<tr>
+ <td>%%EXTRAGLOB_PROPERTY%%</td>
+ <td class="%%EXTRAGLOB_TYPE_STRING%%">
+  <input type="text" name="extraglob-%%EXTRAGLOB_PROPERTY%%"
+  value="%%EXTRAGLOB_VALUE%%" />
+ </td>
+ <td class="%%EXTRAGLOB_TYPE_BOOLEAN%%">
+  <span class="%%EXTRAGLOB_ENABLED%% bold">Enabled</span>
+  <input class="%%EXTRAGLOB_ENABLED%% autowidth" type="checkbox"
+   name="cbglobal0-%%EXTRAGLOB_PROPERTY%%" />
+  <span class="%%EXTRAGLOB_ENABLED%%">Disable</span>
+  <span class="%%EXTRAGLOB_DISABLED%% bold">Disabled</span>
+  <input class="%%EXTRAGLOB_DISABLED%% autowidth" type="checkbox"
+   name="cbglobal1-%%EXTRAGLOB_PROPERTY%%" />
+  <span class="%%EXTRAGLOB_DISABLED%%">Enable</span>
+ </td>
+ <td>
+  <input type="checkbox" name="cb_removeglob_%%EXTRAGLOB_PROPERTY%%" 
+   title="check this box to remove this variable" />
+ </td>
+</tr>
+%%TABLE_SAMBA_EXTRAGLOBALS_END%%
+<tr>
+ <td>Insert new global variable</td>
+ <td>
+  <select name="newvariable_varname" onchange="sambaManualSettings(this)">
+   <option value=""></option>
+%%TABLE_SAMBA_GLOBALVARS%%
+   <option value="%%CV_VAR%%">%%CV_VAR%%</option>
+%%TABLE_SAMBA_GLOBALVARS_END%%
+  </select>
+  with value: <input type="text" name="newvariable_value" />
+  <br />
+  <span class="minortext">
+   Global variables reside in the 
+   <span style="color:#222">[global]</span> section of the Samba configuration 
+   file and cannot be used inside a share.
+  </span>
+ </td>
+ <td></td>
+</tr><tr>
+ <td>Insert new default share variable</td>
+ <td>
+  <select name="newsharevariable_varname" onchange="sambaManualSettings(this)">
+   <option value=""></option>
+%%TABLE_SAMBA_SHAREGLOBVARS%%
+   <option value="%%CV_VAR%%">%%CV_VAR%%</option>
+%%TABLE_SAMBA_SHAREGLOBVARS_END%%
+  </select>
+  with value: <input type="text" name="newsharevariable_value" />
+  <br />
+  <span class="minortext">
+   Share variables can be used inside a share to affect only that share.
+   Configuring a share variable here will cause all shares to use this setting 
+   by default.
+   You can still configure shares to override that default, 
+   by setting the same variable to another value.
+  </span>
+ </td>
+ <td></td>
+</tr>
+</table><br />
+
+<iframe id="samba_settings_manualiframe" class="hidden"
+ style="width:100%; height:150px; margin-bottom:15px" class="hidden"></iframe>
+
+<table class="buttontable">
+<tr><td style="width:50%">
+<input type="submit" name="samba_update_config" value="Update configuration" />
+</td><td>
+<input type="submit" name="samba_restart_samba" value="Restart Samba" />
+</td></tr>
+</table>
+
+</form>

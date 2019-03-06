@@ -1,0 +1,43 @@
+
+/* disk image and name */
+
+td.diskname
+{
+vertical-align:middle;
+}
+
+td.diskname img
+{
+max-height:16px;
+margin:0 4px;
+vertical-align:middle;
+}
+
+
+/* identification */
+
+td.disk_identstring
+{
+font-size:90%;
+color:#444;
+}
+
+
+/* sector size */
+
+td.disk_sector_normal
+{
+color:grey;
+}
+
+
+/* mass process bottom row */
+
+tr.massprocess, tr.massprocess td
+{
+color:#222 !important;
+background:#ccc !important;
+font-weight:normal !important;
+text-align:right;
+}
+

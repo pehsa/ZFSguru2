@@ -1,0 +1,187 @@
+<script type="text/javascript">
+
+function changeVersion(chosenOption)
+{
+ if (chosenOption == "modernzfs")
+ {
+  document.getElementById('new_zpool_spa').selectedIndex = 29-1;
+  document.getElementById('new_zpool_zpl').selectedIndex = 5-1;
+ }
+ if (chosenOption == "compat28")
+ {
+  document.getElementById('new_zpool_spa').selectedIndex = 28-1;
+  document.getElementById('new_zpool_zpl').selectedIndex = 5-1;
+ }
+ if (chosenOption == "specify")
+ {
+  document.getElementById('new_zpool_spa').selectedIndex = 28-1;
+  document.getElementById('new_zpool_zpl').selectedIndex = 5-1;
+ }
+}
+
+function changeSelect(o)
+{
+ document.getElementById('poolversion_specify').checked = true;
+}
+
+</script>
+
+<h1>Create ZFS pool</h1>
+
+<div>
+<form enctype="multipart/form-data" action="pools.php?create&submit"
+ method="post">
+<input type="hidden" name="handle" value="pools_createpool" />
+
+<table id="zpool_create" class="widetable">
+<tr>
+ <th colspan="2" class="center">Standard options</th>
+</tr><tr>
+<tr>
+ <td class="dark" style="width:25%">Pool name</td>
+ <td>
+  <input class="yellow" type="text" name="new_zpool_name" required />
+  <br />
+  <span class="minortext">
+   By convention, use only lowercase alphanumerical characters.
+   Do not choose a <acronym 
+   title="raidz, raidz2, raidz3, mirror, boot, root, bin, etc, mnt, usr, var"
+   >reserved name</acronym>.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Redundancy level</td>
+ <td>
+  <select name="new_zpool_redundancy" required>
+   <option value="" class="italic">*** select redundancy level ***</option>
+   <option value="stripe">Single disk or multiple disks in RAID0</option>
+   <option value="mirror">One mirror with 2 or more devices</option>
+   <option value="mirror2">Multiple mirrors in groups of 2</option>
+   <option value="mirror3">Multiple mirrors in groups of 3</option>
+<!--   <option value="mirror4">Multiple mirrors in groups of 4</option>-->
+   <option value="raidz1">RAID-Z1 - single parity like RAID5</option>
+   <option value="raidz2">RAID-Z2 - double parity like RAID6</option>
+   <option value="raidz3">RAID-Z3 - triple parity</option>
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Member disks</td>
+ <td>
+  %%POOL_MEMBERDISKS%%
+ </td>
+</tr>
+</table>
+
+<table class="flattable createpoolbutton">
+<tr>
+ <td class="right"><img src="theme/default/dragon-right.png" alt="" /></td>
+ <td style="width:1px">
+  <input type="submit" name="submit_createnewzpool"
+   class="createpoolbutton" value="Create pool" />
+ </td>
+ <td class="left"><img src="theme/default/dragon-left.png" alt="" /></td>
+</tr></table>
+
+<table class="widetable">
+<tr>
+ <th colspan="2" class="center">Advanced options</th>
+</tr><tr>
+ <td class="dark" style="width:25%">ZFS version</td>
+ <td>
+  <input type="radio" name="new_zpool_version" value="modernzfs"
+   %%RADIO_MODERNZFS%% onchange="changeVersion('modernzfs');" /> 
+   Modern ZFS v5000 with feature flags<br />
+  <input type="radio" name="new_zpool_version" value="compat28"
+   onchange="changeVersion('compat28');" />
+   Legacy ZFS v28, compatible with almost all ZFS platforms<br />
+  <input id="poolversion_specify" type="radio" name="new_zpool_version" 
+   value="specify" %%RADIO_SPECIFY%% onchange="changeVersion('specify');" />
+  Choose your own version:<br />
+  <p>
+   <b><acronym title="Storage Pool Allocator version">SPA</acronym></b>
+   <select id="new_zpool_spa" name="new_zpool_spa" 
+    onchange="changeSelect(this)">
+    %%POOL_SPALIST%%
+   </select>
+   <b><acronym title="ZFS POSIX Layer version">ZPL</acronym></b>
+   <select id="new_zpool_zpl" name="new_zpool_zpl"
+    onchange="changeSelect(this)">
+    %%POOL_ZPLLIST%%
+   </select>
+   <span class="grey">-</span>
+   <a href="pools.php?version">help me choose a version</a>
+  </p>
+ </td>
+</tr><tr>
+ <td class="dark">Sector size override</td>
+ <td>
+  <select name="new_zpool_sectorsize">
+   <option value="">No sector size override</option>
+   <option value="4096" selected>Optimize for 4K harddrives aka 'Advanced Format'</option>
+   <option value="8192">Optimize for 8K Solid State Drives</option>
+  </select><br />
+  <span class="minortext">
+   Recommended for all devices, except older harddrives.
+   Beware: the usable storage capacity drops with sector override!
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Large blocks</td>
+ <td>
+  <select name="new_zpool_recordsize">
+   <option value="128K">Standard 128 kilobyte recordsize (bootable)</option>
+   <option value="256K">Increase maximum recordsize to 256 kilobytes</option>
+   <option value="512K">Increase maximum recordsize to 512 kilobytes</option>
+   <option value="1024K">Increase maximum recordsize to 1 megabyte</option>
+  </select><br />
+  <span class="minortext">
+   Recommend to leave at 128K except for pools with many disks per vdev (8+).
+   Only 128K and below are bootable!
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Apply force</td>
+ <td>
+  <input type="checkbox" name="new_zpool_force" /> 
+  <span class="red">Danger:</span>
+  automatically destroy pools that exist on any of the disks selected above.
+ </td>
+</tr>
+</table><br />
+
+</form>
+</div><br />
+
+<h2>Optimal pool configurations</h2>
+<p>
+ For SSDs and modern harddrives using 'Advanced Format' - 
+ also known as 4K sectors - you may want to stick to the most optimal 
+ configurations. Mirroring and RAID0 has no restrictions, but RAID-Z and its 
+ two bigger brothers have problems with 4K sectors in some configurations.
+</p>
+<div class="colorbox_green">
+ In general, when choosing any of the RAID-Z family redundancy types
+ for your 4K pool, stick to:
+ <br /><br />
+ <b>RAID-Z1</b> : 3, 5 or 9 disks<br />
+ <b>RAID-Z2</b>	: 4, 6 or 10 disks<br />
+ <b>RAID-Z3</b>	: 5, 7, 11 or 19 disks
+</div>
+<p>
+ For those interested, the idea is that you end up with a power-of-two number 
+ of <u>data</u> disks. So with a RAID-Z of <b>5</b> disks, you have <b>4</b>
+ <i>data disks</i> and <b>1</b> parity disk. 
+ With 4 data disks, you get a clean fraction when dividing 
+ the 128KiB record size with the number of <u>data</u> disks, like this:
+</p>
+<div class="colorbox_blue">
+ <b>Good</b> configuration:<br />
+ 128KiB record size / 4 <u>data</u> disks = 32KiB 'stripesize' per disk.
+ This is a multiple of 4K sectors so works great with 4K HDD and SSD alike.
+ <br /><br />
+ <b>Bad</b> configuration:<br />
+ 128KiB record size / 5 <u>data</u> disks = 25.6K, 
+ which is not a multiple of 4K sectors, 
+ so not optimal for Advanced Format HDDs and some SSDs.
+</div>
+

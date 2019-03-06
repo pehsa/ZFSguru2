@@ -1,0 +1,276 @@
+
+<h1>Migration</h1>
+
+<p>
+This page allows you to create a backup of certain configuration files. 
+Each square represents one profile; click a profile for more options.
+</p>
+
+<table class="widetable migrationspaces">
+%%TABLE_MIGRATIONSPACES%%
+<tr>
+ <td>
+  <img src="%%THEMEPATH%%/ok.png" alt="(selected)" title="selected" 
+   class="%%MIG1_SELECTED%% mig_selected" />
+  <img src="%%THEMEPATH%%/ok.png" alt="(selected)" title="selected"
+   class="%%MIG1_SELECTED%% mig_selected_right" />
+  <a class="%%MIG1_CLASS%%" href="system.php?migration=%%MIG1_ID%%"
+   ><b>%%MIG1_NAME%%</b>
+   <br /><br />
+   %%MIG1_TYPE%% (%%MIG1_SIZE%%)
+   <br /><br />
+   Changed: %%MIG1_CHANGED%%
+  </a>
+ </td>
+ <td>
+  <img src="%%THEMEPATH%%/ok.png" alt="(selected)" title="selected"
+   class="%%MIG2_SELECTED%% mig_selected" />
+  <img src="%%THEMEPATH%%/ok.png" alt="(selected)" title="selected"
+   class="%%MIG2_SELECTED%% mig_selected_right" />
+  <a class="%%MIG2_CLASS%%" href="system.php?migration=%%MIG2_ID%%">
+   <b>%%MIG2_NAME%%</b>
+   <br /><br />
+   %%MIG2_TYPE%% (%%MIG2_SIZE%%)
+   <br /><br />
+   Changed: %%MIG2_CHANGED%%
+  </a>
+ </td>
+ <td>
+  <img src="%%THEMEPATH%%/ok.png" alt="(selected)" title="selected"
+   class="%%MIG3_SELECTED%% mig_selected" />
+  <img src="%%THEMEPATH%%/ok.png" alt="(selected)" title="selected"
+   class="%%MIG3_SELECTED%% mig_selected_right" />
+  <a class="%%MIG3_CLASS%%" href="system.php?migration=%%MIG3_ID%%"
+   ><b>%%MIG3_NAME%%</b>
+   <br /><br />
+   %%MIG3_TYPE%% (%%MIG3_SIZE%%)
+   <br /><br />
+   Changed: %%MIG3_CHANGED%%
+  </a>
+ </td>
+</tr>
+%%TABLE_MIGRATIONSPACES_END%%
+</table><br /><br />
+
+<div class="%%CLASS_QUERY%%">
+<form enctype="multipart/form-data" action="system.php?migration&submit"
+ method="post">
+<input type="hidden" name="handle" value="system_migration" />
+<input type="hidden" name="mig_id" value="%%QUERY_MIGID%%" />
+
+<div class="%%CLASS_MIGSPECIAL%%">
+<h2>Special migration spot</h2>
+<p>
+ This migration spot is a special <b><i>Live profile</i></b> that is created 
+ fresh everytime you use it on the 
+ <a href="system.php?install">System->Install</a> page.
+ <br />
+ This negates the need to create a custom migration profile everytime, unless 
+ you have special needs which require a custom profile.
+</p>
+<p>
+ This profile can not be modified.
+</p>
+</div>
+
+<div class="%%CLASS_MIGLIGHT%%">
+<h2>Light migration profile: <span class="green">%%QUERY_NAME%%</span></h2>
+<p>
+ This a light migration profile, meaning no actual files are stored.
+ <br />
+ <p>
+  <input type="radio" name="mig_action" value="promote" />
+  Promote this profile to a <b>heavy profile</b>, storing the files in a
+  migration pack.
+ </p>
+ <p>
+  <input type="radio" name="mig_action" value="modify" /> 
+  Modify this profile, changing what files are stored.
+ </p>
+ <p>
+  <input type="radio" name="mig_action" value="delete" /> 
+  Delete profile.
+ </p>
+ <p>
+  <input type="submit" name="submit_migused" value="Perform action" />
+  (only click once!)
+ </p>
+</p>
+</div>
+
+<div class="%%CLASS_MIGHEAVY%%">
+<h2>Heavy migration profile: <span class="green">%%QUERY_NAME%%</span></h2>
+<p>
+ This is a heavy profile, meaning a migration pack exists with 
+ archived configuration files.
+ <br />
+ <p>
+  <input type="radio" name="mig_action" value="update"/>
+  Update profile, re-create profile with current system configuration.
+ </p>
+ <p>
+  <input type="radio" name="mig_action" value="activate" />
+  Activate profile, overwriting current configuration with files
+  from the profile.
+ </p>
+ <p>
+  <input type="radio" name="mig_action" value="download" />
+  Download profile, storing it on your local computer for future use.
+ </p>
+ <p>
+  <input type="radio" name="mig_action" value="prune" />
+  Prune profile, deleting the stored migration pack and freeing disk space.
+ </p>
+ <p>
+  <input type="radio" name="mig_action" value="delete" />
+  Delete profile completely, freeing up disk space and destroying 
+  the list of referenced files.
+ </p>
+ <p>
+  <input type="submit" name="submit_migused" value="Perform action" />
+  (only click once!)
+ </p>
+</p>
+</div>
+
+<div class="%%CLASS_MIGFREE%%">
+<h2>Free migration spot</h2>
+<p>
+ This migration spot is still empty. 
+ You can create a new migration profile.
+</p>
+
+<table class="widetable">
+<tr>
+ <th colspan="3">Services</th>
+</tr>
+%%TABLE_SERVICES%%
+<tr>
+ <td style="width:30%">
+  <input type="checkbox" name="mig_svc_%%SVC_SHORT%%" /> %%SVC_LONGNAME%%
+ </td>
+ <td>%%SVC_SIZE%%</td>
+ <td class="grey">%%SVC_CONFIG%%</td>
+</tr>
+%%TABLE_SERVICES_END%%
+<tr>
+ <th colspan="3">System configuration</th>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_loader" checked="checked" />
+  Boot Loader configuration
+ </td>
+ <td>%%SIZE_LOADER%%</td>
+ <td class="grey">/boot/loader.conf</td>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_user" checked="checked" />
+  User+Group configuration
+ </td>
+ <td>%%SIZE_USER%%</td>
+ <td class="grey">/etc/master.passwd, /etc/group</td>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_rc" checked="checked" />
+  Run Control configuration
+ </td>
+ <td>%%SIZE_RC%%</td>
+ <td class="grey">/etc/rc.conf</td>
+</tr><tr>
+ <th colspan="3">Pre-installed services</th>
+</tr><tr>
+ <td style="width:30%">
+  <input type="checkbox" name="mig_cfg_samba" checked="checked" />
+  Samba configuration
+ </td>
+ <td>%%SIZE_SAMBA%%</td>
+ <td class="grey">/usr/local/etc/samba, /usr/local/etc/smb.conf</td>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_pf" />
+  Firewall configuration
+ </td>
+ <td>%%SIZE_PF%%</td>
+ <td class="grey">/etc/pf.conf</td>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_lighttpd" />
+  Lighttpd webserver configuration
+ </td>
+ <td>%%SIZE_LIGHTTPD%%</td>
+ <td class="grey">/usr/local/etc/lighttpd</td>
+</tr><tr>
+ <th colspan="3">Extra</th>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_web" />
+  ZFSguru web-interface
+ </td>
+ <td>%%SIZE_WEB%%</td>
+ <td class="grey">%%DOCROOT%%</td>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_home" />
+  Home directory
+ </td>
+ <td>%%SIZE_HOME%%</td>
+ <td class="grey">/home</td>
+</tr><tr>
+ <td>
+  <input type="checkbox" name="mig_cfg_root" />
+  Root directory
+ </td>
+ <td>%%SIZE_ROOT%%</td>
+ <td class="grey">/root</td>
+</tr>
+</table><br />
+
+<h2>Custom files</h2>
+
+<p>
+ You can add files <i>and</i> directories to your profile.
+ Always use an absolute path, starting with a forward slash like <b>/var/db/mysql</b>.
+</p>
+
+<table class="widetable">
+<tr class="dark">
+ <td style="width:10px"><input type="checkbox" name="mig_custom_1_check" /></td>
+ <td><input type="text" name="mig_custom_1" /></td>
+</tr><tr>
+ <td><input type="checkbox" name="mig_custom_2_check" /></td>
+ <td><input type="text" name="mig_custom_2" /></td>
+</tr><tr class="dark">
+ <td><input type="checkbox" name="mig_custom_3_check" /></td>
+ <td><input type="text" name="mig_custom_3" /></td>
+</tr><tr>
+ <td><input type="checkbox" name="mig_custom_4_check" /></td>
+ <td><input type="text" name="mig_custom_4" /></td>
+</tr><tr class="dark">
+ <td><input type="checkbox" name="mig_custom_5_check" /></td>
+ <td><input type="text" name="mig_custom_5" /></td>
+</tr>
+</table><br />
+
+<h2>Create profile</h2>
+
+<table class="mig_createprofile widetable" style="width:60%">
+<tr>
+ <td>Profile name</td>
+ <td><input type="text" name="mig_longname" style="width:100%" /></td>
+</tr><tr>
+ <td>Description</td>
+ <td>
+  <textarea name="mig_description" style="width:100%; height:100px"
+  ></textarea>
+ </td>
+</tr><tr>
+ <td>Execute</td>
+ <td><input type="submit" name="submit_migfree" value="Create profile" /></td>
+</tr>
+</table><br />
+
+</div>
+
+</form>
+</div><!-- class_query div containing form -->
+

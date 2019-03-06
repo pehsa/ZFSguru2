@@ -1,0 +1,258 @@
+
+/* layout */
+
+html
+{
+background:#dfdfdf;
+margin:0;
+padding:0;
+}
+
+body
+{
+font-family:sans-serif;
+font-size:0.8em;
+margin:0;
+padding:0;
+background:#dfdfdf;
+}
+
+#main
+{
+width:1000px;
+text-align:center;
+margin:0 auto;
+}
+
+#top
+{
+margin:5px 0 0 0;
+color:#fff;
+background:#159;
+background-image:url(bluebg.png);
+border:1px solid #229;
+text-align:left;
+padding:2px 0 2px 8px;
+}
+
+#logoimg
+{
+height:18px;
+margin:2px 2px 0 6px;
+vertical-align:middle;
+}
+
+#logotitle
+{
+color:#2df;
+letter-spacing:2px;
+font-style:italic;
+font-weight:bold;
+margin-top:1px;
+}
+
+#logotxt
+{
+color:#fff;
+letter-spacing:1px;
+font-style:italic;
+font-weight:bold;
+margin-top:1px;
+}
+
+#logoright
+{
+font-size:100%;
+color:#eee;
+float:right;
+margin-right:10px;
+margin-top:1px;
+}
+
+#logoright a, #logoright a:visited
+{
+color:#ddd;
+text-decoration:none;
+}
+
+#logoright a:hover
+{
+color:#fff;
+text-decoration:underline;
+}
+
+#menu
+{
+display:block;
+clear:both;
+text-align:left;
+margin:10px 0;
+}
+
+#menu ul
+{
+padding:0;
+margin:0;
+}
+
+#menu ul li
+{
+display:inline;
+}
+
+#menu ul li a, #menu ul li a:visited
+{
+color:#222;
+background:#bbb;
+font-size:120%;
+font-variant:small-caps;
+text-transform:lowercase;
+letter-spacing:2px;
+padding:4px 10px;
+margin-right:10px;
+text-decoration:none;
+font-weight:bold;
+border:1px solid #000;
+}
+
+#menu ul li a:hover
+{
+color:#fff !important;
+background:#666;
+}
+
+#menu ul li a.menu-active
+{
+color:#fff;
+background:#99d;
+background-image:url(bluebg.png);
+}
+
+#navtabs
+{
+display:block;
+position:relative;
+text-align:left;
+border-bottom:1px solid #bbb;
+padding-bottom:0.35em;
+margin-top:1.6em;
+}
+
+#navtabs div
+{
+display:none;
+width:20px;
+height:20px;
+background:#f00;
+border-bottom:1px solid #00f !important;
+}
+
+#navtabs a.navtab-active
+{
+background:#fff !important;
+border-bottom:1px solid #fff !important;
+font-weight:bold;
+}
+
+#navtabs a, #navtabs a:visited
+{
+display:inline;
+position:relative;
+color:#444;
+text-decoration:none;
+margin-left:5px;
+margin-right:10px;
+padding:5px;
+background:#ddd;
+border:1px solid #bbb;
+font-size:90%;
+}
+
+#navtabs a:hover
+{
+text-decoration:underline;
+}
+
+#content
+{
+clear:both;
+text-align:left;
+background:#fefefe;
+border-left:1px solid #bbb;
+border-right:1px solid #bbb;
+border-bottom:1px solid #bbb;
+padding:25px 25px 25px 25px;
+margin:0 0 20px 0;
+}
+
+
+/* tab bar */
+
+p.tabbar
+{
+padding-bottom:10px;
+}
+
+p.tabbar a, p.tabbar a:visited, p.tabbar a:link
+{
+color:#000;
+background:#eee;
+border:1px solid #aaa;
+padding:4px;
+text-decoration:none;
+}
+
+p.tabbar a:hover
+{
+text-decoration:underline;
+}
+
+p.tabbar a.activebar, p.tabbar a.activebar:visited
+{
+color:#b00;
+}
+
+/* timekeeper */
+
+#timekeeper
+{
+position:relative;
+width:1000px;
+height:20px;
+margin:20px auto;
+border:1px solid #000;
+box-sizing:content-box;
+overflow:hidden;
+background:#f1f1f1;
+opacity:0.05;
+transition:opacity 0.8s;
+}
+ 
+#timekeeper:hover
+{
+opacity:1;
+}
+
+#timekeeper div
+{
+position:absolute;
+height:20px;
+}
+
+#timekeeper div:hover
+{
+background:#ccc !important;
+}
+
+#timekeeper-total
+{
+display:inline-block;
+position:relative;
+top:-19px;
+margin:0 auto;
+cursor:default;
+color:#444;
+font-size:0.75em;
+}
+
+/* end of layout style sheet */

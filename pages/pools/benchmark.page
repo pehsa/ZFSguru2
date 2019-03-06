@@ -1,0 +1,91 @@
+<h1>Non-destructive benchmark</h1>
+
+<div class="%%CLASS_BENCHMARK%%">
+ <pre class="command_box">%%POOLS_BENCHMARKOUTPUT%%</pre>
+</div>
+
+<div>
+<form enctype="multipart/form-data" method="post"
+ action="pools.php?benchmark&submit">
+<input type="hidden" name="handle" value="pools_benchmark" />
+<input type="hidden" name="poolname" value="%%QUERY_POOLNAME%%" />
+
+<table class="widetable">
+<tr>
+ <td class="dark benchmark_pool">
+  <img src="theme/default/pango/pool-16.png" alt="" title="ZFS pool" />
+  Pool
+ </td>
+ <td colspan="4">
+  <select class="yellow" name="poolname">
+   %%TABLE_POOLLIST%%
+    <option value="%%POOLNAME%%">%%POOLNAME%%</option>
+   %%TABLE_POOLLIST_END%%
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Test size</td>
+ <td colspan="4">
+  <select name="size">
+   <option value="128">128 MiB</option>
+   <option value="512">512 MiB</option>
+   <option value="1024">1 GiB</option>
+   <option value="2048">2 GiB</option>
+   <option value="4096">4 GiB</option>
+   <option value="8192">8 GiB</option>
+   <option value="16384">16 GiB</option>
+   <option value="32768">32 GiB</option>
+   <option value="65536" selected="selected">64 GiB</option>
+   <option value="131072">128 GiB</option>
+   <option value="262144">256 GiB</option>
+  </select>
+  <span class="minortext">
+   <b>Note:</b> choose a large enough test size for accurate results.
+   8 times your RAM memory is recommended.
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Benchmark select</td>
+ <td>
+  <input type="checkbox" name="cb_normal" checked="checked" /> 
+  Normal
+ </td><td>
+  <input type="checkbox" name="cb_lzjb" />
+  LZJB compression
+ </td><td>
+  <input type="checkbox" name="cb_gzip" />
+  GZIP compression
+ </td><td>
+  <input type="checkbox" name="cb_zeronull" checked="checked" />
+  I/O bandwidth
+ </td>
+</tr><tr>
+ <td class="dark">Execute</td>
+ <td colspan="4">
+  <input type="submit" name="start_pool_benchmark" value="Start Benchmark" />
+  <span class="minortext">Note: <b>click only once</b> and be patient!</span>
+ </td>
+</tr>
+</table>
+
+</form>
+</div>
+
+<p>
+ <b>Tip:</b>
+ start with a quick test (8GiB) and do a longer (64GiB) test afterwards.
+</p>
+<p>
+ <b>Note:</b>
+ this benchmark creates a filesystem on your pool for testing and destroys
+ it afterwards. It should not harm any existing data.
+</p>
+
+<div class="colorbox_grey center">
+ <b>Want more?</b> 
+ If you want a more detailed benchmark, you can try the 
+ <a href="disks.php?benchmark&advancedbench">Advanced Disk Benchmark</a>. 
+ The advanced benchmark tests multiple ZFS pool configurations. 
+ But beware: the advanced benchmark destroys existing data on the disk, 
+ while this benchmark is non-destructive.
+</div>

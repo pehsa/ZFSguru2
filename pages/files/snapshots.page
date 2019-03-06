@@ -1,0 +1,149 @@
+<script type="text/javascript">
+
+function selectHandler(prefix, chosenOption)
+{
+ document.getElementById('snap_op_rollback').style.display = "none";
+ document.getElementById('snap_op_clone').style.display = "none";
+ document.getElementById('snap_op_promote').style.display = "none";
+ document.getElementById('snap_op_destroy').style.display = "none";
+ if (chosenOption == "rollback")
+ {
+  document.getElementById('snap_op_rollback').style.display = "block";
+ }
+ if (chosenOption == "clone")
+ {
+  document.getElementById('snap_op_clone').style.display = "block";
+ }
+ if (chosenOption == "promote")
+ {
+  document.getElementById('snap_op_promote').style.display = "block";
+ }
+ if (chosenOption == "destroy")
+ {
+  document.getElementById('snap_op_destroy').style.display = "block";
+ }
+}
+
+</script>
+
+<h1>Snapshot management</h1>
+
+<p class="%%CLASS_NOQUERY%%">
+ Click a <u>snapshot name</u> for more information about that snapshot.
+ Snapshots can be created on the <a href="files.php">Filesystems</a> page.
+</p>
+
+<div>
+<form enctype="multipart/form-data" method="post" 
+ action="files.php?snapshots&submit">
+<input type="hidden" name="handle" value="snapshot_operation" />
+
+<table class="widetable hover snapshotlist">
+<tr>
+ <th style="text-align:right !important">
+  <a href="files.php?snapshots&sort=fs%%SORT_FS%%">Filesystem</a>
+ </th>
+ <th style="width:10px" class="grey">@</th>
+ <th>
+  <a href="files.php?snapshots&sort=name%%SORT_NAME%%">Snapshot name</a>
+ </th>
+ <th>
+  <a href="files.php?snapshots&sort=used%%SORT_USED%%">Used</a>
+ </th>
+ <th>
+  <a href="files.php?snapshots&sort=refer%%SORT_REFER%%">Refer</a>
+ </th>
+ <th>Operation</th>
+</tr>
+%%TABLE_SNAPSHOTS%%
+<tr class="%%SNAP_ACTIVE%%">
+ <td class="right"><a href="files.php?query=%%SNAP_FS%%">%%SNAP_FS%%</a></td>
+ <td class="grey">@</td>
+ <td class="high">
+  <a href="files.php?snapshots=%%SNAP_FS%%@%%SNAP_NAME%%">%%SNAP_NAME%%</a>
+ </td>
+ <td>%%SNAP_USED%%</td>
+ <td>%%SNAP_REFER%%</td>
+ <td style="width:200px">
+  <select name="snapshot_%%SNAP_FSB64%%@%%SNAP_NAMEB64%%"
+   onchange="selectHandler('', this.options[this.selectedIndex].value);">
+   <option value=""></option>
+   <option value="rollback">Rollback to this snapshot</option>
+   <option value="clone">Make a clone of the snapshot</option>
+   <option value="promote" class="%%SNAP_PROMOTE%%">Promote this clone 
+    to an independent dataset</option>
+   <option value="destroy">Destroy the snapshot</option>
+  </select>
+ </td>
+</tr>
+%%TABLE_SNAPSHOTS_END%%
+<tr>
+ <th colspan="3"></th>
+ <th>%%SNAP_TOTALUSAGE%%</th>
+ <th colspan="2">Total snapshot usage</th>
+</table>
+
+<div id="snap_op_rollback" class="snap_operation snap_rollback">
+ <p>
+  <b>Caution:</b> rolling back a snapshot means you lose any files 
+  newer than the selected snapshot!
+ </p>
+ <input type="submit" name="submit_rollback" 
+  value="Rollback selected snapshots" />
+</div>
+
+<div id="snap_op_clone" class="snap_operation snap_clone">
+ <p>
+  Cloning a snapshot creates a new filesystem or volume identical to the 
+  data referenced by the snapshot. A clone can be written to, a snapshot cannot.
+ </p>
+ <input type="checkbox" name="clone_promote" /> 
+ Make this clone independent of the parent filesystem (consumes extra space)
+ <br /><br />
+ Clone name: 
+ <input type="text" name="clone_name" />
+ <input type="submit" name="submit_clone"
+  value="Clone selected snapshots" />
+</div>
+
+<div id="snap_op_destroy" class="snap_operation snap_destroy">
+ <p>
+  Destroying a snapshot means you lose the opportunity to access the
+  data as referenced by the snapshot. The parent dataset is unaffected.
+ </p>
+ <input type="submit" name="submit_destroy"
+  value="Destroy selected snapshots" />
+</div>
+
+<div id="snap_op_promote" class="snap_operation snap_promote">
+ <p>
+  Promoting a clone separates it from the parent filesystem or volume.
+ </p>
+ <input type="submit" name="submit_promote"
+  value="Promote selected clone" />
+</div>
+
+</form>
+</div><br />
+
+<div class="%%CLASS_QUERY%%">
+ <form enctype="multipart/form-data" method="post" 
+  action="files.php?snapshots&submit">
+ <input type="hidden" name="handle" value="snapshot_visibility" />
+ <input type="hidden" name="snapshot" value="%%QUERY_NAME%%" />
+ <h2>Snapshot <span style="color:#666">%%QUERY_NAME%%</span></h2>
+ <div class="%%CLASS_SNAPHIDDEN%%">
+  <p>This snapshot is currently <b>not accessible</b>; its snapshot directory is 
+  invisible.</p>
+  <input type="submit" name="snapdir_display" 
+   value="Make this snapshot accessible" />
+ </div>
+ <div class="%%CLASS_SNAPVISIBLE%%">
+  <p>This snapshot is currently <b>visible</b> and accessible at:</p>
+  <p><a href="files.php?browse=%%SNAP_BROWSEFS%%/.zfs">%%SNAP_BROWSEFS%%/.zfs</a></p>
+  <input type="submit" name="snapdir_hide"
+   value="Hide this snapshot" />
+ </div>
+ </form>
+</div>
+

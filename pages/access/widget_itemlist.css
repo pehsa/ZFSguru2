@@ -1,0 +1,196 @@
+
+/* Widget: itemlist */
+
+/* container of all share items */
+div.widget_itemlist
+{
+}
+
+/* hyperlink that is an inline block container with images and text elements inside */
+div.widget_itemlist a.widget_itemlist_item
+{
+display:inline-block;
+width:120px;
+padding:10px 4px;
+color:#000;
+background:#fff;
+border:1px solid #eee;
+font-weight:bold;
+text-decoration:none;
+text-align:center;
+margin:0 auto;
+text-overflow:ellipsis;
+white-space:nowrap;
+overflow:hidden;
+margin-right:4px;
+}
+
+div.widget_itemlist a.widget_itemlist_item:hover
+{
+background:#eee;
+border-color:#ddd;
+}
+
+/* images inside the item container hyperlink */
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images
+{
+position:relative;
+width:64px;
+height:64px;
+margin:0 auto;
+margin-bottom:7px;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img
+{
+position:absolute;
+left:0;
+top:0;
+z-index:0;
+}
+
+div.widget_itemlist a.widget_itemlist_item:hover div.widget_itemlist_images img
+{
+opacity:1.0 !important;
+}
+
+/* text element inside container hyperlink */
+div.widget_itemlist a.widget_itemlist_item span
+{
+}
+
+div.widget_itemlist a.widget_itemlist_item span.widget_itemlist_name
+{
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+div.widget_itemlist a.widget_itemlist_item span.widget_itemlist_desc
+{
+color:#aaa;
+font-size:75%;
+}
+
+/* images */
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_default
+{
+opacity:0.7;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_public
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_protected
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_private
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_custom
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_noaccess
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_problem
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon16
+{
+width:16px !important;
+height:16px !important;
+padding:49px 24px 0px 24px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon22
+{
+width:22px !important;
+height:22px !important;
+padding:21px 21px 29px 21px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon24
+{
+width:24px !important;
+height:24px !important;
+padding:20px 20px 28px 20px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon32
+{
+width:32px !important;
+height:32px !important;
+padding:16px 16px 24px 16px !important;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon48
+{
+width:48px !important;
+height:48px !important;
+padding:8px 8px 16px 8px !important;
+padding:12px 12px 4px 4px !important;
+}
+
+/* delete button in top-right corner */
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_delete
+{
+display:relative;
+visibility:hidden;
+top:-7px;
+width:16px !important;
+height:16px !important;
+margin:0 0 0 74px !important;
+padding:0 0 4px 4px !important;
+opacity:0.1 !important;
+}
+
+/* display delete button only when hovering over the item */
+div.widget_itemlist a.widget_itemlist_item:hover div.widget_itemlist_images img.widget_itemlist_delete
+{
+visibility:visible;
+}
+
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_delete:hover
+{
+opacity:0.3 !important;
+}
+
+/* disabled effect */
+div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_item_disabled img.widget_itemlist_default
+{
+/* legacy tags */
+filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+moz-filter: grayscale(100%);
+-ms-filter: grayscale(100%);
+-o-filter: grayscale(100%);
+-webkit-filter: grayscale(100%);
+/* IE6-9 */
+filter: gray;
+/* proper browser */
+filter: grayscale(100%);
+}
+

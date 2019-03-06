@@ -1,0 +1,25 @@
+
+** start of ZFSguru license **
+
+The ZFSguru scripts including the web-interface and other documents, are 
+released under the following terms:
+
+Copyright (c) 2010-2015, zfsguru.com / Jason Edwards. All rights reserved.
+Modified re-distribution prohibited.
+
+A real license will follow; contact by email for details.
+See website for email address.
+
+** end of ZFSguru license **
+
+--------------------------------------------------------------------------------
+
+FreeBSD is licensed under the BSD license, please see /COPYRIGHT for details.
+
+The following files have different licenses:
+
+files/warn.png		licensed under the Creative Common BY-ND 3.0 license
+			URL: http://www.creativefreedom.co.uk
+files/warning.png	licensed under the Creative Commons BY 3.0 license
+			URL: http://www.creativefreedom.co.uk
+

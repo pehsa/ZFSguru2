@@ -1,0 +1,78 @@
+<h1>Hot Spares</h1>
+
+<p>
+ Hot spares are special disks that do nothing until they are needed to replace
+ a failed or offline disk. This allows your pool to immediately start the 
+ resynchronization process, and thus recover from a degraded state sooner.
+</p><br />
+
+<h2>Current spares</h2>
+<table class="widetable hover">
+<tr>
+ <th>Hot spare device</th>
+ <th>Size (legacy)</th>
+ <th>Size (binary)</th>
+ <th>Used for pools</th>
+</tr>
+%%TABLE_HOTSPARES%%
+<tr>
+ <td>%%SPARE_NAME%%</td>
+ <td>%%SPARE_SIZE%%</td>
+ <td>%%SPARE_SIZB%%</td>
+ <td>%%SPARE_POOL%%</td>
+</tr>
+%%TABLE_HOTSPARES_END%%
+<tr class="%%CLASS_NOHOTSPARES%%">
+ <td colspan="4" class="center">
+  No hot spares have been found in any of your pools.
+ </td>
+</tr>
+</table><br /><br />
+
+<h2>Create new spare</h2>
+<div>
+<form enctype="multipart/form-data" method="post" 
+ action="pools.php?spare&submit">
+<input type="hidden" name="handle" value="pools_spare" />
+
+<p>
+ Create a new Hot Spare disk and attach it to one or more pools.
+ The disk may not be in use.
+</p>
+
+<table class="widetable" style="width:60%">
+<tr>
+ <td class="dark">Disk to use as Hot Spare</td>
+ <td>
+  <select name="spare_device">
+   <option value=""></option>
+   %%SPARE_DEVICELIST%%
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Attach the Hot Spare to this pool</td>
+ <td>
+%%TABLE_POOLCHECKBOX%%
+ <input type="checkbox" name="spare_pool_%%PCB_POOLNAME%%" %%PCB_EXTRA%% /> 
+  %%PCB_POOLNAME%%<br />
+%%TABLE_POOLCHECKBOX_END%%
+ </td>
+</tr><tr>
+ <td class="dark">Execute</td>
+ <td>
+  <input type="submit" name="spare_submit" value="Create new Hot Spare" />
+ </td>
+</tr>
+</table>
+
+</form>
+</div>
+
+<div class="colorbox_amber">
+ <b>Attention</b><br />
+ Currently, hot spare functionality in ZFSguru does not work as expected. It is
+ possible to add hot spare disks to a pool, but during a disk failure the hot
+ spare would not automatically replace the failed drive, as expected.
+ Scripted functionality should fix this, in a future release.
+</div>
+

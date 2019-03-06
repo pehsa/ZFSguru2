@@ -1,0 +1,70 @@
+
+<h1>Terminal access using <acronym title="Secure SHell">SSH</acronym></h1>
+<p>
+ The Secure Shell protocol allows you to connect to a remote 
+ server using an encrypted connection.
+</p>
+
+<h2>How do I login?</h2>
+<p>
+ Windows users can download <a
+ href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html"
+ onclick="window.open(this.href,'_blank');return false;">PuTTY</a>
+ and enter <span class="bold green">%%SSH_IPADDRESS%%</span> in the Host Name / 
+ IP address field. Check the SSH option underneath and finally hit enter.
+</p>
+<p>
+ You can now login with username 
+ <span class="bold green">%%SSH_USERNAME%%</span> and the password you have
+ set at the bottom.
+ If you require <i>root</i> access, become <i>root</i> by typing 
+ <span class="bold green">su</span>.
+</p>
+<p>
+ Linux and BSD users can login with:
+ <span class="bold">ssh ssh@%%SSH_IPADDRESS%%</span>
+</p>
+
+<h2>PuTTY example</h2>
+<div class="openssh_images">
+ <div>
+  <img src="files/pictures/openssh_step1.png" alt="OpenSSH step #1" 
+   title="Open the PuTTY window and enter your IP address" />
+ </div><div>
+  <img src="files/pictures/openssh_step2.png" alt="OpenSSH step #2"
+   title="Login with the ssh user and your password" />
+ </div><div>
+  <img src="files/pictures/openssh_step3.png" alt="OpenSSH step #3"
+   title="Optionally become root user by entering 'su'" />
+ </div>
+</div>
+
+<div class="colorbox_red">
+ <b>Beware</b> that commands entered in this environment
+ have the <i>potential</i> of causing
+ <b>malfunctions</b>, <b>loss of data</b> or <b>security incursions</b>.
+</div>
+
+<h2>Set or reset the SSH password</h2>
+
+<div class="colorbox_grey">
+<form enctype="multipart/form-data" 
+ action="access.php?ssh&submit" method="post">
+<input type="hidden" name="handle" value="access_ssh_reset" />
+<table class="flattable openssh_resetpw">
+<tr>
+ <td>Reset password of <b>%%SSH_USERNAME%%</b> user to:</td>
+ <td><input class="sshinput" type="password" name="ssh_reset_pw" 
+  autocomplete="off" /></td>
+ <td>repeat:</td>
+ <td><input class="sshinput" type="password" name="ssh_reset_pw2" 
+  autocomplete="off" /></td>
+ <td class="center">
+  <input class="submit" type="submit" name="access_ssh_reset" 
+   value="Reset password" />
+ </td>
+</tr>
+</table>
+</form>
+</div>
+

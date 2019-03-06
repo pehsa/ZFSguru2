@@ -1,0 +1,192 @@
+
+/* filesystem properties */
+
+div.zfspropertyleft
+{
+width:50%;
+line-height:30px;
+}
+
+div.zfspropertyright
+{
+width:50%;
+line-height:30px;
+float:right;
+}
+
+
+/* upgrade filesystem */
+
+div.upgradefs
+{
+border:1px solid #666;
+padding:10px;
+margin-top:20px;
+background:#eec;
+}
+
+
+/* filesystem warnings like sharing primary filesystem and v5000 features */
+
+div.fswarningbox
+{
+clear:both;
+padding-top:5px;
+}
+
+div.fswarningbox div
+{
+margin:5px 0 0 0;
+}
+
+
+/* filesystem button box */
+
+div.fsbuttonbox
+{
+clear:both;
+text-align:center;
+padding-top:5px;
+}
+
+div.fsbuttonbox table
+{
+padding:5px 40px;
+}
+
+div.fsbuttonbox table tr td
+{
+text-align:left !important;
+}
+
+div.fsbuttonbox table
+{
+border:1px solid #aaa;
+margin-top:8px;
+text-align:left;
+background-image: -moz-linear-gradient(#fee, #dbb);
+background-image: -webkit-linear-gradient(#fee, #dbb);
+background-image: -o-linear-gradient(#fee, #dbb);
+background-image: -ms-linear-gradient(#fee, #dbb);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeee', endColorstr='#ddbbbb');
+background-image: linear-gradient(#fee, #dbb);
+}
+
+div.fsbuttonbox table:hover
+{
+background-image: linear-gradient(#fee, #ecc);
+}
+
+div.fsbuttonbox-shared table
+{
+background-image: -moz-linear-gradient(#efe, #aca);
+background-image: -webkit-linear-gradient(#efe, #aca);
+background-image: -o-linear-gradient(#efe, #aca);
+background-image: -ms-linear-gradient(#efe, #aca);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeffee', endColorstr='#aaccaa');
+background-image: linear-gradient(#efe, #aca);
+}
+
+div.fsbuttonbox-shared table:hover
+{
+background-image: linear-gradient(#efe, #bdb);
+}
+
+div.fsbuttonbox-shared table tr th
+{
+color:#292 !important;
+}
+
+div.fsbuttonbox table tr td
+{
+background:transparent;
+}
+
+div.fsbuttonbox table tr th
+{
+color:#922;
+background:transparent;
+font-size:120%;
+font-variant:small-caps;
+text-transform:lowercase;
+letter-spacing:2px;
+text-shadow:1px 1px 0px #fff, -1px -1px 0px #ddd;
+padding:1px 0;
+}
+
+div.fsbuttonbox table tr th span
+{
+}
+
+td.sharefsicon
+{
+width:1px;
+padding-right:8px !important;
+padding-top:6px !important;
+text-align:center;
+vertical-align:middle;
+}
+
+select.profilebox
+{
+width:110px;
+text-align:center;
+}
+
+a.files_sharedfilesystem, a.files_sharedfilesystem:visited
+{
+float:left;
+min-width:100px;
+max-width:150px;
+overflow:hidden;
+text-overflow:ellipsis;
+padding:2px 6px;
+background:#f00;
+border:1px solid #999;
+margin:1px 5px 1px 0;
+text-align:center;
+background-image: -moz-linear-gradient(#aca, #bd7);
+background-image: -webkit-linear-gradient(#aca, #bd7);
+background-image: -o-linear-gradient(#aca, #bd7);
+background-image: -ms-linear-gradient(#aca, #bd7);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aaccaa', endColorstr='#bbdd77');
+background-image: linear-gradient(#aca, #bd7);
+}
+
+a.files_sharedfilesystem:hover
+{
+text-decoration:none;
+background-image: -moz-linear-gradient(#ac9, #bd4);
+background-image: -webkit-linear-gradient(#ac9, #bd4);
+background-image: -o-linear-gradient(#ac9, #bd4);
+background-image: -ms-linear-gradient(#ac9, #bd4);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aacc99', endColorstr='#bbdd44');
+background-image: linear-gradient(#ac9, #bd4);
+}
+
+a.files_sf_inherited
+{
+background-image: -moz-linear-gradient(#bcb, #bc9);
+background-image: -webkit-linear-gradient(#bcb, #bc9);
+background-image: -o-linear-gradient(#bcb, #bc9);
+background-image: -ms-linear-gradient(#bcb, #bc9);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#bbccbb', endColorstr='#bbcc99');
+background-image: linear-gradient(#bcb, #bc9);
+}
+
+input.files_sharesubmitbutton
+{
+display:block;
+margin:0 auto;
+}
+
+/* AppleShare */
+
+div.appleshare
+{
+border:1px solid #666;
+padding:10px;
+margin-top:20px;
+background:#eec;
+}
+

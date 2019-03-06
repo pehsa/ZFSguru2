@@ -1,0 +1,390 @@
+#!/bin/sh
+
+##
+## ZFSguru Distribution script
+##
+
+# PROVIDE: zfsguru-dist
+# BEFORE:  LOGIN lighttpd samba zfs zvol
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="zfsguru_dist"
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+rcvar="${name}_enable"
+
+: ${zfsguru_dist_enable="YES"}
+
+# variables
+SCRIPTVER="8"
+TAG="\n\033[1;33m[ZFSGURU-DIST]\033[0m "
+DISTFILE="/zfsguru.dist"
+DEVICEFILE="/zfsguru.device"
+MP_MEDIA="/media/zfsguru"
+WEBINTERFACE_NAME="ZFSguru-webinterface.txz"
+WEBINTERFACE_MP="/usr/local/www/zfsguru"
+
+
+zfsguru_dist_start()
+{
+ echo -e "${TAG}Starting ZFSguru distribution script version ${SCRIPTVER}"
+
+ # detect device
+ DEVICE=`cat ${DEVICEFILE} 2>/dev/null`
+ printf "distribution device: "
+ if [ -z "${DEVICE}" ]
+ then
+  printf "\033[1;31mUNKNOWN!\033[0m"
+  echo
+  echo "ERROR: no distribution device at ${DEVICEFILE}"
+  echo
+  exit 1
+ else
+  printf "\033[1;37m${DEVICE}\033[0m"
+ fi
+ echo
+
+ # detect distribution
+ echo -n "distribution type: "
+ DIST=`cat ${DISTFILE} 2>/dev/null`
+ if [ -z "${DIST}" ]
+ then
+  printf "\033[1;31mUNKNOWN!\033[0m"
+  echo
+  echo "ERROR: no distribution found at ${DISTFILE}"
+  echo
+  exit 1
+ fi
+
+ # supported distributions
+ SUPPORTEDDISTS="RoZ RoR RoR+union RoM livecd usb"
+
+ # sanity
+ UNKNOWNDIST=1
+ for SUPPORTEDDIST in ${SUPPORTEDDISTS}
+ do
+  if [ "${SUPPORTEDDIST}" = "${DIST}" ]
+  then
+   UNKNOWNDIST=0
+   break
+  fi
+ done
+ if [ "${UNKNOWNDIST}" -eq "1" ]
+ then
+  echo
+  echo "ERROR: unsupported distribution type '${DIST}' detected - ABORTING!"
+  echo
+  /rescue/sh
+  exit 1
+ fi
+
+ # distribution types
+ if [ "${DIST}" = "livecd" ]
+ then
+  func_distribution_livecd
+ fi
+ if [ "${DIST}" = "usb" ]
+ then
+  func_distribution_usb
+ fi
+ if [ "${DIST}" = "RoR" ]
+ then
+  func_distribution_ror
+ fi
+ if [ "${DIST}" = "RoR+union" ]
+ then
+  func_distribution_ror_union
+ fi
+ if [ "${DIST}" = "RoM" ]
+ then
+  func_distribution_rom
+ fi
+
+ # finished
+ echo -e "${TAG}Finished ZFSguru distribution script"
+ echo
+}
+
+func_distribution_livecd()
+{
+ printf "\033[1;37mLiveCD\033[0m"
+ echo
+ echo
+
+ # mount media
+ mkdir -p ${MP_MEDIA}
+ func_checkerror ${?} mkdir-media
+ mount -rt cd9660 ${DEVICE} ${MP_MEDIA}
+ func_checkerror ${?} mount-media
+
+ # common tasks
+ func_distribution_common
+
+ # install services
+ func_installservices
+
+ # unmount media
+ sync
+ umount -f ${MP_MEDIA}
+ func_checkerror ${?} unmount-media
+}
+
+func_distribution_usb()
+{
+ printf "\033[1;37mUSB\033[0m -> "
+ func_distribution_ror
+}
+
+func_distribution_ror()
+{
+ printf "\033[1;37mRoot-on-RAM\033[0m"
+ echo
+ echo
+
+ # check filesystem for errors
+ echo "* checking filesystem for errors"
+ fsck_ufs -fpRSy ${DEVICE}
+ if [ "${?}" -ne "0" ]
+ then
+  fsck_ufs -fRSy ${DEVICE}
+  if [ "${?}" -ne "0" ]
+  then
+   echo
+   printf "\033[1;31mDANGER! your filesystem is corrupt!\033[0m"
+   echo
+   echo
+   exit 1
+  else
+   echo "WARNING! errors have been corrected on your boot device!"
+  fi
+ else
+  echo "filesystem is clean"
+ fi
+ echo
+
+ # mount media
+ mkdir -p ${MP_MEDIA}
+ func_checkerror ${?} mkdir-media
+ mount -t ufs ${DEVICE} ${MP_MEDIA}
+ func_checkerror ${?} mount-media
+
+ # common tasks
+ func_distribution_common
+
+ # install services
+ func_installservices
+
+ # unmount media
+ sync
+ umount -f ${MP_MEDIA}
+ func_checkerror ${?} unmount-media
+}
+
+func_distribution_ror_union()
+{
+ printf "\033[1;37mRoot-on-RAM + Union\033[0m"
+ echo
+ echo
+ echo "not implemented"
+}
+
+func_distribution_rom()
+{
+ printf "\033[1;37mRoot-on-Media\033[0m"
+ echo
+ echo
+
+ # mount media     
+ mkdir -p ${MP_MEDIA}
+ func_checkerror ${?} mkdir-media
+ mount -rt ufs ${DEVICE} ${MP_MEDIA}
+ func_checkerror ${?} mount-media     
+
+ # common tasks
+ func_distribution_common
+
+ # install services
+ func_installservices  
+
+ # unmount media
+ sync
+ umount -f ${MP_MEDIA}
+ func_checkerror ${?} unmount-media
+}
+
+func_distribution_common()
+{
+ ## WEB INTERFACE
+ echo "* copying ZFSguru web-interface"
+ if [ -r "${MP_MEDIA}/${WEBINTERFACE_NAME}" ]
+ then
+  tar xf ${MP_MEDIA}/${WEBINTERFACE_NAME} -C ${WEBINTERFACE_MP}
+ else
+  echo "*** ERROR: Could not find ${MP_MEDIA}/${WEBINTERFACE_NAME}"
+  sleep 10
+  exit 2
+ fi
+}
+
+func_installservices()
+{
+ echo -e "${TAG}Installing services"
+ if [ ! -d "${MP_MEDIA}/services/" ]
+ then
+  echo "WARNING: no /services directory found on boot media!"
+  return
+ fi
+ 
+ # check for SVCLIST file on boot media
+ SVCLIST=`cat ${MP_MEDIA}/services/SVCLIST 2>&1`
+ if [ "${?}" -eq "0" ]
+ then
+  SVCLIST_AUTO="${SVCLIST}"
+ else
+  echo "WARNING: no /services/SVCLIST file found on boot media!"
+  echo "using directory scan fallback instead"
+  SVCLIST_AUTO=$(/bin/ls -1 ${MP_MEDIA}/services/)
+ fi
+  
+ # process services
+ for SVC in ${SVCLIST_AUTO}
+ do
+  func_installservice ${SVC}
+ done
+}
+
+func_installservice()
+{
+ # sanity
+ if [ -z "${1}" ]
+ then
+  echo "* ERROR: invalid call to installservice!"
+  read -p "continue? (press any key) " ANYKEY
+  return 1
+ fi
+ # check whether already installed
+ if [ -d "/services/${1}/" ] && [ ! -d "/services/${1}/install-pkg/" ]
+ then
+  echo "* ${1} already installed; skipping"
+  return 1
+ fi
+ if [ -d "/services/${1}/" ]
+ then
+  echo "WARNING: directory /services/${1} already exists; this should not be!"
+  read -p "continue? (press any key) " ANYKEY
+  return 1
+ fi
+ # from this point on we assume service is not installed yet
+ if [ ! -f "${MP_MEDIA}/services/${1}/${1}.tar" ]
+ then
+  echo "WARNING: service ${1} does not have a tarball file; skipping!"
+  read -p "continue? (press any key) " ANYKEY
+  return 1
+ fi
+
+ echo
+ printf "\033[1;37m*** INSTALLING SERVICE\033[0m \033[1;33m${1}\033[0m\n"
+ echo
+
+ # extract service from boot media
+ echo -n "* extracting service... "
+ mkdir -p /services/${1}
+ /usr/bin/tar xf ${MP_MEDIA}/services/${1}/${1}.tar -C /services/${1}/
+ if [ ${?} -eq 0 ]
+ then
+  echo "done."
+ else
+  echo "error!"
+  echo "WARNING: service ${1} could not be extracted!"
+  read -p "continue? (press any key) " ANYKEY
+  return 1
+ fi
+
+ # TODO: may need to check for dependencies or assume SVCLIST is proper
+
+ # final checks before install
+ if [ ! -d "/services/${1}/install-pkg" ]
+ then
+  echo "service ${1} already installed: no package dir; skipping!"
+  return 1
+ fi
+ if [ ! -x "/services/${1}/service_install.sh" ]
+ then
+  echo "WARNING: could not execute installation script for service ${1}!"
+  read -p "Continue? (press any key) " choice
+  echo "continuing with next service (skipping ${1})"
+  return 1
+ fi
+
+ # skip service which require internet connectivity during installation
+ if [ -f "/services/${1}/NEEDSINTERNET_INSTALL" ]
+ then
+  echo "service ${1} requires internet connectivity; skipping!"
+  return 1
+ fi
+
+ # execute install script
+ if [ -f "/zfsguru-verbose" ]
+ then
+  /services/${1}/service_install.sh VERBOSE
+ else
+  /services/${1}/service_install.sh
+ fi
+
+ # check return value
+ if [ "${?}" -gt "1" ]
+ then
+  # check for debug file
+  if [ -f "/zfsguru-debug" ]
+  then
+   echo
+   echo "**** DEBUG ****"
+   echo
+   read -p "-- installation complete --" debugchoice
+  else
+   # remove package directory
+   echo "* removing /services/${1}/install-pkg"
+   rm -R /services/${1}/install-pkg
+  fi
+ else
+  echo
+  echo "ERROR: installation of ${1} was not successful!"
+  echo
+  read -p "Continue? (press any key) " choice
+  echo "continuing with next service (skipping ${1})"
+  return 1
+ fi
+
+ # register service
+ if [ -f "/services/${1}/service_register.sh" ]
+ then
+  echo "registering service..."
+  /services/${1}/service_register.sh REGISTER
+ fi
+}
+
+zfsguru_dist_stop()
+{
+ echo -e "${TAG}Shutting down..."
+ echo
+}
+
+func_checkerror()
+{
+ RV="${1}"
+ NAME="${2}"
+ if [ "${RV}" -ne "0" ]
+ then
+  printf "\033[1;31mERROR:\033[0m\033[1;37m ${NAME} \033[0m"
+  printf "command exited with return value \033[1;37m${RV}\033[0m"
+  echo
+  echo
+  exit 1
+ fi
+}
+
+load_rc_config ${name}
+run_rc_command "$1"
+

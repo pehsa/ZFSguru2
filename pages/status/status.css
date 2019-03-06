@@ -1,0 +1,45 @@
+
+/* headbox */
+
+div.status_headbox
+{
+margin-top:2px !important;
+}
+
+div.status_headbox div
+{
+display:table-cell;
+vertical-align:middle;
+padding:0 6px;
+line-height:160%;
+}
+
+#bsddaemon:active
+{
+width:0;
+height:0;
+padding:32px;
+background:url(/theme/default/pango/love-64.png);
+}
+
+#livecdicon:active
+{
+width:0;
+height:0;
+padding:8px;
+background:url(/theme/default/pango/livecd-mounted-16.png);
+}
+
+
+/* hardware */
+
+table.status_hardware tr td
+{
+line-height:150%;
+}
+
+table.status_hardware img
+{
+padding-left:2px;
+text-align:center;
+}

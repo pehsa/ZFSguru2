@@ -1,0 +1,184 @@
+<h1>ZFS Volumes</h1>
+
+<p>
+ A ZFS Volume or <b>ZVOL</b> is a special file that act like a virtual hard 
+ drive. It can be used for sharing data via the iSCSI service.
+</p>
+
+<table class="widetable hover">
+<tr>
+ <th></th>
+ <th>Volume name</th>
+ <th>Size</th>
+ <th>Size (bytes)</th>
+ <th>Claimed</th>
+ <th>Total space</th>
+ <th>Provisioning</th>
+ <th>Sector size</th>
+</tr>
+%%TABLE_ZVOL_VOLUMES%%
+<tr %%ZVOL_ACTIVEROW%%>
+ <td class="imagecolumn">
+  <img src="theme/default/pango/zvol-16.png" alt="" title="" />
+ </td>
+ <td class="dark">
+  <b><a href="files.php?zvol=%%ZVOL_NAME%%">%%ZVOL_NAME%%</a></b>
+ </td>
+ <td>%%ZVOL_SIZEBINARY%%</td>
+ <td>%%ZVOL_SIZEBYTES%%</td>
+ <td>%%ZVOL_REFER%%</td>
+ <td>%%ZVOL_USED%%</td>
+ <td>%%ZVOL_PROVISIONING%%</td>
+ <td>%%ZVOL_SIZESECTOR%% bytes</td>
+</tr>
+%%TABLE_ZVOL_VOLUMES_END%%
+</table><br />
+
+<div %%ZVOL_QUERYHIDDEN%%>
+
+<form enctype="multipart/form-data" method="post"
+action="files.php?zvol&submit">
+<input type="hidden" name="handle" value="zvol_operations" />
+<input type="hidden" name="zvol_name" value="%%ZVOL_QUERYNAME%%" />
+
+<h2>Volume %%ZVOL_QUERYNAME%%</h2>
+<table class="widetable">
+<tr>
+ <td>Device path</td>
+ <td><b>/dev/zvol/%%ZVOL_QUERYNAME%%</b></td>
+</tr><tr class="%%CLASS_ISSWAP%%">
+ <td>Volume type</td>
+ <td>
+  In use as <b>SWAP</b> volume
+  <input type="submit" name="disableswap_zvol" value="Disable SWAP" />
+  <span class="%%CLASS_ISSWAPNONACT%% red"><br />Warning: 
+   flagged as SWAP volume but not in use as SWAP currently.
+   You may want to disable and enable swap again to fully activate.
+  </span>  
+ </td>
+</tr><tr class="%%CLASS_ISNOTSWAP%%">
+ <td>Volume type</td>
+ <td>
+  This volume is not in use as SWAP volume
+  <input type="submit" name="enableswap_zvol" 
+   value="Enable SWAP" /><br />
+  <span class="minortext">
+   <b>Danger:</b> enabling SWAP will overwrite existing data on this volume!
+  </span>
+ </td>
+</tr><tr>
+ <td>Volume size</td>
+ <td>%%ZVOL_QUERYSIZE%%</td>
+</tr><tr>
+ <td>Volume blocksize</td>
+ <td>%%ZVOL_QUERYBLOCKSIZE%%
+  <i>(cannot be changed after creation)</i>
+ </td>
+</tr><tr>
+ <td>Synchronous writes</td>
+ <td>
+  <span class="%%CLASS_SYNC%%">
+   Enabled (safe but slower) 
+   <input type="submit" name="zvol_sync_off" value="Disable sync writes" />
+  </span>
+  <span class="%%CLASS_NOSYNC%%">
+   Disabled 
+   (faster, but does not maintain <u>application consistency</u> after a crash)
+   <input type="submit" name="zvol_sync_on" value="Enable sync writes" />
+  </span>
+ </td>
+</tr><tr>
+ <td>Resize volume</td>
+ <td>
+  <input type="text" name="zvol_resize" value="%%ZVOL_QUERYRESIZE%%" /> GiB
+  <br />
+  <span class="minortext"><b>Warning:</b>
+   do not make the volume smaller if you wish to preserve existing data!
+  </span>
+ </td>
+</tr><tr>
+ <td>Volume operations</td>
+ <td>
+  <input type="submit" name="resize_zvol" value="Resize volume" /> 
+  <input type="submit" name="destroy_zvol" class="red"
+   value="Destroy volume" />
+ </td>
+</tr>
+</table><br />
+
+</form>
+</div>
+
+<h2>Create new volume</h2>
+
+<div>
+<form enctype="multipart/form-data" method="post"
+ action="files.php?zvol&create" />
+<input type="hidden" name="handle" value="zvol_create" />
+
+<table class="widetable">
+<tr>
+ <td class="dark">Volume name</td>
+ <td><input class="yellow" type="text" name="zvol_name" size="20" /></td>
+</tr><tr>
+ <td class="dark">Volume size</td>
+ <td>
+  <input type="text" name="zvol_size" size="10" /> GiB
+  <span class="minortext">
+   (fractions like 0.125, 0.25, 0.5 and 0.75 are permitted)
+  </span>
+ </td>
+</tr><tr>
+ <td class="dark">Volume blocksize</td>
+ <td>
+  <select name="zvol_blocksize">
+   <option value="512">512 bytes</option>
+   <option value="4k">4 KiB</option>
+   <option value="8k">8 KiB (default)</option>
+   <option value="16k">16 KiB</option>
+   <option value="32k">32 KiB</option>
+   <option value="64k" selected="selected">64 KiB (recommended)</option>
+   <option value="128k">128 KiB</option>
+ </td>
+</tr><tr>
+ <td class="dark">Stored on filesystem</td>
+ <td>
+  <select name="zvol_filesystem" required="required">
+   %%ZVOL_FILESYSTEMS%%
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Synchronous writes</td>
+ <td>
+  <select name="zvol_sync">
+   <option value="standard">Standard (safe default)</option>
+   <option value="always">Always (slowest)</option>
+   <option value="disabled">Disabled 
+    (faster, but does not maintain application consistency)</option>
+  </select>
+ </td>
+</tr><tr>
+ <td class="dark">Swap volume</td>
+ <td>
+  <input type="checkbox" name="zvol_swap" />
+  Use this volume as FreeBSD swap with automatic configuration.
+ </td>
+</tr><tr>
+ <td class="dark">Sparse volume</td>
+ <td>
+  <input type="checkbox" name="zvol_sparse" /> 
+  Create a sparse volume - also known as <i>thin-provisioning</i><br />
+  <span class="minortext">A sparse volume only uses up storage space as it
+   is filled with data. Be careful not to run out of storage space!
+  </span>
+</tr><tr>
+ <td class="dark">Submit</td>
+ <td>
+  <input type="submit" name="create_zvol" value="Create ZFS Volume" />
+ </td>
+</tr>
+</table>
+
+</form>
+</div><br />
+

@@ -1,0 +1,74 @@
+<h1>System services</h1>
+
+<p>The following services are pre-installed:</p>
+
+<div>
+<form enctype="multipart/form-data" method="post" 
+ action="services.php?manage&system&submit">
+<input type="hidden" name="handle" value="services_system" />
+
+<table class="widetable hover services_system">
+<tr>
+ <th>Name</th>
+ <th>Process</th>
+ <th>Description</th>
+ <th class="center">Status</th>
+ <th class="center">Control</th>
+ <th class="center">Autostart</th>
+</tr>
+%%TABLE_SERVICELIST%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark">
+  <span class="%%CLASS_SVCTEXT%%">%%SERVICE_LONGNAME%%</span>
+  <a class="bold %%CLASS_SVCLINK%%" href="%%SERVICE_URL%%"
+   >%%SERVICE_LONGNAME%%</a>
+ </td>
+ <td>%%SERVICE_PROCESS%%</td>
+ <td class="services_system_desc">%%SERVICE_DESC%%</td>
+ <td class="%%CLASS_STATUS%% center bold">%%SERVICE_STATUS%%</td>
+ <td class="servicelist_stopstart center">
+  <input class="%%CLASS_STARTBUTTON%%" name="svc_start_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-start-16.png" alt=""
+   title="Start service" />
+  <input class="%%CLASS_STOPBUTTON%%" name="svc_stop_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-stop-16.png" alt=""
+   title="Stop service" />
+  <input class="%%CLASS_RESTARTBUTTON%%" name="svc_restart_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-restart-16.png" alt=""
+   title="Restart service" />
+ </td>
+ <td class="servicelist_autostart center">
+  <input class="%%CLASS_AUTOSTART_Y%%" name="svc_autostart_n_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-autostart-14.png" alt=""
+   title="Autostart enabled; click to disable" />
+  <input class="%%CLASS_AUTOSTART_N%%" name="svc_autostart_y_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-noautostart-14.png" alt=""
+   title="Autostart disabled; click to automatically start" />
+  <img class="%%CLASS_AUTOSTART_P%%" title="incapable of autostart" alt="-"
+   src="theme/default/pango/service-cantautostart-14.png" />
+ </td>
+</tr>
+%%TABLE_SERVICELIST_END%%
+</table>
+
+</form>
+</div>
+
+<p class="%%CLASS_SERVICES%%">
+<b>Note:</b> 
+Select a service by clicking on its name for more options.
+</p>
+
+<p class="%%CLASS_NOSERVICES%%">
+<b class="red">Warning:</b>
+no services have been detected!
+</p>
+
+<div class="%%CLASS_QSERVICE%%">
+<br />
+<h2>%%QSERVICE_LONG%%</h2>
+<div class="minipanel">
+%%MINIPANEL%%
+</div>
+</div>
+

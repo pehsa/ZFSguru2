@@ -1,0 +1,404 @@
+
+<div class="colorbox_red %%CLASS_SAMBA_NOTRUNNING%%">
+ <b>Samba</b> is currently <b>not running</b>.
+ Please <a href="services.php?manage&system">start Samba</a> 
+ before managing user accounts!
+</div>
+<div class="colorbox_red %%CLASS_SAMBA_CORRUPTCONFIG%%">
+ Your <b>Samba configuration file</b> is corrupt or cannot be read properly.
+</div>
+
+<form id="samba_shares_dragdropform" enctype="multipart/form-data" method="post"
+ action="access.php?samba&share&submit">
+<input type="hidden" name="handle" value="access_samba_shares_dragdrop" />
+<input type="hidden" name="samba_sharename" value="%%QUERY_SHARENAME%%" />
+<input type="hidden" id="samba_shares_name" name="samba_shares_name"
+ value="default" />
+<input type="hidden" id="samba_shares_type" name="samba_shares_type"
+ value="default" />
+<input type="hidden" id="samba_shares_target" name="samba_shares_target"
+ value="default" />
+<!-- this form is submitted through javascript, to avoid form nesting -->
+</form>
+
+<h1>Samba shares</h1>
+<div class="colorbox_blue %%CLASS_SAMBA_NOSHARES%%">
+ No Samba shares detected!
+</div>
+<div class="widget_itemlist">
+ <a id="sambanewshare-button" class="widget_itemlist_item %%CLASS_NOQUERY%%" 
+  href="access.php?samba&shares&newshare" onclick="sambaNewShare(); return false">
+  <div class="widget_itemlist_images">
+   <img class="widget_itemlist_default" src="theme/default/pango/samba-share-64.png" alt="" />
+   <img class="widget_itemlist_new" src="theme/default/pango/x/tab-new.png" alt="" />
+  </div>
+  <span class="widget_itemlist_name">New share</span><br />
+  <span class="widget_itemlist_desc">click for options</span>
+ </a><a class="widget_itemlist_item %%CLASS_QUERY%%" href="access.php?shares">
+  <div class="widget_itemlist_images">
+   <img class="widget_itemlist_default" src="theme/default/pango/share-goback-64.png" alt="" />
+  </div>
+  <span class="widget_itemlist_name">Go back</span><br />
+  <span class="widget_itemlist_desc">display shares</span>
+ </a>%%TABLE_SAMBA_SHARELIST%%<a class="widget_itemlist_item" 
+ href="access.php?samba&share=%%SHARE_NAME%%">
+ <div class="widget_itemlist_images">
+  <img class="widget_itemlist_default" src="theme/default/pango/samba-share-64.png" alt="" />
+  <img class="widget_itemlist_protected %%SHARE_PROTECTED%%" src="theme/default/pango/x/samba-lock-protected-16.png" alt="" />
+  <img class="widget_itemlist_private %%SHARE_PRIVATE%%" src="theme/default/pango/x/samba-lock-private-16.png" alt="" />
+  <img class="widget_itemlist_custom %%SHARE_CUSTOM%%" src="theme/default/pango/x/samba-lock-custom-16.png" alt="" />
+  <img class="widget_itemlist_noaccess %%SHARE_NOACCESS%%" src="theme/default/pango/x/samba-lock-noaccess-16.png" alt="" />
+  <img class="widget_itemlist_problem %%SHARE_PROBLEM%%" src="theme/default/pango/x/samba-share-problem-32.png" alt="" />
+  <img class="widget_itemlist_default %%SHARE_PROBLEM%%" src="theme/default/pango/x/software-update-urgent-3.png" alt="" />
+  <img class="widget_itemlist_delete %%SHARE_SHARED%%"
+   src="theme/default/pango/samba-group-delete-16.png" alt="" title="Remove share"
+   onclick="if (confirm('Remove \'%%SHARE_NAME%%\' share?')) window.location.href =
+   'access.php?shares&removeshare=%%SHARE_NAME%%'; return false" />
+ </div>
+ <span class="widget_itemlist_name">%%SHARE_NAME%%</span><br />
+ <span class="widget_itemlist_desc %%SHARE_PUBLIC%%">public</span>
+ <span class="widget_itemlist_desc %%SHARE_PROTECTED%%">protected</span>
+ <span class="widget_itemlist_desc %%SHARE_PRIVATE%%">private</span>
+ <span class="widget_itemlist_desc %%SHARE_CUSTOM%%">custom</span>
+ <span class="widget_itemlist_desc %%SHARE_NOACCESS%%">no access</span>
+ <span class="widget_itemlist_desc %%SHARE_PROBLEM%%">problem detected!</span>
+</a>%%TABLE_SAMBA_SHARELIST_END%%
+</div><!-- div.widget_itemlist -->
+
+<div id="sambanewshare" class="%%CLASS_NEWSHARE%%">
+<form enctype="multipart/form-data" method="post"
+ action="access.php?samba&shares&submit">
+<input type="hidden" name="handle" value="access_samba_shares_create" />
+<br />
+<h2>Create new Samba share</h2>
+<table class="widetable">
+<tr>
+ <th></th>
+ <th>Value</th>
+</tr>
+<tr>
+ <td style="width:200px">Share filesystem</td>
+ <td>
+  <select name="newshare_zfsfs" onchange="sambaNewShareFilesystem(this)"
+   class="yellow" pattern=".+" required="required" autofocus="autofocus">
+   <option value=""></option>
+   <option value="/mp/" class="italic">Choose your own mountpoint</option>
+   <option value=""></option>
+%%SHARES_ZFSFSLIST%%
+  </select>
+  <span id="newshare_mountpoint" class="hidden">
+   <span class="minortext">mountpoint: </span>
+   <input type="text" name="newshare_mp" id="newshare_mp" class="yellow" />
+  </span>
+ </td>
+</tr><tr>
+ <td>Share name</td>
+ <td><input type="text" name="newshare_sharename" value="%%NEWSHARE_NAME%%" 
+  id="newshare_sharename" pattern="[a-zA-Z0-9]{1,8}" maxlength="8" 
+  required="required" />
+ </td>
+</tr><tr>
+ <td>Comment</td>
+ <td><input type="text" name="newshare_comment" 
+  pattern="[a-zA-Z0-9\-\_\ \:\;\.\,\/]{0,32}" maxlength="32" />
+  <span class="minortext">(not required)</span>
+ </td>
+</tr><tr>
+ <td>Access profile</td>
+ <td>
+  <select name="newshare_accessprofile" id="newshare_accessprofile"
+   onchange="sambaNewShareProfile(this)">
+   <option value="public">Public</option>
+   <option value="protected" selected="selected">Protected</option>
+   <option value="private">Private</option>
+   <option value="noaccess">No access</option>
+  </select>
+ </td>
+</tr><tr>
+ <td>Access description</td>
+ <td>
+  <span class="minortext">
+   <span class="hidden" id="newshare_span_public">
+    No password is required to access this share.
+   </span>
+   <span class="normal" id="newshare_span_protected">
+    Only users with a password may access this share.
+   </span>
+  </span>
+  <span class="hidden" id="newshare_span_private">
+   Exclusive access for:
+   <select name="newshare_accessprivate">
+%%TABLE_SAMBA_STANDARDUSERS%%
+    <option value="%%SU_USERNAME%%">%%SU_USERUCFIRST%%</option>
+%%TABLE_SAMBA_STANDARDUSERS_END%%
+   </select>
+  </span>
+  <span class="hidden" id="newshare_span_noaccess">
+   Create a share that nobody may access.
+   You may configure permissions manually on the next screen.
+  </span>
+ </td>
+</tr><tr>
+ <td></td>
+ <td>
+  <input type="submit" name="newshare_submit" value="Create new Samba share" />
+ </td>
+</tr>
+</table>
+</form>
+</div>
+
+<div id="extratabbar" class="extratabbar %%CLASS_QUERY%%">
+ <div class="et_row">
+  <div class="et_text">Share: %%QUERY_SHARENAME%%</div>
+  <div class="et_tab_active" id="et_query_share_permissions"><a href="#"
+   onclick="return extraTab(this)">Permissions</a></div>
+  <div class="et_tab" id="et_query_share_advanced"><a href="#"
+   onclick="return extraTab(this)">Advanced</a></div>
+  <div class="et_tab" id="et_query_share_howtoaccess"><a href="#"
+   onclick="return extraTab(this)">How to access</a></div>
+ </div>
+</div>
+
+<div id="query_share_permissions" class="%%CLASS_QUERY%%">
+
+<div id="samba_share_userlist_container" class="samba_share_userlist_container">
+
+<a id="samba_share_usertab" href="#" 
+ class="samba_share_usergrouptab samba_share_usergrouptab_%%CLASS_USERLIST%%" 
+ onclick="return sambaShareUserList();">Users</a>
+<a id="samba_share_grouptab" href="#" 
+ class="samba_share_usergrouptab samba_share_usergrouptab_%%CLASS_GROUPLIST%%" 
+ onclick="return sambaShareGroupList();">Groups</a>
+
+<div id="samba_share_userlist" 
+ ondrop="drop_grouplist(event)" ondragover="allowDrop_grouplist(event)"
+ class="samba_share_userlist samba_share_userlist_%%CLASS_USERLIST%%">
+%%TABLE_SAMBA_STANDARDUSERS%%
+ <a id="standarduser_%%SU_USERNAME%%" class="sambauser" 
+  onclick="return false"
+  draggable="true" ondragstart="drag(event)"><img
+  src="theme/default/pango/samba-user-64.png" alt=""
+  id="sambaimagexx_%%SU_USERNAME%%" /><br />%%SU_USERUCFIRST%%</a><br />
+%%TABLE_SAMBA_STANDARDUSERS_END%%
+</div>
+
+<div id="samba_share_grouplist" 
+ ondrop="drop_grouplist(event)" ondragover="allowDrop_grouplist(event)"
+ class="samba_share_grouplist samba_share_grouplist_%%CLASS_GROUPLIST%%">
+%%TABLE_SAMBA_GROUPS%%
+ <a id="sambagroupxx_%%SAMBAGROUP_GROUPNAME%%" class="sambauser"
+  onclick="return sambaShareGroupSelect(this)" 
+  draggable="true" ondragstart="drag(event)"><img
+  src="theme/default/pango/samba-group-64.png" alt=""
+  id="sambaimagexx_%%SAMBAGROUP_GROUPNAME%%" 
+  /><br />%%SAMBAGROUP_DISPLAY_SHARES%%</a>
+%%TABLE_SAMBA_GROUPS_END%%
+</div>
+
+<!-- userlist of a specific group, hidden by default -->
+%%TABLE_SAMBA_GROUPS%%
+<div id="samba_share_grouplist_%%SAMBAGROUP_GROUPNAME%%"
+ ondrop="drop_grouplist(event)" ondragover="allowDrop_grouplist(event)"
+ class="samba_share_grouplist">
+%%TABLE_SAMBA_USERS%%
+ <a id="useringroupx_%%SAMBAUSER_USERNAME%%" class="useringroup"
+  onclick="return false"
+  draggable="true" ondragstart="drag(event)"><img
+  src="theme/default/pango/samba-user-64.png" alt=""
+  id="sambaimagexx_%%SAMBAUSER_USERNAME%%" 
+  /><br />%%SAMBAUSER_USERUCFIRST%%</a><br />
+%%TABLE_SAMBA_USERS_END%%
+</div>
+%%TABLE_SAMBA_GROUPS_END%%
+
+</div><!-- samba_share_userlist_container -->
+
+<div class="samba_share_accesslists">
+
+ <!-- FULL ACCESS -->
+ <h2>Users with full access</h2>
+ <div class="sambagroup">
+ <div class="sambaspacer"></div>
+
+%%TABLE_SAMBA_FULLACCESS%%
+ <div id="sambagroup_fullaccess" class="sambabox"
+  draggable="true" ondragstart="drag(event)">
+  <a id="%%SP_TYPE%%_%%SP_NAME%%" class="sambauser %%SP_TYPE%%"
+   onclick="return false;"
+   draggable="true" ondragstart="drag(event)"><img
+   src="theme/default/pango/samba-%%SP_IMAGE%%-64.png" alt="" 
+   id="sambaimagexx_%%SP_NAME%%" /><br />%%SP_UCFIRST%%</a>
+ </div>
+ <div id="sambaspacer_%%SP_TYPE%%_%%SP_NAME%%" class="sambaspacer"></div>
+%%TABLE_SAMBA_FULLACCESS_END%%
+
+ <!-- dropzone -->
+ <div id="samba_shares_drop_fullaccess" class="sambabox"
+  ondrop="drop_shares(event)" ondragover="allowDrop_shares(event)">
+ <div id="samba_shares_drag_fullaccess"
+  class="sambadrag"><div>drag here</div></div>
+ </div>
+ <div class="sambaspacer"></div>
+ </div>
+
+ <h2>Users with read-only access</h2>
+ <div class="sambagroup">
+ <div class="sambaspacer"></div>
+
+%%TABLE_SAMBA_READONLY%%
+ <div id="sambagroup_readonly" class="sambabox"
+  draggable="true" ondragstart="drag(event)">
+  <a id="%%SP_TYPE%%_%%SP_NAME%%" class="sambauser %%SP_TYPE%%"
+   onclick="return false"
+   draggable="true" ondragstart="drag(event)"><img
+   src="theme/default/pango/samba-%%SP_IMAGE%%-64.png" alt="" 
+   id="sambaimagexx_%%SP_NAME%%" /><br />%%SP_UCFIRST%%</a>
+ </div>
+ <div id="sambaspacer_%%SP_TYPE%%_%%SP_NAME%%" class="sambaspacer"></div>
+%%TABLE_SAMBA_READONLY_END%%
+
+ <!-- dropzone -->
+ <div id="samba_shares_drop_readonly" class="sambabox" 
+  ondrop="drop_shares(event)" ondragover="allowDrop_shares(event)">
+ <div id="samba_shares_drag_readonly"
+  class="sambadrag"><div>drag here</div></div>
+ </div>
+ <div class="sambaspacer"></div>
+ </div>
+
+ <h2>Users with no access</h2>
+ <div class="sambagroup">
+ <div class="sambaspacer"></div>
+
+%%TABLE_SAMBA_NOACCESS%%
+ <div id="sambagroup_noaccess" class="sambabox"
+  draggable="true" ondragstart="drag(event)">
+  <a id="%%SP_TYPE%%_%%SP_NAME%%" class="sambauser %%SP_TYPE%%"
+   onclick="return false"
+   draggable="true" ondragstart="drag(event)"><img
+   src="theme/default/pango/samba-%%SP_IMAGE%%-64.png" alt="" 
+   id="sambaimagexx_%%SP_NAME%%" /><br />%%SP_UCFIRST%%</a>
+ </div>
+ <div id="sambaspacer_%%SP_TYPE%%_%%SP_NAME%%" class="sambaspacer"></div>
+%%TABLE_SAMBA_NOACCESS_END%%
+
+ <!-- dropzone -->
+ <div id="samba_shares_drop_noaccess" class="sambabox"
+  ondrop="drop_shares(event)" ondragover="allowDrop_shares(event)">
+ <div id="samba_shares_drag_noaccess"
+  class="sambadrag"><div>drag here</div></div>
+ </div>
+ <div class="sambaspacer"></div>
+ </div>
+</div><!-- samba share accesslists -->
+<div class="colorbox_grey">
+ Please beware that the <b>drag&amp;drop</b> functionality on this page only 
+ works with <b>Firefox</b> or other browsers based on Gecko technology.
+</div>
+</div><!-- query share permissions -->
+
+<div id="query_share_advanced" class="hidden">
+
+<div class="samba_share_advanced %%CLASS_QUERY%%">
+<form enctype="multipart/form-data" method="post"
+ action="access.php?samba&shares&submit">
+<input type="hidden" name="handle" value="access_samba_shares_advanced" />
+<input type="hidden" name="advanced_sharename" value="%%QUERY_SHARENAME%%" />
+<table class="widetable">
+<tr><th>
+ Advanced settings for <i>%%QUERY_SHARENAME%%</i>
+</th></tr></table>
+<div>
+<table class="widetable">
+<tr>
+ <td>Target path</td>
+ <td colspan="2">
+  <input style="width:40%" class="yellow" type="text" name="advancedvar_path"
+   value="%%QUERY_TARGET%%" />
+  <a href="/files.php?browse=%%QUERY_TARGET%%">[browse]</a>
+ </td>
+</tr><tr>
+ <td>Comment</td>
+ <td colspan="2">
+  <input style="width:40%" type="text" class="yellow" name="advancedvar_comment"
+   pattern="[a-zA-Z0-9\-\_\ \:\;\.\,\/]{0,32}" value="%%QUERY_COMMENT%%" 
+   maxlength="32" />
+  <span class="minortext">(some special characters allowed, like spaces)</span>
+ </td>
+</tr><tr>
+ <td>Browseable
+  <span class="minortext">(allows the share to be seen)</span>
+ </td>
+ <td colspan="2">
+  <select name="advancedvar_browseable" class="yellow">
+   <option value="yes">Yes</option>
+   <option value="no" %%SHARE_NOBROWSE%%>No</option>
+  </select>
+ </td>
+</tr><tr>
+ <td>Guest ok
+  <span class="minortext">(allow guest access)</span>
+ </td>
+ <td colspan="2">
+  <select name="advancedvar_guest ok" class="yellow">
+   <option value="yes">Yes</option>
+   <option value="no" %%SHARE_GUESTNOTOK%%>No</option>
+  </select>
+ </td>
+</tr><tr>
+ <td>Read only
+  <span class="minortext">(applies to guest user)</span>
+ </td>
+ <td colspan="2">
+  <select name="advancedvar_read only" class="yellow">
+   <option value="yes">Yes</option>
+   <option value="no" %%SHARE_NOREADONLY%%>No</option>
+  </select>
+ </td>
+</tr>
+%%TABLE_SHARE_EXTRA%%
+<tr>
+ <td>%%SE_DISPLAYNAME%%</td>
+ <td>
+  <input type="text" name="advancedvar_%%SE_VARNAME%%" value="%%SE_VALUE%%" />
+ </td>
+ <td class="right">
+  <input type="checkbox" name="cb_advanced_%%SE_VARNAME%%" />
+ </td>
+</tr>
+%%TABLE_SHARE_EXTRA_END%%
+<tr>
+ <td>Insert new variable</td>
+ <td colspan="2">
+  <select name="newvariable_varname" onchange="sambaManualShares(this)">
+   <option value=""></option>
+%%TABLE_SAMBA_SHAREVARS%%
+   <option value="%%CV_VAR%%">%%CV_VAR%%</option>
+%%TABLE_SAMBA_SHAREVARS_END%%
+  </select>
+ with value: <input type="text" name="newvariable_value" />
+ </td>
+</tr>
+</table><br />
+
+<iframe id="samba_shares_manualiframe" class="hidden"
+ style="width:100%; height:150px; margin-bottom:15px"></iframe>
+
+<table class="buttontable">
+<tr><td style="width:50%">
+<input type="submit" name="samba_update_config" value="Update configuration" />
+</td><td>
+<input type="submit" name="samba_restart_samba" value="Restart Samba" />
+</td></tr>
+</table>
+</div>
+</form>
+</div>
+</div><!-- query share advanced -->
+
+<div id="query_share_howtoaccess" class="hidden">
+<h2>How to access?</h2>
+<p>Try <b>\\SERVERNAME\SHARENAME</b></p>
+</div>
+

@@ -1,0 +1,65 @@
+
+<h1>ZFSguru installation</h1>
+
+<a class="installstep activestep" href="system.php?install">Step 1: Select version</a>
+
+<p class="%%CLASS_AVAIL%%">
+ Select the desired system version by clicking on the name.
+</p>
+
+<p class="%%CLASS_NOTAVAIL%%">
+ Because no system versions are available, 
+ please download a system version first.
+ If you have a ZFSguru USB stick, insert it now and 
+ <a href="system.php?install">refresh the page</a>.
+</p>
+
+<div>
+<form enctype="multipart/form-data" method="post" 
+action="system.php?install&dist=%%INSTALL_DIST%%&download">
+<input type="hidden" name="handle" value="system_install_download" />
+<input type="hidden" name="dist" value="%%INSTALL_DIST%%" />
+
+<div class="%%CLASS_DIP%%">
+<p class="yellow_box">
+ <img src="%%THEMEPATH%%/bip.gif" alt="" style="vertical-align:middle" /> 
+ <b>Download in progress!</b> This page will <b>automatically refresh</b> 
+ itself, please wait until the download is complete and this message disappears.
+</p>
+</div>
+
+<table class="widetable hover">
+<tr>
+ <th></th>
+ <th>Version</th>
+ <th>Availability</th>
+ <th>Branch</th>
+ <th>BSD version</th>
+ <th>Size</th>
+</tr>
+%%TABLE_INSTALL_SYSTEMVERSIONS%%
+<tr class="%%CLASS_SYSVER%%">
+ <td></td>
+ <td class="dark bold">%%SYSVER_NAME%%</td>
+ <td>%%SYSVER_AVAIL%%</td>
+ <td class="%%CLASS_BRANCH%%">%%SYSVER_BRANCH%%</td>
+ <td>%%SYSVER_BSDVERSION%%</td>
+ <td>%%SYSVER_SIZE_BINARY%%</td>
+</tr>
+%%TABLE_INSTALL_SYSTEMVERSIONS_END%%
+<tr class="obsolete_sysver">
+ <th></th>
+ <th colspan="9">
+  <a href="system.php?install&displayobsolete"
+  class="%%CLASS_OBSOLETE_DISPLAY%%">Display %%INSTALL_OBSOLETECOUNT%% 
+  obsolete system versions</a>
+  <a href="system.php?install"
+  class="%%CLASS_OBSOLETE_HIDE%%">Hide %%INSTALL_OBSOLETECOUNT%%
+  obsolete system versions</a>
+ </th>
+</tr>
+</table>
+
+</form>
+</div>
+

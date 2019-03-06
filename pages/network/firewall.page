@@ -1,0 +1,45 @@
+
+<h1>Firewall</h1>
+
+<div class="colorbox_grey %%CLASS_PF_NOTRUNNING%%">
+ The <i>package filter</i> (pf) firewall is currently <b>not running</b>.
+ You can enable it on the <a href="services.php">Services page</a>.
+</div>
+<div class="colorbox_green %%CLASS_PF_RUNNING%%">
+ The <i>package filter</i> (pf) firewall is currently <b>running</b>.
+</div>
+
+<div>
+<form enctype="multipart/form-data" method="post" action="network.php?firewall&submit">
+<input type="hidden" name="handle" value="network_firewall" />
+<textarea name="network_firewall_pfconf" 
+ style="width:100%; height:480px">%%NETWORK_FW_PFCONF%%</textarea>
+<br /><br />
+<input type="submit" name="submit_network_firewall_restart" 
+ value="Activate changes by restarting pf" style="float:right" />
+<input type="submit" name="submit_network_firewall_pfconf" 
+ value="Save changes" />
+ %%NETWORK_FW_UPDATED%%
+</form>
+</div>
+
+<div class="colorbox_red">
+ <b>Danger:</b>
+ the use of a firewall and adapting its configuration over the network,
+ presents the possibility of locking yourself out, unable to revert recent
+ changes. Be aware that you may need to logon to the physical machine.
+ You can quickly disable the firewall with <b>pfctl -d</b>.
+</div>
+
+
+<div id="network_firewall_pfman_d"><div class="colorbox_blue" style="cursor:pointer" 
+ onMouseDown="document.getElementById('network_firewall_pfman').className = 'normal'; document.getElementById('network_firewall_pfman_h').className = 'normal'; document.getElementById('network_firewall_pfman_d').className = 'hidden';">
+ Click this box to <b>display</b> the manual page for the <b>pf.conf</b> configuration file.
+</div></div>
+<div id="network_firewall_pfman_h" class="hidden"><div class="colorbox_blue" style="cursor:pointer" 
+ onMouseDown="document.getElementById('network_firewall_pfman').className = 'hidden'; document.getElementById('network_firewall_pfman_h').className = 'hidden'; document.getElementById('network_firewall_pfman_d').className = 'normal';">
+ Click this box to <b>hide</b> the manual page.
+</div></div>
+
+<div id="network_firewall_pfman" class="hidden">%%NETWORK_FW_PFMAN%%</div>
+

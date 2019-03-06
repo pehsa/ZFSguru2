@@ -1,0 +1,158 @@
+<h1>Manage services</h1>
+
+<p>The following services are installed:</p>
+
+<div style="margin-bottom:15px">
+<form enctype="multipart/form-data" method="post"
+ action="services.php?manage&submit">
+<input type="hidden" name="handle" value="services_manage" />
+
+<table class="widetable hover servicemanagetable">
+<tr>
+ <th>Name</th>
+ <th>Category</th>
+ <th>Upgrade</th>
+ <th>Status</th>
+ <th>Control</th>
+ <th>Autostart</th>
+</tr>
+%%TABLE_SERVICELIST%%
+<tr class="%%CLASS_ACTIVEROW%%">
+ <td class="dark bold servicename">
+  <img src="%%SERVICE_ICON%%" alt="" />
+  <a href="services.php?manage&query=%%SERVICE_NAME%%">%%SERVICE_LONGNAME%%</a>
+ </td>
+ <td class="service_cat"><span>%%SERVICE_CAT%%</span></td>
+ <td class="serviceupgrade">
+  <a class="%%CLASS_UPGRADE%%" href="services.php?manage&query=%%SERVICE_NAME%%">
+   <img src="theme/default/pango/service-upgrade-16.png" alt="" />
+   <span class="%%CLASS_UPGRADE%% green">Upgrade available</span>
+  </a>
+  <span class="minortext %%CLASS_NOUPGRADE%%">-</span>
+  <span class="hidden">
+%%SERVICE_VER_EXT%% <span class="minortext">(%%SERVICE_VER_PROD%%)</span>
+  </span>
+ </td>
+ <td class="%%CLASS_STATUS%% bold">%%SERVICE_STATUS%%</td>
+ <td class="servicelist_stopstart">
+  <input class="%%CLASS_STARTBUTTON%%" name="svc_start_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-start-16.png" alt=""
+   title="Start service" />
+  <input class="%%CLASS_STOPBUTTON%%" name="svc_stop_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-stop-16.png" alt=""
+   title="Stop service" />
+ </td>
+ <td class="servicelist_autostart">
+  <input class="%%CLASS_AUTOSTART_Y%%" name="svc_autostart_n_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-autostart-14.png" alt=""
+   title="Autostart enabled; click to disable" />
+  <input class="%%CLASS_AUTOSTART_N%%" name="svc_autostart_y_%%SERVICE_NAME%%"
+   type="image" src="theme/default/pango/service-noautostart-14.png" alt=""
+   title="Autostart disabled; click to automatically start" />
+  <img class="%%CLASS_AUTOSTART_P%%" title="incapable of autostart" alt="-"
+   src="theme/default/pango/service-cantautostart-14.png" />
+ </td>
+</tr>
+%%TABLE_SERVICELIST_END%%
+</table>
+
+</form>
+</div>
+
+<div class="%%CLASS_PANEL%% qservice_panel colorbox_green">
+ <a href="services.php?panel=%%QSERVICE%%"
+ >Navigate to service panel interface &raquo;</a>
+</div>
+
+<div class="%%CLASS_SVCUPGRADE%% colorbox_green">
+ You can <b>upgrade</b> this service to a newer version!
+ <br /><br />
+ On the
+ <a href="services.php?install&cat=%%QSERVICE_CATSHORT%%&service=%%QSERVICE%%"
+ >Services &raquo; Install</a> page, follow the instructions to upgrade your 
+ service. Backup the service directory before upgrading!
+</div>
+
+<h2>Service <u>%%QSERVICE_LONG%%</u></h2>
+
+<table class="widetable hover qservice">
+<tr>
+ <th colspan="2">Service information</th>
+</tr><tr>
+ <td>Name</td>
+ <td><b>%%QSERVICE_LONG%%</b></td>
+</tr><tr>
+ <td>Category</td>
+ <td>
+  <a href="services.php?install&cat=%%QSERVICE_CATSHORT%%">%%QSERVICE_CAT%%</a>
+ </td>
+</tr><tr>
+ <td>Product version</td>
+ <td>%%QSERVICE_VERSION%%</td>
+</tr><tr>
+ <td>Service serial number</td>
+ <td>%%QSERVICE_SERIAL%%</td>
+</tr><tr>
+ <td>System version</td>
+ <td>%%QSERVICE_SYSVER%%</td>
+</tr><tr>
+ <td>Platform</td>
+ <td>%%QSERVICE_PLATFORM%%</td>
+</tr><tr>
+ <td>Installation page</td>
+ <td>
+  <a href="services.php?install&cat=%%QSERVICE_CATSHORT%%&service=%%QSERVICE%%"
+  >Installation page</a>
+ </td>
+</tr><tr>
+ <td>Installation path</td>
+ <td><a href="files.php?browse=%%QSERVICE_PATH%%">%%QSERVICE_PATH%%</a></td>
+</tr><tr>
+ <td>Service data size</td>
+ <td>%%QSERVICE_SIZE%%</td>
+</tr><tr>
+ <td>License</td>
+ <td>%%QSERVICE_LICENSE%%</td>
+</tr><tr>
+ <td>Security</td>
+ <td>%%QSERVICE_SECURITY%%</td>
+</tr><tr>
+ <td>Dependencies</td>
+ <td>%%QSERVICE_DEPEND%%</td>
+</tr><tr>
+ <td>Conflicts with</td>
+ <td>%%QSERVICE_CONFLICTS%%</td>
+</tr>
+</table>
+
+<div class="%%CLASS_SYSVERTABLE%%">
+<br />
+<table class="widetable hover infopage_sysver">
+<tr>
+ <th>Service</th>
+ <th>Size</th>
+ <th>System version</th>
+ <th class="center" style="width:55px">
+  <acronym title="Compatibility with current web-interface">Compat</acronym>
+ </th>
+ <th>Branch</th>
+ <th>BSD version</th>
+ <th>Platform</th>
+</tr>
+%%TABLE_SYSVERLIST%%
+<tr class="%%IP_CLASS%%">
+ <td><b>%%IP_SVCLONG%%</b> %%IP_VERSION%%</td>
+ <td>%%IP_SIZE%%</td>
+ <td><b>%%IP_SYSVER%%</b></td>
+ <td class="center">
+  <img src="%%THEMEPATH%%/%%IP_COMPAT%%.png" alt=""
+   title="Compatible: %%IP_COMPAT%%" />
+ </td>
+ <td>%%IP_BRANCH%%</td>
+ <td>%%IP_BSDVERSION%%</td>
+ <td>%%IP_PLATFORM%%</td>
+</tr>
+%%TABLE_SYSVERLIST_END%%
+</table>
+</div>
+

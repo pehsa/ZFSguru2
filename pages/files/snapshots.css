@@ -1,0 +1,43 @@
+
+div.snap_operation
+{
+display:none;
+padding:10px;
+margin:10px 0;
+border:1px solid #444;
+background:#9ff;
+}
+
+div.snap_destroy
+{
+background:#fdd;
+background-image: -moz-linear-gradient(#fdd, #c88);
+background-image: -webkit-linear-gradient(#fdd, #c88);
+background-image: -o-linear-gradient(#fdd, #c88);
+background-image: -ms-linear-gradient(#fdd, #c88);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdddd', endColorstr='#cc8888');
+background-image: linear-gradient(#fdd, #c88);
+}
+
+div.snap_rollback
+{
+background:#ed9;
+background-image: -moz-linear-gradient(#fea, #cb7);
+background-image: -webkit-linear-gradient(#fea, #cb7);
+background-image: -o-linear-gradient(#fea, #cb7);
+background-image: -ms-linear-gradient(#fea, #cb7);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeaa', endColorstr='#ccbb77');
+background-image: linear-gradient(#fea, #cb7);
+}
+
+div.snap_clone
+{
+background:#9ff;
+background-image: -moz-linear-gradient(#dee, #9ff);
+background-image: -webkit-linear-gradient(#dee, #9ff);
+background-image: -o-linear-gradient(#dee, #9ff);
+background-image: -ms-linear-gradient(#dee, #9ff);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ddeeee', endColorstr='#99ffff');
+background-image: linear-gradient(#dee, #9ff);
+}
+

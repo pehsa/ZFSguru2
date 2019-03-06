@@ -1,0 +1,23 @@
+
+/* disk image and name */
+
+td.diskname
+{
+vertical-align:middle;
+}
+
+td.diskname img
+{
+max-height:16px;
+margin:0 4px;
+vertical-align:middle;
+}
+
+
+/* sector */
+
+td.network_sector_normal
+{
+color:grey;
+}
+

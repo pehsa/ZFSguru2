@@ -1,0 +1,130 @@
+
+<form id="samba_users_dragdropform" enctype="multipart/form-data" method="post"
+ action="access.php?samba&users&submit">
+<input type="hidden" name="handle" value="access_samba_users_dragdrop" />
+<input type="hidden" id="samba_users_user" name="samba_users_user"
+ value="default" />
+<input type="hidden" id="samba_users_oldgroup" name="samba_users_oldgroup"
+ value="default" />
+<input type="hidden" id="samba_users_newgroup" name="samba_users_newgroup"
+ value="default" />
+<!-- this form is submitted through javascript, to avoid form nesting -->
+</form>
+
+%%TABLE_SAMBA_GROUPS%%
+<form enctype="multipart/form-data" method="post"
+ action="access.php?samba&users&submit">
+<input type="hidden" name="handle" value="access_samba_users_deletegroup" />
+<input type="hidden" name="groupname" value="%%SAMBAGROUP_GROUPNAME%%" />
+<div class="sambagrouptitle%%SAMBAGROUP_SUFFIX%%"
+ >%%SAMBAGROUP_DISPLAY_USERS%%<div class="sambagroupdelete%%SAMBAGROUP_SUFFIX%%"
+ ><input type="image" alt="Delete" 
+ src="theme/default/pango/samba-group-delete-16.png" title="Delete this group" 
+ name="samba_deletegroup_%%SAMBAGROUP_GROUPNAME%%" value="Delete" 
+ /><input type="checkbox" class="%%CLASS_SAMBAGROUP_HASUSERS%%" 
+ name="samba_deleteusersingroup_%%SAMBAGROUP_GROUPNAME%%" 
+ /><span class="%%CLASS_SAMBAGROUP_HASUSERS%%"> delete users in group</span>
+ </div></div>
+</form><!-- form: samba_users_deletegroup -->
+
+<div class="sambagroup">
+<div class="sambaspacer"></div>
+
+<!-- new user box -->
+<div class="sambabox" draggable="false">
+ <a class="sambauser sambanew" draggable="false"
+  onclick="addUser(this)" id="sambanew_%%SAMBAGROUP_GROUPNAME%%" 
+  ><img src="theme/default/pango/samba-user-new-64.png"
+  alt="" /><br />New user</a>
+</div>
+<div class="sambaspacer"></div>
+
+<!-- special guest user -->
+<div class="sambaspecial %%SAMBAGROUP_SPECIAL%%" draggable="false">
+<div class="sambabox" draggable="false">
+ <a class="sambauser sambaguestxx" draggable="false"><img 
+  src="theme/default/pango/samba-user-guest-64.png"
+  alt="" /><br />Guest</a>
+</div>
+<div class="sambaspacer"></div>
+</div>
+
+%%TABLE_SAMBA_USERS%%
+<div id="sambagroupxx_%%SAMBAGROUP_GROUPNAME%%" class="sambabox" 
+ draggable="true" ondragstart="drag(event)">
+ <a id="sambauserxxx_%%SAMBAUSER_USERNAME%%" class="sambauser" 
+  onclick="modifyUser(this)" draggable="true" ondragstart="drag(event)"><img 
+  src="theme/default/pango/samba-user-64.png" alt="" 
+  id="sambaimagexx_%%SAMBAUSER_USERNAME%%" /><br />%%SAMBAUSER_USERUCFIRST%%</a>
+</div>
+<div id="sambaspacer_%%SAMBAUSER_USERNAME%%" class="sambaspacer"></div>
+%%TABLE_SAMBA_USERS_END%%
+
+<!-- dropzone -->
+<div id="samba_users_drop_%%SAMBAGROUP_GROUPNAME%%" 
+ class="sambabox" ondrop="drop_users(event)" ondragover="allowDrop_users(event)">
+<div id="samba_users_drag_%%SAMBAGROUP_GROUPNAME%%" 
+ class="sambadrag"><div>drag here</div></div>
+</div>
+<div class="sambaspacer"></div>
+
+</div><!-- sambagroup -->
+
+<!-- add new user -->
+<form enctype="multipart/form-data" method="post" 
+ id="form_samba_adduser_%%SAMBAGROUP_GROUPNAME%%" 
+ action="access.php?samba&users&submit" onsubmit="return sambaAddUser(this);">
+<input type="hidden" name="handle" value="access_samba_users_adduser" />
+<input type="hidden" name="groupname" value="%%SAMBAGROUP_GROUPNAME%%" />
+<input type="hidden" name="samba_adduserpassword_%%SAMBAGROUP_GROUPNAME%%" 
+ value="" id="samba_adduserpassword_%%SAMBAGROUP_GROUPNAME%%" />
+<div class="samba_select" id="samba_adduserbox_%%SAMBAGROUP_GROUPNAME%%">
+ Create new user with name: 
+ <input type="text" class="textbox" 
+  name="samba_adduser_%%SAMBAGROUP_GROUPNAME%%"
+  id="samba_adduser_%%SAMBAGROUP_GROUPNAME%%" pattern="[a-zA-Z0-9\-\_\.]*" 
+  autocomplete="off" cols="40" />
+ <input type="submit" name="samba_add_user_submit" value="Create new user" />
+</div>
+</form>
+
+<!-- modify existing user -->
+<form enctype="multipart/form-data" method="post"
+ action="access.php?samba&users&submit">
+<input type="hidden" name="handle" value="access_samba_users_modify" />
+<input type="hidden" name="groupname" value="%%SAMBAGROUP_GROUPNAME%%" />
+<input type="hidden" name="samba_modify_username_%%SAMBAGROUP_GROUPNAME%%" 
+ value="" id="samba_modify_username_%%SAMBAGROUP_GROUPNAME%%" />
+<div class="samba_select" id="samba_select_%%SAMBAGROUP_GROUPNAME%%">
+ Reset Samba password
+ <input type="text" class="textbox" 
+  name="samba_modify_password_%%SAMBAGROUP_GROUPNAME%%" 
+  id="samba_modify_password_%%SAMBAGROUP_GROUPNAME%%" 
+  autocomplete="off" cols="40" />
+ <input type="submit" name="samba_modify_user" value="Change password" />
+ <input type="submit" name="samba_delete_user" value="Delete user" />
+</div>
+</form>
+
+<br />
+%%TABLE_SAMBA_GROUPS_END%%
+<br />
+
+<div class="samba_addgroup">
+<form id="samba_addgroup_form" enctype="multipart/form-data" method="post"
+ action="access.php?samba&users&submit">
+<input type="hidden" name="handle" value="access_samba_users_addgroup" />
+<table class="flattable">
+<tr>
+ <td style="width:200px"><span>Add a new group</span></td>
+ <td>
+  <input form="samba_addgroup_form" type="text" name="samba_addgroup" 
+   cols="40" required="required" pattern="[a-zA-Z0-9\-\_\.]*" 
+   autocomplete="off" /><input type="submit" name="samba_addgroup_submit" 
+   value="Add group" />
+ </td>
+</tr>
+</table>
+</form>
+</div>
+

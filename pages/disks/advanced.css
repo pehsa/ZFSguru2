@@ -1,0 +1,44 @@
+
+/* disk image and name */
+
+td.power_diskname
+{
+vertical-align:middle;
+}
+
+td.power_diskname img
+{
+max-height:16px;
+margin:0 4px;
+vertical-align:middle;
+}
+
+
+/* buttons */
+
+table.advancedsettings tr td input
+{
+font-size:85%;
+}
+
+
+/* diskname */
+
+td.power_diskname
+{
+font-weight:bold;
+}
+
+
+/* spinning */
+
+td.power_spinning
+{
+color:darkgreen;
+}
+
+td.power_spindown
+{
+color:grey;
+}
+

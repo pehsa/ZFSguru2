@@ -1,0 +1,15 @@
+
+<h1>AJAX file browser</h1>
+
+<iframe src="interface/ajaxplorer/index.php" class="ajaxpl">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+
+<p>
+ <b>Note:</b> 
+ If you prefer, you can open this page in a 
+ <a href="interface/ajaxplorer/index.php"
+ onclick="window.open(this.href,'_blank');return false;">new window</a> 
+ instead.
+ The <a href="files.php?browse=/">internal file browser</a> is also available.
+</p>

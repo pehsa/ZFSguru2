@@ -1,0 +1,88 @@
+
+<div class="%%CLASS_SUCCESS%%">
+<h1>Installation successful</h1>
+<div class="colorbox_grey install_headbox">
+ <div>
+  <img id="installok" src="theme/default/pango/bsd-daemon-face-64.png" alt="" />
+ </div>
+ <div style="line-height:200%">
+  <b>Friendly daemons</b> now inhabit your pool!
+  <br />
+  You should reboot now. 
+  Do not forget to <b>configure the boot sequence</b>
+  in your system BIOS/EFI setup.
+ </div>
+</div>
+<form enctype="multipart/form-data" action="system.php?shutdown&submit"
+ method="post">
+<table class="flattable dragontable">
+<tr>
+ <td class="right"><img src="theme/default/dragon-right.png" alt="" /></td>
+ <td style="width:1px">
+  <input type="hidden" name="handle" value="system_shutdown" />
+  <input class="reboot" type="submit" name="reboot_system" value="Reboot now" />
+ </td>
+ <td class="left"><img src="theme/default/dragon-left.png" alt="" /></td>
+</tr></table>
+</form>
+</div>
+
+<div class="%%CLASS_FAILURE%%">
+<h1>Installation failed!</h1>
+<div class="colorbox_red install_headbox">
+ <div>
+  <img id="installfailed" src="theme/default/pango/installation-fail-64.png" alt="" />
+ </div>
+ <div style="line-height:200%">
+  Uh-Oh! <b>Something went wrong</b> during installation.
+  <br />
+  Please review the output below for any clues, 
+  and report this issue on the 
+  <a href="http://zfsguru.com/forum">ZFSguru forum</a> if it persists.
+ </div>
+</div>
+</div>
+
+<div class="%%CLASS_INSTALLING%%">
+<h1>Installing ZFSguru</h1>
+<p>
+ Please wait while ZFSguru is being installed. 
+ This page will automatically refresh itself. 
+</p>
+<div class="install_progress">
+<img src="theme/default/progressbar.gif" alt="" />
+<p>
+<b>%%INSTALL_ACTIVETASK%%...</b>
+</p>
+</div>
+</div><!-- installing -->
+
+<div class="%%CLASS_PROGRESS%%">
+<table class="widetable" style="width:75%; margin:20px auto 0 auto;">
+<tr>
+ <th colspan="3" class="center">Installation progress</th>
+</tr>
+%%TABLE_PROGRESS%%
+<tr>
+ <td>
+  <img class="%%CLASS_DONE%%" src="theme/default/pango/sign-ok-16.png" 
+   alt="+" />
+  <img class="%%CLASS_ACTIVE%%" src="theme/default/pango/service-start-16.png" 
+   alt="&raquo;">
+  <img class="%%CLASS_FAILED%%" src="theme/default/pango/sign-notok-16.png" 
+   alt="X">
+ </td>
+ <td>%%PROG_NAME%%</td>
+ <td>%%PROG_TASKS%%</td>
+</tr>
+<tr class="%%CLASS_DEBUG%%">
+ <td colspan="3">
+  <pre style="font-size:85%; color:grey">cmd: %%PROG_COMMAND%%
+rv: %%PROG_RV%%
+error: %%PROG_OUTPUT%%</pre>
+ </td>
+</tr>
+%%TABLE_PROGRESS_END%%
+</table>
+</div><!-- progress -->
+
