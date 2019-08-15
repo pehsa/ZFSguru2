@@ -1,12 +1,7 @@
-
-td.imagecolumn
-{
-width:1px;
-vertical-align:middle;
+td.imagecolumn {
+	width: 1px;
+	vertical-align: middle;
 }
-
-td.imagecolumn img
-{
-margin:2px 2px;
+td.imagecolumn img {
+	margin: 2px 2px;
 }
-

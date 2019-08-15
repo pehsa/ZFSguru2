@@ -1,68 +1,43 @@
-
 /* service panels */
 
-table.servicepanels tr td
-{
-border:0 !important;
+table.servicepanels tr td {
+	border: 0 !important;
 }
-
-table.servicepanels tr td a img
-{
-max-height:64px;
+table.servicepanels tr td a img {
+	max-height: 64px;
 }
-
-table.servicepanels tr td a:hover img
-{
-box-shadow:10px 10px 5px #888888;
+table.servicepanels tr td a:hover img {
+	box-shadow: 10px 10px 5px #888888;
 }
-
-
-
 /* service list */
 
-table.servicemanagetable tr th
-{
-text-align:center;
+table.servicemanagetable tr th {
+	text-align: center;
 }
-
-table.servicemanagetable
-{
-text-align:center;
+table.servicemanagetable {
+	text-align: center;
 }
-
-td.servicename
-{
-text-align:left;
+td.servicename {
+	text-align: left;
 }
-
-td.servicename img
-{
-float:left;
-height:16px;
-margin-right:4px;
+td.servicename img {
+	float: left;
+	height: 16px;
+	margin-right: 4px;
 }
-
-td.service_cat
-{
-color:#222;
-font-variant:small-caps;
-text-transform:lowercase;
+td.service_cat {
+	color: #222;
+	font-variant: small-caps;
+	text-transform: lowercase;
 }
-
-td.serviceupgrade a, td.serviceupgrade a:visited
-{
-text-decoration:none;
+td.serviceupgrade a, td.serviceupgrade a:visited {
+	text-decoration: none;
 }
-
-td.serviceupgrade a:hover
-{
-color:#00f;
-text-decoration:none !important;
+td.serviceupgrade a:hover {
+	color: #00f;
+	text-decoration: none !important;
 }
-
-td.serviceupgrade img
-{
-border:0;
-vertical-align:top;
+td.serviceupgrade img {
+	border: 0;
+	vertical-align: top;
 }
-

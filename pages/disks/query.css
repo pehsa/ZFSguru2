@@ -1,567 +1,441 @@
-
 /* disk image and name */
 
-td.diskname
-{
-vertical-align:middle;
+td.diskname {
+	vertical-align: middle;
 }
-
-td.diskname img
-{
-max-height:16px;
-margin:0 4px;
-vertical-align:middle;
+td.diskname img {
+	max-height: 16px;
+	margin: 0 4px;
+	vertical-align: middle;
 }
-
-
 /* identification */
 
-td.disk_identstring
-{
-font-size:90%;
-color:#444;
+td.disk_identstring {
+	font-size: 90%;
+	color: #444;
 }
-
-
 /* sector size */
 
-td.disk_sector_normal
-{
-color:grey;
+td.disk_sector_normal {
+	color: grey;
 }
-
-
 /* exclusive to query page: */
 
 /* display all disks */
 
-tr.displayalldisks
-{
-line-height:85%;
+tr.displayalldisks {
+	line-height: 85%;
 }
-
-tr.displayalldisks th
-{
-padding:2px 4px !important;
+tr.displayalldisks th {
+	padding: 2px 4px !important;
 }
-
-tr.displayalldisks th a, tr.displayalldisks th a:visited
-{
-color:#eee;
-font-size:85%;
-text-decoration:none;
+tr.displayalldisks th a, tr.displayalldisks th a:visited {
+	color: #eee;
+	font-size: 85%;
+	text-decoration: none;
 }
-
-tr.displayalldisks th a:hover
-{
-color:#fff;
-text-decoration:underline;
+tr.displayalldisks th a:hover {
+	color: #fff;
+	text-decoration: underline;
 }
-
-
 /* partition map */
 
-div.partition_map_top
-{
-color:#666;
-background:#eee;
-padding:2px;
-font-weight:bold;
-font-size:85%;
-text-align:center;
-border:1px solid #666;
-border-bottom:0;
--moz-border-radius:10px 10px 0 0;
--webkit-border-radius:10px 10px 0 0;
-border-radius:10px 10px 0 0;
+div.partition_map_top {
+	color: #666;
+	background: #eee;
+	padding: 2px;
+	font-weight: bold;
+	font-size: 85%;
+	text-align: center;
+	border: 1px solid #666;
+	border-bottom: 0;
+	-moz-border-radius: 10px 10px 0 0;
+	-webkit-border-radius: 10px 10px 0 0;
+	border-radius: 10px 10px 0 0;
 }
-
-div.partition_map_top a
-{
-color:#666;
-display:block;
+div.partition_map_top a {
+	color: #666;
+	display: block;
 }
-
-div.partition_map_top a:hover
-{
-color:#444;
-text-decoration:none;
+div.partition_map_top a:hover {
+	color: #444;
+	text-decoration: none;
 }
-
-div.partition_map_top:hover
-{
-background:#dadada;
+div.partition_map_top:hover {
+	background: #dadada;
 }
-
-div.partition_map
-{
-display:table;
-width:100%;
-background:#666;
-padding-right:1px;
--moz-box-sizing:border-box;
-box-sizing:border-box;
+div.partition_map {
+	display: table;
+	width: 100%;
+	background: #666;
+	padding-right: 1px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
-
-div.partition_map div
-{
-display:table-cell;
+div.partition_map div {
+	display: table-cell;
 }
-
-div.partition_map a, div.partition_map a:visited
-{
-display:block;
-min-width:6.5em;
-height:60px;
-margin:1px 0 1px 1px;
-padding:6px 8px;
-overflow:hidden;
--moz-box-sizing:border-box;
-box-sizing:border-box;
-background:#d6f;
-background-image: -moz-linear-gradient(#eaf, #bf9);
-background-image: -webkit-linear-gradient(#eaf, #bf9);
-background-image: -o-linear-gradient(#eaf, #bf9);
-background-image: -ms-linear-gradient(#eaf, #bf9);
+div.partition_map a, div.partition_map a:visited {
+	display: block;
+	min-width: 6.5em;
+	height: 60px;
+	margin: 1px 0 1px 1px;
+	padding: 6px 8px;
+	overflow: hidden;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background: #d6f;
+	background-image: -moz-linear-gradient(#eaf, #bf9);
+	background-image: -webkit-linear-gradient(#eaf, #bf9);
+	background-image: -o-linear-gradient(#eaf, #bf9);
+	background-image: -ms-linear-gradient(#eaf, #bf9);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeaaff', endColorstr='#bbff99');
-background-image: linear-gradient(#eaf, #bf9);
+	background-image: linear-gradient(#eaf, #bf9);
 }
-
-div.partition_map a:hover
-{
-text-decoration:none;
-background:#9a4;
-background-image: -moz-linear-gradient(#ebf, #c5a);
-background-image: -webkit-linear-gradient(#ebf, #c5a);
-background-image: -o-linear-gradient(#ebf, #c5a);
-background-image: -ms-linear-gradient(#ebf, #c5a);
+div.partition_map a:hover {
+	text-decoration: none;
+	background: #9a4;
+	background-image: -moz-linear-gradient(#ebf, #c5a);
+	background-image: -webkit-linear-gradient(#ebf, #c5a);
+	background-image: -o-linear-gradient(#ebf, #c5a);
+	background-image: -ms-linear-gradient(#ebf, #c5a);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eebbff', endColorstr='#cc55aa');
-background-image: linear-gradient(#ebf, #c5a);
+	background-image: linear-gradient(#ebf, #c5a);
 }
-
-
 /* segment: unpartitioned */
 
-div.partition_map a.pmap_unpartitioned
-{
-text-align:center;
-min-width:7.5em;
-background:#eee;
-background-image: -moz-linear-gradient(#eee, #aaa);
-background-image: -webkit-linear-gradient(#eee, #aaa);
-background-image: -o-linear-gradient(#eee, #aaa);
-background-image: -ms-linear-gradient(#eee, #aaa);
+div.partition_map a.pmap_unpartitioned {
+	text-align: center;
+	min-width: 7.5em;
+	background: #eee;
+	background-image: -moz-linear-gradient(#eee, #aaa);
+	background-image: -webkit-linear-gradient(#eee, #aaa);
+	background-image: -o-linear-gradient(#eee, #aaa);
+	background-image: -ms-linear-gradient(#eee, #aaa);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#aaaaaa');
-background-image: linear-gradient(#eee, #aaa);
+	background-image: linear-gradient(#eee, #aaa);
 }
-
-div.partition_map a.pmap_unpartitioned span
-{
-position:relative;
-top:-0.5em;
-color:#444;
-font-style:italic;
-font-weight:bold;
-font-size:100% !important;
+div.partition_map a.pmap_unpartitioned span {
+	position: relative;
+	top: -0.5em;
+	color: #444;
+	font-style: italic;
+	font-weight: bold;
+	font-size: 100% !important;
 }
-
-div.partition_map a.pmap_unpartitioned:hover
-{
-background:#aaa;
-background-image: -moz-linear-gradient(#bbb, #777);
-background-image: -webkit-linear-gradient(#bbb, #777);
-background-image: -o-linear-gradient(#bbb, #777);
-background-image: -ms-linear-gradient(#bbb, #777);
+div.partition_map a.pmap_unpartitioned:hover {
+	background: #aaa;
+	background-image: -moz-linear-gradient(#bbb, #777);
+	background-image: -webkit-linear-gradient(#bbb, #777);
+	background-image: -o-linear-gradient(#bbb, #777);
+	background-image: -ms-linear-gradient(#bbb, #777);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#bbbbbb', endColorstr='#777777');
-background-image: linear-gradient(#bbb, #777);
+	background-image: linear-gradient(#bbb, #777);
 }
-
-
 /* segment: free */
 
-div.partition_map a.pmap_free
-{
-min-width:5.5em;
-background:#aaa;
-background-image: -moz-linear-gradient(#bbb, #888);
-background-image: -webkit-linear-gradient(#bbb, #888);
-background-image: -o-linear-gradient(#bbb, #888);
-background-image: -ms-linear-gradient(#bbb, #888);
+div.partition_map a.pmap_free {
+	min-width: 5.5em;
+	background: #aaa;
+	background-image: -moz-linear-gradient(#bbb, #888);
+	background-image: -webkit-linear-gradient(#bbb, #888);
+	background-image: -o-linear-gradient(#bbb, #888);
+	background-image: -ms-linear-gradient(#bbb, #888);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#bbbbbb', endColorstr='#888888');
-background-image: linear-gradient(#bbb, #888);
+	background-image: linear-gradient(#bbb, #888);
 }
-
-div.partition_map a.pmap_free:hover
-{
-background:#999;
-background-image: -moz-linear-gradient(#999, #777);
-background-image: -webkit-linear-gradient(#999, #777);
-background-image: -o-linear-gradient(#999, #777);
-background-image: -ms-linear-gradient(#999, #777);
+div.partition_map a.pmap_free:hover {
+	background: #999;
+	background-image: -moz-linear-gradient(#999, #777);
+	background-image: -webkit-linear-gradient(#999, #777);
+	background-image: -o-linear-gradient(#999, #777);
+	background-image: -ms-linear-gradient(#999, #777);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#777777');
-background-image: linear-gradient(#999, #777);
+	background-image: linear-gradient(#999, #777);
 }
-
-
 /* segment: geom */
 
-div.partition_map a.pmap_geom
-{
-background:#fdd;
-background-image: -moz-linear-gradient(#fd9, #f99);
-background-image: -webkit-linear-gradient(#fd9, #f99);
-background-image: -o-linear-gradient(#fd9, #f99);
-background-image: -ms-linear-gradient(#fd9, #f99);
+div.partition_map a.pmap_geom {
+	background: #fdd;
+	background-image: -moz-linear-gradient(#fd9, #f99);
+	background-image: -webkit-linear-gradient(#fd9, #f99);
+	background-image: -o-linear-gradient(#fd9, #f99);
+	background-image: -ms-linear-gradient(#fd9, #f99);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdd99', endColorstr='#ff9999');
-background-image: linear-gradient(#fd9, #f99);
+	background-image: linear-gradient(#fd9, #f99);
 }
-
-div.partition_map a.pmap_geom:hover
-{
-background:#dcc;
-background-image: -moz-linear-gradient(#fc9, #f77);
-background-image: -webkit-linear-gradient(#fc9, #f77);
-background-image: -o-linear-gradient(#fc9, #f77);
-background-image: -ms-linear-gradient(#fc9, #f77);
+div.partition_map a.pmap_geom:hover {
+	background: #dcc;
+	background-image: -moz-linear-gradient(#fc9, #f77);
+	background-image: -webkit-linear-gradient(#fc9, #f77);
+	background-image: -o-linear-gradient(#fc9, #f77);
+	background-image: -ms-linear-gradient(#fc9, #f77);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcc99', endColorstr='#ff7777');
-background-image: linear-gradient(#fc9, #f77);
+	background-image: linear-gradient(#fc9, #f77);
 }
-
-
 /* segment: freebsd-boot */
 
-div.partition_map a.pmap_freebsd-boot
-{
-background:#fdd;
-background-image: -moz-linear-gradient(#fee, #fbb);
-background-image: -webkit-linear-gradient(#fee, #fbb);
-background-image: -o-linear-gradient(#fee, #fbb);
-background-image: -ms-linear-gradient(#fee, #fbb);
+div.partition_map a.pmap_freebsd-boot {
+	background: #fdd;
+	background-image: -moz-linear-gradient(#fee, #fbb);
+	background-image: -webkit-linear-gradient(#fee, #fbb);
+	background-image: -o-linear-gradient(#fee, #fbb);
+	background-image: -ms-linear-gradient(#fee, #fbb);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeee', endColorstr='#ffbbbb');
-background-image: linear-gradient(#fee, #fbb);
+	background-image: linear-gradient(#fee, #fbb);
 }
-
-div.partition_map a.pmap_freebsd-boot:hover
-{
-background:#dcc;
-background-image: -moz-linear-gradient(#dcc, #d99);
-background-image: -webkit-linear-gradient(#dcc, #d99);
-background-image: -o-linear-gradient(#dcc, #d99);
-background-image: -ms-linear-gradient(#dcc, #d99);
+div.partition_map a.pmap_freebsd-boot:hover {
+	background: #dcc;
+	background-image: -moz-linear-gradient(#dcc, #d99);
+	background-image: -webkit-linear-gradient(#dcc, #d99);
+	background-image: -o-linear-gradient(#dcc, #d99);
+	background-image: -ms-linear-gradient(#dcc, #d99);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ddcccc', endColorstr='#dd9999');
-background-image: linear-gradient(#dcc, #d99);
+	background-image: linear-gradient(#dcc, #d99);
 }
-
-
 /* segment: freebsd-zfs */
 
-div.partition_map a.pmap_freebsd-zfs
-{
-background:#aea;
-background-image: -moz-linear-gradient(#aea, #6b6);
-background-image: -webkit-linear-gradient(#aea, #6b6);
-background-image: -o-linear-gradient(#aea, #6b6);
-background-image: -ms-linear-gradient(#aea, #6b6);
+div.partition_map a.pmap_freebsd-zfs {
+	background: #aea;
+	background-image: -moz-linear-gradient(#aea, #6b6);
+	background-image: -webkit-linear-gradient(#aea, #6b6);
+	background-image: -o-linear-gradient(#aea, #6b6);
+	background-image: -ms-linear-gradient(#aea, #6b6);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aaeeaa', endColorstr='#66bb66');
-background-image: linear-gradient(#aea, #6b6);
+	background-image: linear-gradient(#aea, #6b6);
 }
-
-div.partition_map a.pmap_freebsd-zfs:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#9d9, #5a5);
-background-image: -webkit-linear-gradient(#9d9, #5a5);
-background-image: -o-linear-gradient(#9d9, #5a5);
-background-image: -ms-linear-gradient(#9d9, #5a5);
+div.partition_map a.pmap_freebsd-zfs:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#9d9, #5a5);
+	background-image: -webkit-linear-gradient(#9d9, #5a5);
+	background-image: -o-linear-gradient(#9d9, #5a5);
+	background-image: -ms-linear-gradient(#9d9, #5a5);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#99dd99', endColorstr='#55aa55');
-background-image: linear-gradient(#9d9, #5a5);
+	background-image: linear-gradient(#9d9, #5a5);
 }
-
-
 /* MBR segment: freebsd */
 
-div.partition_map a.pmap_freebsd
-{
-background:#aea;
-background-image: -moz-linear-gradient(#aea, #6b6);
-background-image: -webkit-linear-gradient(#aea, #6b6);
-background-image: -o-linear-gradient(#aea, #6b6);
-background-image: -ms-linear-gradient(#aea, #6b6);
+div.partition_map a.pmap_freebsd {
+	background: #aea;
+	background-image: -moz-linear-gradient(#aea, #6b6);
+	background-image: -webkit-linear-gradient(#aea, #6b6);
+	background-image: -o-linear-gradient(#aea, #6b6);
+	background-image: -ms-linear-gradient(#aea, #6b6);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aaeeaa', endColorstr='#66bb66');
-background-image: linear-gradient(#aea, #6b6);
+	background-image: linear-gradient(#aea, #6b6);
 }
-
-div.partition_map a.pmap_freebsd:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#9d9, #5a5);
-background-image: -webkit-linear-gradient(#9d9, #5a5);
-background-image: -o-linear-gradient(#9d9, #5a5);
-background-image: -ms-linear-gradient(#9d9, #5a5);
+div.partition_map a.pmap_freebsd:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#9d9, #5a5);
+	background-image: -webkit-linear-gradient(#9d9, #5a5);
+	background-image: -o-linear-gradient(#9d9, #5a5);
+	background-image: -ms-linear-gradient(#9d9, #5a5);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#99dd99', endColorstr='#55aa55');
-background-image: linear-gradient(#9d9, #5a5);
+	background-image: linear-gradient(#9d9, #5a5);
 }
-
-
 /* MBR segment: linux */
 
-div.partition_map a.pmap_linux
-{
-background:#eeb;
-background-image: -moz-linear-gradient(#ddf, #88e);
-background-image: -webkit-linear-gradient(#ddf, #88e);
-background-image: -o-linear-gradient(#ddf, #88e);
-background-image: -ms-linear-gradient(#ddf, #88e);
+div.partition_map a.pmap_linux {
+	background: #eeb;
+	background-image: -moz-linear-gradient(#ddf, #88e);
+	background-image: -webkit-linear-gradient(#ddf, #88e);
+	background-image: -o-linear-gradient(#ddf, #88e);
+	background-image: -ms-linear-gradient(#ddf, #88e);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ddddff', endColorstr='#8888ee');
-background-image: linear-gradient(#ddf, #88e);
+	background-image: linear-gradient(#ddf, #88e);
 }
-
-div.partition_map a.pmap_linux:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#ccf, #77e);
-background-image: -webkit-linear-gradient(#ccf, #77e);
-background-image: -o-linear-gradient(#ccf, #77e);
-background-image: -ms-linear-gradient(#ccf, #77e);
+div.partition_map a.pmap_linux:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#ccf, #77e);
+	background-image: -webkit-linear-gradient(#ccf, #77e);
+	background-image: -o-linear-gradient(#ccf, #77e);
+	background-image: -ms-linear-gradient(#ccf, #77e);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ccccff', endColorstr='#7777ee');
-background-image: linear-gradient(#ccf, #77e);
+	background-image: linear-gradient(#ccf, #77e);
 }
-
-
 /* MBR segment: linux-swap */
 
-div.partition_map a.pmap_linux-swap
-{
-background:#eeb;
-background-image: -moz-linear-gradient(#aad, #55d);
-background-image: -webkit-linear-gradient(#aad, #55d);
-background-image: -o-linear-gradient(#aad, #55d);
-background-image: -ms-linear-gradient(#aad, #55d);
+div.partition_map a.pmap_linux-swap {
+	background: #eeb;
+	background-image: -moz-linear-gradient(#aad, #55d);
+	background-image: -webkit-linear-gradient(#aad, #55d);
+	background-image: -o-linear-gradient(#aad, #55d);
+	background-image: -ms-linear-gradient(#aad, #55d);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aaaadd', endColorstr='#5555dd');
-background-image: linear-gradient(#aad, #55d);
+	background-image: linear-gradient(#aad, #55d);
 }
-
-div.partition_map a.pmap_linux-swap:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#88d, #44d);
-background-image: -webkit-linear-gradient(#88d, #44d);
-background-image: -o-linear-gradient(#88d, #44d);
-background-image: -ms-linear-gradient(#88d, #44d);
+div.partition_map a.pmap_linux-swap:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#88d, #44d);
+	background-image: -webkit-linear-gradient(#88d, #44d);
+	background-image: -o-linear-gradient(#88d, #44d);
+	background-image: -ms-linear-gradient(#88d, #44d);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8888dd', endColorstr='#4444dd');
-background-image: linear-gradient(#88d, #44d);
+	background-image: linear-gradient(#88d, #44d);
 }
-
-
 /* MBR segment: fat32 */
 
-div.partition_map a.pmap_fat32
-{
-background:#eeb;
-background-image: -moz-linear-gradient(#fdf, #e8e);
-background-image: -webkit-linear-gradient(#fdf, #e8e);
-background-image: -o-linear-gradient(#fdf, #e8e);
-background-image: -ms-linear-gradient(#fdf, #e8e);
+div.partition_map a.pmap_fat32 {
+	background: #eeb;
+	background-image: -moz-linear-gradient(#fdf, #e8e);
+	background-image: -webkit-linear-gradient(#fdf, #e8e);
+	background-image: -o-linear-gradient(#fdf, #e8e);
+	background-image: -ms-linear-gradient(#fdf, #e8e);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffddff', endColorstr='#ee88ee');
-background-image: linear-gradient(#fdf, #e8e);
+	background-image: linear-gradient(#fdf, #e8e);
 }
-
-div.partition_map a.pmap_fat32:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#fcf, #c6c);
-background-image: -webkit-linear-gradient(#fcf, #c6c);
-background-image: -o-linear-gradient(#fcf, #c6c);
-background-image: -ms-linear-gradient(#fcf, #c6c);
+div.partition_map a.pmap_fat32:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#fcf, #c6c);
+	background-image: -webkit-linear-gradient(#fcf, #c6c);
+	background-image: -o-linear-gradient(#fcf, #c6c);
+	background-image: -ms-linear-gradient(#fcf, #c6c);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffccff', endColorstr='#cc66cc');
-background-image: linear-gradient(#fcf, #c6c);
+	background-image: linear-gradient(#fcf, #c6c);
 }
-
-
 /* MBR segment: ntfs */
 
-div.partition_map a.pmap_ntfs
-{
-background:#eeb;
-background-image: -moz-linear-gradient(#ddf, #8ee);
-background-image: -webkit-linear-gradient(#ddf, #8ee);
-background-image: -o-linear-gradient(#ddf, #8ee);
-background-image: -ms-linear-gradient(#ddf, #8ee);
+div.partition_map a.pmap_ntfs {
+	background: #eeb;
+	background-image: -moz-linear-gradient(#ddf, #8ee);
+	background-image: -webkit-linear-gradient(#ddf, #8ee);
+	background-image: -o-linear-gradient(#ddf, #8ee);
+	background-image: -ms-linear-gradient(#ddf, #8ee);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ddddff', endColorstr='#88eeee');
-background-image: linear-gradient(#ddf, #8ee);
+	background-image: linear-gradient(#ddf, #8ee);
 }
-
-div.partition_map a.pmap_ntfs:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#ccf, #7ee);
-background-image: -webkit-linear-gradient(#ccf, #7ee);
-background-image: -o-linear-gradient(#ccf, #7ee);
-background-image: -ms-linear-gradient(#ccf, #7ee);
+div.partition_map a.pmap_ntfs:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#ccf, #7ee);
+	background-image: -webkit-linear-gradient(#ccf, #7ee);
+	background-image: -o-linear-gradient(#ccf, #7ee);
+	background-image: -ms-linear-gradient(#ccf, #7ee);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ccccff', endColorstr='#77eeee');
-background-image: linear-gradient(#ccf, #7ee);
+	background-image: linear-gradient(#ccf, #7ee);
 }
-
-
 /* MBR segment: solaris */
 
-div.partition_map a.pmap_solaris
-{
-background:#aea;
-background-image: -moz-linear-gradient(#d99, #d55);
-background-image: -webkit-linear-gradient(#d99, #d55);
-background-image: -o-linear-gradient(#d99, #d55);
-background-image: -ms-linear-gradient(#d99, #d55);
+div.partition_map a.pmap_solaris {
+	background: #aea;
+	background-image: -moz-linear-gradient(#d99, #d55);
+	background-image: -webkit-linear-gradient(#d99, #d55);
+	background-image: -o-linear-gradient(#d99, #d55);
+	background-image: -ms-linear-gradient(#d99, #d55);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dd9999', endColorstr='#dd5555');
-background-image: linear-gradient(#d99, #d55);
+	background-image: linear-gradient(#d99, #d55);
 }
-
-div.partition_map a.pmap_solaris:hover
-{
-background:#9d9;
-background-image: -moz-linear-gradient(#d88, #d44);
-background-image: -webkit-linear-gradient(#d88, #d44);
-background-image: -o-linear-gradient(#d88, #d44);
-background-image: -ms-linear-gradient(#d88, #d44);
+div.partition_map a.pmap_solaris:hover {
+	background: #9d9;
+	background-image: -moz-linear-gradient(#d88, #d44);
+	background-image: -webkit-linear-gradient(#d88, #d44);
+	background-image: -o-linear-gradient(#d88, #d44);
+	background-image: -ms-linear-gradient(#d88, #d44);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dd8888', endColorstr='#dd4444');
-background-image: linear-gradient(#d88, #d44);
+	background-image: linear-gradient(#d88, #d44);
 }
-
-
 /* generic segment style */
 
-div.partition_map a span
-{
-color:#333;
-font-size:85%;
+div.partition_map a span {
+	color: #333;
+	font-size: 85%;
 }
-
-div.partition_map a.pmap_selected, div.partition_map a.pmap_selected:visited
-{
-background:#99d;
-background-image: -moz-linear-gradient(#99d, #fbb);
-background-image: -webkit-linear-gradient(#99d, #fbb);
-background-image: -o-linear-gradient(#99d, #fbb);
-background-image: -ms-linear-gradient(#99d, #fbb);
+div.partition_map a.pmap_selected, div.partition_map a.pmap_selected:visited {
+	background: #99d;
+	background-image: -moz-linear-gradient(#99d, #fbb);
+	background-image: -webkit-linear-gradient(#99d, #fbb);
+	background-image: -o-linear-gradient(#99d, #fbb);
+	background-image: -ms-linear-gradient(#99d, #fbb);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#9999dd', endColorstr='#ffbbbb');
-background-image: linear-gradient(#99d, #fbb);
+	background-image: linear-gradient(#99d, #fbb);
 }
-
-div.partition_map a.pmap_selected:hover
-{
-background:#88d;
-background-image: -moz-linear-gradient(#88d, #faa);
-background-image: -webkit-linear-gradient(#88d, #faa);
-background-image: -o-linear-gradient(#88d, #faa);
-background-image: -ms-linear-gradient(#88d, #faa);
+div.partition_map a.pmap_selected:hover {
+	background: #88d;
+	background-image: -moz-linear-gradient(#88d, #faa);
+	background-image: -webkit-linear-gradient(#88d, #faa);
+	background-image: -o-linear-gradient(#88d, #faa);
+	background-image: -ms-linear-gradient(#88d, #faa);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8888dd', endColorstr='#ffaaaa');
-background-image: linear-gradient(#88d, #faa);
+	background-image: linear-gradient(#88d, #faa);
 }
-
-
 /* segment options */
 
-div.segmentoptions
-{
-color:#444;
-font-weight:bold;
-font-size:85%;
-text-align:left;
-padding:10px 20px;
-border-left:1px solid #666;
-border-right:1px solid #666;
-border-top:0;
-border-bottom:1px solid #999;
-background:#ddd;
-background-image: -moz-linear-gradient(#f1f1f1, #d1d1d1);
-background-image: -webkit-linear-gradient(#f1f1f1, #d1d1d1);
-background-image: -o-linear-gradient(#f1f1f1, #d1d1d1);
-background-image: -ms-linear-gradient(#f1f1f1, #d1d1d1);
+div.segmentoptions {
+	color: #444;
+	font-weight: bold;
+	font-size: 85%;
+	text-align: left;
+	padding: 10px 20px;
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+	border-top: 0;
+	border-bottom: 1px solid #999;
+	background: #ddd;
+	background-image: -moz-linear-gradient(#f1f1f1, #d1d1d1);
+	background-image: -webkit-linear-gradient(#f1f1f1, #d1d1d1);
+	background-image: -o-linear-gradient(#f1f1f1, #d1d1d1);
+	background-image: -ms-linear-gradient(#f1f1f1, #d1d1d1);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f1f1f1', endColorstr='#d1d1d1');
-background-image: linear-gradient(#f1f1f1, #d1d1d1);
+	background-image: linear-gradient(#f1f1f1, #d1d1d1);
 }
-
-div.segmentoptions table td
-{
+div.segmentoptions table td {
 }
-
-div.segmentoptions table tr td
-{
-background:transparent;
-padding:2px;
+div.segmentoptions table tr td {
+	background: transparent;
+	padding: 2px;
 }
-
-div.segmentoptions input
-{
-width:200px;
+div.segmentoptions input {
+	width: 200px;
 }
-
-div.segmentoptions select
-{
-width:205px;
+div.segmentoptions select {
+	width: 205px;
 }
-
-
 /* segment in use */
 
-div.seg_inuse
-{
-font-size:110%;
-margin:15px 0 0 0;
+div.seg_inuse {
+	font-size: 110%;
+	margin: 15px 0 0 0;
 }
-
-
 /* segment displayed/hidden bar at the bottom */
 
-a.segmentdisplayed, a.segmentdisplayed:visited
-{
-display:block;
-color:#444;
-background:#aaa;
-padding:2px;
-font-weight:bold;
-font-size:85%;
-text-align:center;
-border:1px solid #666;
-border-top:0;
--moz-border-radius:0 0 10px 10px;
--webkit-border-radius:0 0 10px 10px;
-border-radius:0 0 10px 10px;
+a.segmentdisplayed, a.segmentdisplayed:visited {
+	display: block;
+	color: #444;
+	background: #aaa;
+	padding: 2px;
+	font-weight: bold;
+	font-size: 85%;
+	text-align: center;
+	border: 1px solid #666;
+	border-top: 0;
+	-moz-border-radius: 0 0 10px 10px;
+	-webkit-border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
 }
-
-a.segmentdisplayed:hover
-{
-color:#222;
-background:#999;
-text-decoration:none;
+a.segmentdisplayed:hover {
+	color: #222;
+	background: #999;
+	text-decoration: none;
 }
-
-div.segmenthidden
-{
-color:#666;
-background:#bbb;
-padding:2px;
-font-weight:bold;
-font-size:85%;
-text-align:center;
-border:1px solid #666;
-border-top:0;
--moz-border-radius:0 0 10px 10px;
--webkit-border-radius:0 0 10px 10px;
-border-radius:0 0 10px 10px;
+div.segmenthidden {
+	color: #666;
+	background: #bbb;
+	padding: 2px;
+	font-weight: bold;
+	font-size: 85%;
+	text-align: center;
+	border: 1px solid #666;
+	border-top: 0;
+	-moz-border-radius: 0 0 10px 10px;
+	-webkit-border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
 }
-
-div.segmenthidden:hover
-{
-background:#b1b1b1;
+div.segmenthidden:hover {
+	background: #b1b1b1;
 }
-
-tr.pmap_destroyscheme td
-{
-color:#eee;
-background:#777 !important;
-border:1px solid #666;
-padding:10px !important;
-margin-top:420px !important;
+tr.pmap_destroyscheme td {
+	color: #eee;
+	background: #777 !important;
+	border: 1px solid #666;
+	padding: 10px !important;
+	margin-top: 420px !important;
 }
-

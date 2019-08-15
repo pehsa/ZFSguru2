@@ -1,130 +1,98 @@
-
 /* navibox */
 
-div.svc_navibox
-{
-margin:10px 1px;
-padding:10px;
-color:#444;
-font-weight:bold;
-font-size:90%;
--moz-border-radius:10px;
--webkit-border-radius:10px;
-border-radius:10px;
-background:#eee;
-background-image: -moz-linear-gradient(#eee, #aaa);
-background-image: -webkit-linear-gradient(#eee, #aaa);
-background-image: -o-linear-gradient(#eee, #aaa);
-background-image: -ms-linear-gradient(#eee, #aaa);
+div.svc_navibox {
+	margin: 10px 1px;
+	padding: 10px;
+	color: #444;
+	font-weight: bold;
+	font-size: 90%;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	background: #eee;
+	background-image: -moz-linear-gradient(#eee, #aaa);
+	background-image: -webkit-linear-gradient(#eee, #aaa);
+	background-image: -o-linear-gradient(#eee, #aaa);
+	background-image: -ms-linear-gradient(#eee, #aaa);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#aaaaaa');
-background-image: linear-gradient(#eee, #aaa);
+	background-image: linear-gradient(#eee, #aaa);
 }
-
-div.svc_navibox span
-{
-color:grey;
+div.svc_navibox span {
+	color: grey;
 }
-
-div.svc_navibox a, div.svc_navibox a:link, div.svc_navibox a:visited
-{
-color:#22d;
-text-decoration:none;
-font-weight:normal;
-font-size:125%;
-padding:0 4px;
+div.svc_navibox a, div.svc_navibox a:link, div.svc_navibox a:visited {
+	color: #22d;
+	text-decoration: none;
+	font-weight: normal;
+	font-size: 125%;
+	padding: 0 4px;
 }
-
-div.svc_navibox a:hover
-{
-color:#222;
+div.svc_navibox a:hover {
+	color: #222;
 }
-
-
 /* infopage */
 
-div.service_infopage
-{
-margin:10px 1px;
-padding:10px 20px;
-color:#444;
-font-weight:bold;
-font-size:100%;
--moz-border-radius:10px;
--webkit-border-radius:10px;
-border-radius:10px;
-background:#e7e7e7;
-background-image: -moz-linear-gradient(#e7e7e7, #bbb);
-background-image: -webkit-linear-gradient(#e7e7e7, #bbb);
-background-image: -o-linear-gradient(#e7e7e7, #bbb);
-background-image: -ms-linear-gradient(#e7e7e7, #bbb);
+div.service_infopage {
+	margin: 10px 1px;
+	padding: 10px 20px;
+	color: #444;
+	font-weight: bold;
+	font-size: 100%;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	background: #e7e7e7;
+	background-image: -moz-linear-gradient(#e7e7e7, #bbb);
+	background-image: -webkit-linear-gradient(#e7e7e7, #bbb);
+	background-image: -o-linear-gradient(#e7e7e7, #bbb);
+	background-image: -ms-linear-gradient(#e7e7e7, #bbb);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e7e7e7', endColorstr='#bbbbbb');
-background-image: linear-gradient(#e7e7e7, #bbb);
+	background-image: linear-gradient(#e7e7e7, #bbb);
 }
-
-div.service_infopage:hover
-{
-cursor:default;
-background:#e7e7e7;
-background-image: -moz-linear-gradient(#e7e7e7, #bbb);
-background-image: -webkit-linear-gradient(#e7e7e7, #bbb);
-background-image: -o-linear-gradient(#e7e7e7, #bbb);
-background-image: -ms-linear-gradient(#e7e7e7, #bbb);
+div.service_infopage:hover {
+	cursor: default;
+	background: #e7e7e7;
+	background-image: -moz-linear-gradient(#e7e7e7, #bbb);
+	background-image: -webkit-linear-gradient(#e7e7e7, #bbb);
+	background-image: -o-linear-gradient(#e7e7e7, #bbb);
+	background-image: -ms-linear-gradient(#e7e7e7, #bbb);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e7e7e7', endColorstr='#bbbbbb');
-background-image: linear-gradient(#e7e7e7, #bbb);
+	background-image: linear-gradient(#e7e7e7, #bbb);
 }
-
-div.service_infopage p
-{
+div.service_infopage p {
 }
-
-div.service_infopage_installed div a, div.service_infopage_installed div a:hover
-{
-color:#152;
+div.service_infopage_installed div a, div.service_infopage_installed div a:hover {
+	color: #152;
 }
-
-div.service_infopage_installed div a:hover
-{
-color:#141;
+div.service_infopage_installed div a:hover {
+	color: #141;
 }
-
-img.infopage_progress
-{
-background:#fff;
-padding:4px;
--moz-border-radius:8px;
--webkit-border-radius:8px;
-border-radius:8px;
+img.infopage_progress {
+	background: #fff;
+	padding: 4px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
 }
-
-table.infopage_sysver
-{
-text-align:left;
-font-weight:normal;
+table.infopage_sysver {
+	text-align: left;
+	font-weight: normal;
 }
-
-div.infopage_action
-{
-border-top:1px solid #444;
-border-bottom:1px solid #444;
-padding:20px 0;
-background:#fff;
-margin:20px 0;
+div.infopage_action {
+	border-top: 1px solid #444;
+	border-bottom: 1px solid #444;
+	padding: 20px 0;
+	background: #fff;
+	margin: 20px 0;
 }
-
-div.infopage_action p
-{
-margin-bottom:20px;
+div.infopage_action p {
+	margin-bottom: 20px;
 }
-
 /* availability chart */
 
-div.availabilitychart
-{
-display:block;
-overflow:scroll;
+div.availabilitychart {
+	display: block;
+	overflow: scroll;
 }
-
-div.availabilitychart table
-{
+div.availabilitychart table {
 }
-

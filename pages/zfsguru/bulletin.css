@@ -1,16 +1,11 @@
-
-div.bulletin_body
-{
-padding:8px;
-border:1px solid #aaa;
-background:#fff;
-font-size:0.9em;
-margin:10px 0;
+div.bulletin_body {
+	padding: 8px;
+	border: 1px solid #aaa;
+	background: #fff;
+	font-size: 0.9em;
+	margin: 10px 0;
 }
-
-div.bulletin_body:hover
-{
-border:1px solid #666;
-cursor:default;
+div.bulletin_body:hover {
+	border: 1px solid #666;
+	cursor: default;
 }
-

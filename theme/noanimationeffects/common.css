@@ -238,7 +238,7 @@ text-decoration:underline;
 
 tr.activerow td
 {
-font-weight:heavy;
+font-weight:900;
 background:#ddf !important;
 background-image: -moz-linear-gradient(#e1e1f1, #ccf) !important;
 background-image: -webkit-linear-gradient(#e1e1f1, #ccf) !important;
@@ -311,7 +311,7 @@ background-image: linear-gradient(#e1e1e1, #ccc) !important;
 
 tr.high td
 {
-font-weight:heavy;
+font-weight:900;
 background:#ddf !important;
 background-image: -moz-linear-gradient(#e1e1f1, #ccf) !important;
 background-image: -webkit-linear-gradient(#e1e1e1, #ccf) !important;
@@ -323,7 +323,7 @@ background-image: linear-gradient(#e1e1e1, #ccf) !important;
 
 td.high
 {
-font-weight:heavy;
+font-weight:900;
 background:#ddf !important;
 background-image: -moz-linear-gradient(#e1e1f1, #ccf) !important;
 background-image: -webkit-linear-gradient(#e1e1f1, #ccf) !important;

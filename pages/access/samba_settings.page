@@ -1,4 +1,3 @@
-
 <div class="colorbox_red %%CLASS_SAMBA_NOTRUNNING%%">
  <b>Samba</b> is currently <b>not running</b>.
  Please <a href="services.php?manage&system">start Samba</a> 
@@ -123,7 +122,6 @@
  <td>
   <select name="global-security">
    <option value="user">User-level security</option>
-   <option value="share" %%CLASS_SM_SHARE%%>Share-level security</option>
    <option value="domain" %%CLASS_SM_DOMAIN%%>Domain-level security</option>
    <option value="ads" %%CLASS_SM_ADS%%>Active Directory security</option>
    <option value="server" %%CLASS_SM_SERVER%%>Server-level security</option>

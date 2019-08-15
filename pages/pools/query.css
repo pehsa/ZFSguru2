@@ -1,77 +1,49 @@
-
 /* query specific css: */
 
 /* pool details */
 
-tr.member_normal td
-{
+tr.member_normal td {
 }
-
-tr.member_special td
-{
+tr.member_special td {
 }
-
-tr.member_main td
-{
+tr.member_main td {
 }
-
-td.status_online
-{
-color:#080;
-font-weight:bold;
+td.status_online {
+	color: #080;
+	font-weight: bold;
 }
-
-td.status_faulted
-{
-color:#f00;
-font-weight:bold;
+td.status_faulted {
+	color: #f00;
+	font-weight: bold;
 }
-
-td.status_degraded
-{
-color:#f50;
-font-weight:bold;
+td.status_degraded {
+	color: #f50;
+	font-weight: bold;
 }
-
-
 /* pool image and name */
 
-td.pool_name
-{
-padding:8px 0px !important;
-vertical-align:middle;
+td.pool_name {
+	padding: 8px 0px !important;
+	vertical-align: middle;
 }
-
-td.pool_name img
-{
-margin:0 1px 0 7px;
-vertical-align:middle;
+td.pool_name img {
+	margin: 0 1px 0 7px;
+	vertical-align: middle;
 }
-
-
 /* member disks */
 
-td.memberdisk_class
-{
-width:1px;
+td.memberdisk_class {
+	width: 1px;
 }
-
-td.memberdisk_class img
-{
-margin:3px;
+td.memberdisk_class img {
+	margin: 3px;
 }
-
-
 /* corrupted files */
 
-table.corruptedfiles tr th
-{
-color:#eee;
-background:#722;
+table.corruptedfiles tr th {
+	color: #eee;
+	background: #722;
 }
-
-table.corruptedfiles tr td
-{
-background:#edd;
+table.corruptedfiles tr td {
+	background: #edd;
 }
-

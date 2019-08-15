@@ -1,13 +1,8 @@
-
-div.diskmonitor_filterbox
-{
-padding:5px 10px;
-background:#ffd;
-border:1px solid #666;
+div.diskmonitor_filterbox {
+	padding: 5px 10px;
+	background: #ffd;
+	border: 1px solid #666;
 }
-
-input.filter
-{
-width:200px;
+input.filter {
+	width: 200px;
 }
-

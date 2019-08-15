@@ -1,314 +1,228 @@
-
 /* Widget: user drag&drop */
 
 /* user / group list */
 
-div.samba_share_userlist_container
-{
-float:right;
-width:120px;
+div.samba_share_userlist_container {
+	float: right;
+	width: 120px;
 }
-
-a.samba_share_usergrouptab, a.samba_share_usergrouptab:visited
-{
-float:left;
-width:50%;
-color:#222;
-background:#aaa;
-text-align:center;
-border-top:1px solid #666;
-border-right:1px solid #666;
-border-bottom:1px solid #666;
-padding-bottom:2px;
--moz-box-sizing:border-box;
-box-sizing:border-box;
+a.samba_share_usergrouptab, a.samba_share_usergrouptab:visited {
+	float: left;
+	width: 50%;
+	color: #222;
+	background: #aaa;
+	text-align: center;
+	border-top: 1px solid #666;
+	border-right: 1px solid #666;
+	border-bottom: 1px solid #666;
+	padding-bottom: 2px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
-
-a.samba_share_usergrouptab:hover
-{
-background:#ddd;
+a.samba_share_usergrouptab:hover {
+	background: #ddd;
 }
-
-a.samba_share_usergrouptab:first-child
-{
-border-left:1px solid #666;
+a.samba_share_usergrouptab:first-child {
+	border-left: 1px solid #666;
 }
-
-a.samba_share_usergrouptab_active, a.samba_share_usergrouptab_active:visited
-{
-color:#00e;
-background:#bbb;
+a.samba_share_usergrouptab_active, a.samba_share_usergrouptab_active:visited {
+	color: #00e;
+	background: #bbb;
 }
-
-div.samba_share_userlist, div.samba_share_grouplist
-{
-display:none;
-height:400px;
-overflow:scroll;
-text-align:center;
-background:#ddd;
-clear:both;
-padding-top:10px;
-border-left:1px solid #bbb;
-border-right:1px solid #ddd;
-border-bottom:1px solid #ddd;
+div.samba_share_userlist, div.samba_share_grouplist {
+	display: none;
+	height: 400px;
+	overflow: scroll;
+	text-align: center;
+	background: #ddd;
+	clear: both;
+	padding-top: 10px;
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
 }
-
-div.samba_share_userlist_active, div.samba_share_grouplist_active
-{
-display:block;
+div.samba_share_userlist_active, div.samba_share_grouplist_active {
+	display: block;
 }
-
-div.samba_share_accesslists
-{
+div.samba_share_accesslists {
 }
-
-div.samba_share_accesslists h2
-{
-margin:10px 0 0 0;
+div.samba_share_accesslists h2 {
+	margin: 10px 0 0 0;
 }
-
-div.samba_share_advanced
-{
+div.samba_share_advanced {
 }
-
-div.samba_share_advanced:hover div
-{
+div.samba_share_advanced:hover div {
 /*display:block;*/
 }
-
-div.samba_share_advanced div
-{
+div.samba_share_advanced div {
 /*display:none;*/
 }
-
 /* grouptitle used on page Access->Users */
 
-div.sambagrouptitle, div.sambagrouptitle_special
-{
-display:table-cell;
-background:#777;
-color:#ddd;
-font-weight:bold;
-font-size:110%;
-padding:3px 30px;
-border-radius:10px;
-cursor:default;
--khtml-user-select:none;
--moz-user-select:none;
--ms-user-select:none;
--webkit-touch-callout:none;
--webkit-user-select:none;
-user-select:none;
-line-height:170%;
+div.sambagrouptitle, div.sambagrouptitle_special {
+	display: table-cell;
+	background: #777;
+	color: #ddd;
+	font-weight: bold;
+	font-size: 110%;
+	padding: 3px 30px;
+	border-radius: 10px;
+	cursor: default;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	user-select: none;
+	line-height: 170%;
 }
-
-div.sambagrouptitle:hover, div.sambagrouptitle_special:hover
-{
-color:#ffe;
+div.sambagrouptitle:hover, div.sambagrouptitle_special:hover {
+	color: #ffe;
 }
-
-div.sambagrouptitle:hover div.sambagroupdelete
-{
-display:table-cell;
+div.sambagrouptitle:hover div.sambagroupdelete {
+	display: table-cell;
 }
-
-div.sambagrouptitle div.sambagroupdelete, 
-div.sambagrouptitle_special div.sambagroupdelete_special
-{
-display:none;
-float:right;
-overflow:hidden;
-height
+div.sambagrouptitle div.sambagroupdelete, div.sambagrouptitle_special div.sambagroupdelete_special {
+	display: none;
+	float: right;
+	overflow: hidden;
+height: auto
 }
-
-div.sambagrouptitle div.sambagroupdelete input
-{
-border:0;
-margin-left:20px;
-vertical-align:middle;
+div.sambagrouptitle div.sambagroupdelete input {
+	border: 0;
+	margin-left: 20px;
+	vertical-align: middle;
 }
-
-div.sambagroup
-{
-display:table;
-background:#eee;
+div.sambagroup {
+	display: table;
+	background: #eee;
 }
-
-div.sambaspecial
-{
-float:left;
+div.sambaspecial {
+	float: left;
 }
-
-div.sambaspacer
-{
-float:left;
-width:11px;
-height:1px;
+div.sambaspacer {
+	float: left;
+	width: 11px;
+	height: 1px;
 }
-
-div.sambabox
-{
-float:left;
-padding:0px;
-background:#ddd;
-margin:11px 0px 11px 0px;
--moz-user-select:none;
--khtml-user-select:none;
--o-user-select:none;
--webkit-user-select:none;
-user-select:none;
+div.sambabox {
+	float: left;
+	padding: 0px;
+	background: #ddd;
+	margin: 11px 0px 11px 0px;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-o-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
-
-div.sambabox:hover
-{
-background:#ccc;
+div.sambabox:hover {
+	background: #ccc;
 }
-
-div.sambaclear
-{
-clear:both;
+div.sambaclear {
+	clear: both;
 }
-
-a.sambauser
-{
-display:block;
-padding:12px;
-text-align:center;
+a.sambauser {
+	display: block;
+	padding: 12px;
+	text-align: center;
 }
-
-a.sambauser:hover
-{
-color:#d00;
-text-decoration:none;
-cursor:pointer;
+a.sambauser:hover {
+	color: #d00;
+	text-decoration: none;
+	cursor: pointer;
 }
-
-a.sambauser:hover img
-{
-opacity:1.0;
+a.sambauser:hover img {
+	opacity: 1.0;
 }
-
-a.sambauser img
-{
-opacity:0.9;
-padding-right:2px;
+a.sambauser img {
+	opacity: 0.9;
+	padding-right: 2px;
 }
-
-a.sambaguestxx, a.sambaguestxx:visited
-{
-color:#666;
+a.sambaguestxx, a.sambaguestxx:visited {
+	color: #666;
 }
-
-a.sambaguestxx:hover
-{
-color:#222;
-cursor:default;
+a.sambaguestxx:hover {
+	color: #222;
+	cursor: default;
 }
-
-a.sambaguestxx:hover img
-{
-opacity:0.8;
+a.sambaguestxx:hover img {
+	opacity: 0.8;
 }
-
-a.sambaguestxx img
-{
-opacity:0.7;
+a.sambaguestxx img {
+	opacity: 0.7;
 }
-
-a.sambaguestxx img:hover
-{
+a.sambaguestxx img:hover {
 }
-
-div.sambadrag
-{
-width:90px;
-background:#ddd;
-padding:10px;
--moz-box-sizing:border-box;
-box-sizing:border-box;
+div.sambadrag {
+	width: 90px;
+	background: #ddd;
+	padding: 10px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
-
-div.sambadrag:hover
-{
-background:#eee;
+div.sambadrag:hover {
+	background: #eee;
 }
-
-div.sambadrag div
-{
-color:#999;
-background:#eee;
-border:1px dashed #ccc;
-text-align:center;
-line-height:85px;
-cursor:default;
-font-size:85%;
-font-weight:bold;
+div.sambadrag div {
+	color: #999;
+	background: #eee;
+	border: 1px dashed #ccc;
+	text-align: center;
+	line-height: 85px;
+	cursor: default;
+	font-size: 85%;
+	font-weight: bold;
 }
-
-div.sambadrag div:hover
-{
-color:#ddd;
-background:#ddd;
-border:1px solid #ccc;
+div.sambadrag div:hover {
+	color: #ddd;
+	background: #ddd;
+	border: 1px solid #ccc;
 }
-
-div.samba_select
-{
-display:none;
-color:#320;
-border:1px solid #976;
-padding:10px;
-text-shadow:1px 1px #fc9;
-background:#ffd;
-background-image: -moz-linear-gradient(#eec, #db9);
-background-image: -webkit-linear-gradient(#eec, #db9);
-background-image: -o-linear-gradient(#eec, #db9);
-background-image: -ms-linear-gradient(#eec, #db9);
+div.samba_select {
+	display: none;
+	color: #320;
+	border: 1px solid #976;
+	padding: 10px;
+	text-shadow: 1px 1px #fc9;
+	background: #ffd;
+	background-image: -moz-linear-gradient(#eec, #db9);
+	background-image: -webkit-linear-gradient(#eec, #db9);
+	background-image: -o-linear-gradient(#eec, #db9);
+	background-image: -ms-linear-gradient(#eec, #db9);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeecc', endColorstr='#ddbb99');
-background-image: linear-gradient(#eec, #db9);
+	background-image: linear-gradient(#eec, #db9);
 }
-
-div.samba_select input.textbox
-{
-width:150px;
-margin-left:40px;
+div.samba_select input.textbox {
+	width: 150px;
+	margin-left: 40px;
 }
-
-div.samba_addgroup
-{
-padding:6px 26px;
-color:#eee;
-border-radius:20px;
-margin-bottom:20px;
-font-weight:bold;
-background:#777;
-background-image: -moz-linear-gradient(#999, #666);
-background-image: -webkit-linear-gradient(#999, #666);
-background-image: -o-linear-gradient(#999, #666);
-background-image: -ms-linear-gradient(#999, #666);
+div.samba_addgroup {
+	padding: 6px 26px;
+	color: #eee;
+	border-radius: 20px;
+	margin-bottom: 20px;
+	font-weight: bold;
+	background: #777;
+	background-image: -moz-linear-gradient(#999, #666);
+	background-image: -webkit-linear-gradient(#999, #666);
+	background-image: -o-linear-gradient(#999, #666);
+	background-image: -ms-linear-gradient(#999, #666);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#999999', endColorstr='#666666');
-background-image: linear-gradient(#999, #666);
+	background-image: linear-gradient(#999, #666);
 }
-
-div.samba_addgroup:hover
-{
-color:#ffe;
+div.samba_addgroup:hover {
+	color: #ffe;
 }
-
-div.samba_addgroup input
-{
-margin-right:10px;
+div.samba_addgroup input {
+	margin-right: 10px;
 }
-
-div.samba_addgroup span
-{
-cursor:default;
--khtml-user-select:none;
--moz-user-select:none;
--ms-user-select:none;
--webkit-touch-callout:none;
--webkit-user-select:none;
-user-select:none;
+div.samba_addgroup span {
+	cursor: default;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
-

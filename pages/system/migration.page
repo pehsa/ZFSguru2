@@ -184,7 +184,7 @@ Each square represents one profile; click a profile for more options.
   Samba configuration
  </td>
  <td>%%SIZE_SAMBA%%</td>
- <td class="grey">/usr/local/etc/samba, /usr/local/etc/smb.conf</td>
+ <td class="grey">/var/db/samba4/private/, /usr/local/etc/smb4.conf</td>
 </tr><tr>
  <td>
   <input type="checkbox" name="mig_cfg_pf" />
