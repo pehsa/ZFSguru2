@@ -1,111 +1,84 @@
-
 /* headbox */
 
-div.install_headbox
-{
-margin-top:2px !important;
+div.install_headbox {
+	margin-top: 2px !important;
 }
-
-div.install_headbox div
-{
-display:table-cell;
-vertical-align:middle;
-padding:0 6px;
-line-height:160%;
+div.install_headbox div {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 0 6px;
+	line-height: 160%;
 }
-
-#installok:active
-{
-width:0;
-height:0;
-padding:32px;
-background:url(/theme/default/pango/love-64.png);
+#installok:active {
+	width: 0;
+	height: 0;
+	padding: 32px;
+	background: url(/theme/default/pango/love-64.png);
 }
-
-#installfailed:active
-{
-width:0;
-height:0;
-padding:32px;
-background:url(/theme/default/pango/installation-cry-64.png);
+#installfailed:active {
+	width: 0;
+	height: 0;
+	padding: 32px;
+	background: url(/theme/default/pango/installation-cry-64.png);
 }
-
-
 /* installation running */
 
-div.install_progress
-{
-text-align:center;
-padding:6px;
-background:#fff;
-border-top:2px solid #666;
-border-bottom:2px solid #666;
+div.install_progress {
+	text-align: center;
+	padding: 6px;
+	background: #fff;
+	border-top: 2px solid #666;
+	border-bottom: 2px solid #666;
 }
-
-div.install_progress p
-{
-margin:0;
-padding:0;
+div.install_progress p {
+	margin: 0;
+	padding: 0;
 }
-
-pre.install_output
-{
-color:#333;
+pre.install_output {
+	color: #333;
 }
-
-
 /* reboot button */
 
-table.dragontable
-{
-width:100%;
-background:white;
-text-align:center;
-border-top:2px solid #622;
-border-bottom:2px solid #622;
+table.dragontable {
+	width: 100%;
+	background: white;
+	text-align: center;
+	border-top: 2px solid #622;
+	border-bottom: 2px solid #622;
 }
-
-table.dragontable img
-{
-padding:0 6px;
+table.dragontable img {
+	padding: 0 6px;
 }
-
-input.reboot
-{
-color:#444;
-font-size:120%;
-font-weight:bold;
-text-decoration:none;
-padding:6px 10px;
-border:2px solid #424;
--moz-border-radius:10px;
--webkit-border-radius:10px;
-border-radius:10px;
-color:#dbd;
-background-image: -moz-linear-gradient(#b55b8d, #24121b);
-background-image: -webkit-linear-gradient(#b55b8d, #24121b);
-background-image: -o-linear-gradient(#b55b8d, #24121b);
-background-image: -ms-linear-gradient(#b55b8d, #24121b);
+input.reboot {
+	color: #444;
+	font-size: 120%;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 6px 10px;
+	border: 2px solid #424;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	color: #dbd;
+	background-image: -moz-linear-gradient(#b55b8d, #24121b);
+	background-image: -webkit-linear-gradient(#b55b8d, #24121b);
+	background-image: -o-linear-gradient(#b55b8d, #24121b);
+	background-image: -ms-linear-gradient(#b55b8d, #24121b);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b55b8d', endColorstr='#24121b');
-background-image: linear-gradient(#b55b8d, #24121b);
+	background-image: linear-gradient(#b55b8d, #24121b);
 }
-
-input.reboot:hover
-{
-cursor:pointer;
-cursor:hand;
-color:#ede;
-border:2px solid #422;
-background-image: -moz-linear-gradient(#b50a68, #240313);
-background-image: -webkit-linear-gradient(#b50a68, #240313);
-background-image: -o-linear-gradient(#b50a68, #240313);
-background-image: -ms-linear-gradient(#b50a68, #240313);
+input.reboot:hover {
+	cursor: pointer;
+	cursor: hand;
+	color: #ede;
+	border: 2px solid #422;
+	background-image: -moz-linear-gradient(#b50a68, #240313);
+	background-image: -webkit-linear-gradient(#b50a68, #240313);
+	background-image: -o-linear-gradient(#b50a68, #240313);
+	background-image: -ms-linear-gradient(#b50a68, #240313);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b50a68', endColorstr='#240313');
-background-image: linear-gradient(#b50a68, #240313);
+	background-image: linear-gradient(#b50a68, #240313);
 }
-
-input.reboot:active
-{
-color:#f00;
+input.reboot:active {
+	color: #f00;
 }
-

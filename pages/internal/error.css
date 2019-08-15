@@ -1,15 +1,9 @@
-
-p.errorbox
-{
+p.errorbox {
 }
-
-span.errorstring
-{
-color:red;
-font-weight:bold;
+span.errorstring {
+	color: red;
+	font-weight: bold;
 }
-
-span.errormessage
-{
-font-weight:bold;
+span.errormessage {
+	font-weight: bold;
 }

@@ -53,7 +53,7 @@ border:2px solid #444;
 -webkit-border-radius:10px;
 border-radius:10px;
 background-image: -moz-linear-gradient(#fff, #aaa);
-background-image: -website-linear-gradient(#fff, #aaa);
+background-image: -webkit-linear-gradient(#fff, #aaa);
 background-image: -o-linear-gradient(#fff, #aaa);
 background-image: -ms-linear-gradient(#fff, #aaa);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#aaaaaa');
@@ -78,7 +78,7 @@ letter-spacing:2px;
 font-weight:bold;
 font-size:500%;
 text-decoration:none;
-text-shadow:0px -1px 1px rgba(0,0,0,1.5);
+text-shadow:0px -1px 1px rgba(0,0,0,0.5);
 }
 
 #logotitle:hover

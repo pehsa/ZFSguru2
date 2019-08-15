@@ -1,58 +1,46 @@
-
-#zpool_create td
-{
-padding:6px 10px;
+#zpool_create td {
+	padding: 6px 10px;
 }
-
 /* create pool button */
 
-table.createpoolbutton
-{
-width:100%;
-background:white;
-text-align:center;
-border-top:2px solid #622;
-border-bottom:2px solid #622;
-margin:30px 0;
+table.createpoolbutton {
+	width: 100%;
+	background: white;
+	text-align: center;
+	border-top: 2px solid #622;
+	border-bottom: 2px solid #622;
+	margin: 30px 0;
 }
-
-table.createpoolbutton img
-{
-padding:0 6px;
+table.createpoolbutton img {
+	padding: 0 6px;
 }
-
-input.createpoolbutton
-{
-color:#dbd;
-font-size:120%;
-font-weight:bold;
-text-decoration:none;
-padding:6px 10px;
-border:2px solid #424;
--moz-border-radius:10px;
--webkit-border-radius:10px;
-border-radius:10px;
-background-image: -moz-linear-gradient(#b55b8d, #24121b);
-background-image: -webkit-linear-gradient(#b55b8d, #24121b);
-background-image: -o-linear-gradient(#b55b8d, #24121b);
-background-image: -ms-linear-gradient(#b55b8d, #24121b);
-background-image: linear-gradient(#b55b8d, #24121b);
+input.createpoolbutton {
+	color: #dbd;
+	font-size: 120%;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 6px 10px;
+	border: 2px solid #424;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	background-image: -moz-linear-gradient(#b55b8d, #24121b);
+	background-image: -webkit-linear-gradient(#b55b8d, #24121b);
+	background-image: -o-linear-gradient(#b55b8d, #24121b);
+	background-image: -ms-linear-gradient(#b55b8d, #24121b);
+	background-image: linear-gradient(#b55b8d, #24121b);
 }
-
-input.createpoolbutton:hover
-{
-cursor: pointer; cursor: hand;
-color:#ede;
-border:2px solid #422;
-background-image: -moz-linear-gradient(#b50a68, #240313);
-background-image: -webkit-linear-gradient(#b50a68, #240313);
-background-image: -o-linear-gradient(#b50a68, #240313);
-background-image: -ms-linear-gradient(#b50a68, #240313);
-background-image: linear-gradient(#b50a68, #240313);
+input.createpoolbutton:hover {
+	cursor: pointer;
+	cursor: hand;
+	color: #ede;
+	border: 2px solid #422;
+	background-image: -moz-linear-gradient(#b50a68, #240313);
+	background-image: -webkit-linear-gradient(#b50a68, #240313);
+	background-image: -o-linear-gradient(#b50a68, #240313);
+	background-image: -ms-linear-gradient(#b50a68, #240313);
+	background-image: linear-gradient(#b50a68, #240313);
 }
-
-input.createpoolbutton:active
-{
-color:#f00;
+input.createpoolbutton:active {
+	color: #f00;
 }
-

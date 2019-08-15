@@ -1,7 +1,5 @@
-
 /* IPv4/v6 table */
 
-table.network_iptable
-{
-width:50%;
+table.network_iptable {
+	width: 50%;
 }

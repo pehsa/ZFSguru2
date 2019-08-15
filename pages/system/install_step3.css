@@ -1,60 +1,48 @@
-
-table.installbutton
-{
-width:100%;
-background:white;
-text-align:center;
-border-top:2px solid #622;
-border-bottom:2px solid #622;
-margin-top:20px;
+table.installbutton {
+	width: 100%;
+	background: white;
+	text-align: center;
+	border-top: 2px solid #622;
+	border-bottom: 2px solid #622;
+	margin-top: 20px;
 }
-
-table.installbutton img
-{
-padding:0 6px;
+table.installbutton img {
+	padding: 0 6px;
 }
-
-input.installbutton
-{
-color:#dbd;
-font-size:120%;
-font-weight:bold;
-text-decoration:none;
-padding:6px 10px;
-border:2px solid #424;
--moz-border-radius:10px;
--webkit-border-radius:10px;
-border-radius:10px;
-background-image: -moz-linear-gradient(#b55b8d, #24121b);
-background-image: -webkit-linear-gradient(#b55b8d, #24121b);
-background-image: -o-linear-gradient(#b55b8d, #24121b);
-background-image: -ms-linear-gradient(#b55b8d, #24121b);
+input.installbutton {
+	color: #dbd;
+	font-size: 120%;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 6px 10px;
+	border: 2px solid #424;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	background-image: -moz-linear-gradient(#b55b8d, #24121b);
+	background-image: -webkit-linear-gradient(#b55b8d, #24121b);
+	background-image: -o-linear-gradient(#b55b8d, #24121b);
+	background-image: -ms-linear-gradient(#b55b8d, #24121b);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b55b8d', endColorstr='#24121b');
-background-image: linear-gradient(#b55b8d, #24121b);
+	background-image: linear-gradient(#b55b8d, #24121b);
 }
-
-input.installbutton:hover
-{
-cursor: pointer; cursor: hand;
-color:#ede;
-border:2px solid #422;
-background-image: -moz-linear-gradient(#b50a68, #240313);
-background-image: -webkit-linear-gradient(#b50a68, #240313);
-background-image: -o-linear-gradient(#b50a68, #240313);
-background-image: -ms-linear-gradient(#b50a68, #240313);
+input.installbutton:hover {
+	cursor: pointer;
+	cursor: hand;
+	color: #ede;
+	border: 2px solid #422;
+	background-image: -moz-linear-gradient(#b50a68, #240313);
+	background-image: -webkit-linear-gradient(#b50a68, #240313);
+	background-image: -o-linear-gradient(#b50a68, #240313);
+	background-image: -ms-linear-gradient(#b50a68, #240313);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b50a68', endColorstr='#240313');
-background-image: linear-gradient(#b50a68, #240313);
+	background-image: linear-gradient(#b50a68, #240313);
 }
-
-input.installbutton:active
-{
-color:#f00;
+input.installbutton:active {
+	color: #f00;
 }
-
-div.install-latin
-{
-color:grey;
-text-align:center;
-font-style:italic;
+div.install-latin {
+	color: grey;
+	text-align: center;
+	font-style: italic;
 }
-

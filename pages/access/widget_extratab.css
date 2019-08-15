@@ -1,63 +1,42 @@
-
 /* widget: extratabs */
 
-div.extratabbar
-{
-display:table;
-margin:15px 0;
+div.extratabbar {
+	display: table;
+	margin: 15px 0;
 }
-
-div.extratabbar div.et_row
-{
-display:table-row;
+div.extratabbar div.et_row {
+	display: table-row;
 }
-
-div.extratabbar div.et_row div
-{
-display:table-cell;
-background:#ddd;
+div.extratabbar div.et_row div {
+	display: table-cell;
+	background: #ddd;
 }
-
-div.extratabbar div.et_row div:first-child
-{
-border-top-left-radius:10px;
-border-bottom-left-radius:10px;
+div.extratabbar div.et_row div:first-child {
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
 }
-
-div.extratabbar div.et_row div:last-child
-{
-border-top-right-radius:10px;
-border-bottom-right-radius:10px;
+div.extratabbar div.et_row div:last-child {
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
-
-div.extratabbar div.et_row div.et_text
-{
-padding:6px 12px;
-color:#ffe;
-background:#666;
-font-size:85%;
-font-weight:bold;
+div.extratabbar div.et_row div.et_text {
+	padding: 6px 12px;
+	color: #ffe;
+	background: #666;
+	font-size: 85%;
+	font-weight: bold;
 }
-
-div.extratabbar div.et_row div.et_text:hover
-{
-background:#555;
+div.extratabbar div.et_row div.et_text:hover {
+	background: #555;
 }
-
-div.extratabbar div.et_row div.et_tab:hover
-{
-background:#ccc;
+div.extratabbar div.et_row div.et_tab:hover {
+	background: #ccc;
 }
-
-div.extratabbar div.et_row div a, div.extratabbar div.et_row div a:visited
-{
-color:#222;
-display:block;
-padding:6px 12px;
+div.extratabbar div.et_row div a, div.extratabbar div.et_row div a:visited {
+	color: #222;
+	display: block;
+	padding: 6px 12px;
 }
-
-div.extratabbar div.et_row div.et_tab_active a, div.extratabbar div.et_row div.et_tab_active a:visited
-{
-color:#00d;
+div.extratabbar div.et_row div.et_tab_active a, div.extratabbar div.et_row div.et_tab_active a:visited {
+	color: #00d;
 }
-
