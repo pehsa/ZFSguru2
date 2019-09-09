@@ -6,10 +6,10 @@
  */
 
 // include common library
-require( 'common.php' );
+require 'common.php';
 
 // start timekeeper
-timerstart( 'init' );
+timerstart('init');
 
 // start guru global array
 $guru = array();
@@ -34,7 +34,7 @@ $guru[ 'compat_max' ] = '1';
 /*
  ** Path Locations
  */
-$guru[ 'docroot' ] = realpath( dirname( __FILE__ ) . '/../' ) . '/';
+$guru[ 'docroot' ] = realpath(dirname(__FILE__) . '/../') . '/';
 $guru[ 'dev_livecd' ] = '/dev/iso9660/ZFSGURU-LIVECD';
 $guru[ 'tempdir' ] = '/tmp/';
 
@@ -59,29 +59,29 @@ $guru[ 'configuration_file' ] = $guru[ 'docroot' ] . '/config/config.bin';
  ** If needed, change these accordingly
  */
 $guru[ 'required_binaries' ] = array(
-	'Tar' => '/usr/bin/tar',
-	'Sudo' => '/usr/local/bin/sudo',
-	'sh' => '/bin/sh'
+    'Tar' => '/usr/bin/tar',
+    'Sudo' => '/usr/local/bin/sudo',
+    'sh' => '/bin/sh'
 );
 $guru[ 'path' ] = array(
-	'Samba' => '/usr/local/etc/smb4.conf',
-	'OpenSSH' => '/etc/ssh/sshd_config'
+    'Samba' => '/usr/local/etc/smb4.conf',
+    'OpenSSH' => '/etc/ssh/sshd_config'
 );
 $guru[ 'rc.d' ] = array(
-	'Lighttpd' => '/usr/local/etc/rc.d/lighttpd',
-	'OpenSSH' => '/etc/rc.d/sshd',
-	'Samba' => '/usr/local/etc/rc.d/samba_server',
-	'NFS' => '/etc/rc.d/nfsserver',
-	'iSCSI' => '/usr/local/etc/rc.d/istgt',
-	'powerd' => '/etc/rc.d/powerd'
+    'Lighttpd' => '/usr/local/etc/rc.d/lighttpd',
+    'OpenSSH' => '/etc/rc.d/sshd',
+    'Samba' => '/usr/local/etc/rc.d/samba_server',
+    'NFS' => '/etc/rc.d/nfsserver',
+    'iSCSI' => '/usr/local/etc/rc.d/istgt',
+    'powerd' => '/etc/rc.d/powerd'
 );
 $guru[ 'runcontrol' ] = array(
-	'Apache' => 'apache22',
-	'OpenSSH' => 'sshd',
-	'Lighttpd' => 'lighttpd',
-	'Samba' => 'samba',
-	'NFS' => 'nfs_server',
-	'iSCSI' => 'istgt'
+    'Apache' => 'apache22',
+    'OpenSSH' => 'sshd',
+    'Lighttpd' => 'lighttpd',
+    'Samba' => 'samba',
+    'NFS' => 'nfs_server',
+    'iSCSI' => 'istgt'
 );
 
 /*
@@ -89,35 +89,35 @@ $guru[ 'runcontrol' ] = array(
  ** Do NOT change these! Your actual preferences are stored in a file
  */
 $guru[ 'default_preferences' ] = array(
-	'uuid' => '',
-	'language' => 'en',
-	'preferred_master' => '',
-	'preferred_slave' => '',
-	'advanced_mode' => true,
-	'timezone' => 'UTC',
+    'uuid' => '',
+    'language' => 'en',
+    'preferred_master' => '',
+    'preferred_slave' => '',
+    'advanced_mode' => true,
+    'timezone' => 'UTC',
 
-	'access_control' => 2,
-	'access_whitelist' => '',
-	'authentication' => '',
+    'access_control' => 2,
+    'access_whitelist' => '',
+    'authentication' => '',
 
-	'theme' => 'default',
-	'command_confirm' => false,
-	'destroy_pools' => true,
-	'timekeeper' => true,
+    'theme' => 'default',
+    'command_confirm' => false,
+    'destroy_pools' => true,
+    'timekeeper' => true,
 
-	'refresh_rate' => 14400,
-	'connect_timeout' => 3,
-	'offline_mode' => false,
-	'segment_hide' => 1024,
+    'refresh_rate' => 14400,
+    'connect_timeout' => 3,
+    'offline_mode' => false,
+    'segment_hide' => 1024,
 
-	// invisible
-	'refresh_lastcheck' => 0,
-	'bulletin_unread' => '?',
-	'bulletin_lastread' => 0,
+    // invisible
+    'refresh_lastcheck' => 0,
+    'bulletin_unread' => '?',
+    'bulletin_lastread' => 0,
 );
 
 // include page library
-require( 'page.php' );
+require 'page.php';
 
 // start procedures to be executed every page request
-require( 'procedure.php' );
+require 'procedure.php';
