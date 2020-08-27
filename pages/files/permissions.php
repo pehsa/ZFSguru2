@@ -27,12 +27,12 @@ function content_files_permissions()
     $hidesystem = ( @isset($_GET[ 'displaysystem' ]) ) ? false : true;
     if ($hidesystem ) {
         foreach ( $sysusers as $name => $data ) {
-            if (($data['userid'] < 1000) && $name != 'root') {
+            if (($data['userid'] < 1000) && $name !== 'root') {
                 unset($sysusers[ $name ]);
             }
         }
         foreach ( $sysgroups as $name => $data ) {
-            if (($data['groupid'] < 1000) && $name != 'wheel') {
+            if (($data['groupid'] < 1000) && $name !== 'wheel') {
                 unset($sysgroups[ $name ]);
             }
         }
@@ -134,10 +134,10 @@ function submit_permissions_ownership()
                 $user = @$_POST[ $tag . '_user_' . $fsname ];
                 $group = @$_POST[ $tag . '_group_' . $fsname ];
                 $action = @$_POST[ $tag . '_action' ];
-                if ($user == '') {
+                if ($user === '') {
                     continue;
                 }
-                if ($group != '') {
+                if ($group !== '') {
                     $perm = $user . ':' . $group;
                 } else {
                     $perm = $user;
@@ -235,7 +235,7 @@ function processfilesystemsubmit( $tag )
     // reset filesystem array
     $resetfs = array();
     foreach ( $_POST as $name => $value ) {
-        if ((strlen($value) > 0) && substr($name, 0, strlen($tag.'_change_')) == $tag.'_change_') {
+        if (($value != '') && strpos($name, $tag.'_change_') === 0) {
             $resetfs[ substr($name, strlen($tag . '_change_')) ] =
             @$prop[ substr($name, strlen($tag . '_change_')) ][ 'mountpoint' ][ 'value' ];
         }

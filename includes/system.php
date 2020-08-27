@@ -63,8 +63,11 @@ function sortbyid( $a, $b )
     return ( $aa < $bb ) ? -1 : 1;
 }
 
-function system_adduser( $username, $password = false, $userid = false,
-    $group = false, $useroptions = false 
+function system_adduser(
+    $username,
+    $userid = false,
+    $group = false,
+    $useroptions = false
 ) {
     // creates a new system account; input (username) should be sanitized!
     // TODO: password is not implemented
@@ -98,7 +101,7 @@ function system_adduser( $username, $password = false, $userid = false,
     return !($result['rv'] != 0);
 }
 
-function system_user_delete( $username, $delete_homedir = false )
+function system_user_delete($username)
 {
     // elevated privileges
     activate_library('super');
@@ -113,7 +116,7 @@ function system_user_delete( $username, $delete_homedir = false )
     return $result['rv'] == 0;
 }
 
-function system_group_delete( $groupname, $delete_resident_users = false )
+function system_group_delete($groupname)
 {
     // elevated privileges
     activate_library('super');
@@ -171,7 +174,7 @@ function system_detect_vmenvironment()
     }
     return false;
     // todo
-    if (stripos($dmesg_boot, 'esxi_rdm') !== false) {
+    /*if (stripos($dmesg_boot, 'esxi_rdm') !== false) {
         return 'esxi_rdm';
     }
 
@@ -185,7 +188,7 @@ function system_detect_vmenvironment()
         return 'vmware';
     } else {
         return false;
-    }
+    }*/
 }
 
 function system_detect_networkspeed()
@@ -198,7 +201,9 @@ function system_detect_networkspeed()
 
     if (strpos($outputstr, '10Gbase') !== false) {
         return '10 gigabit';
-    } elseif (strpos($outputstr, '1000base') !== false ) {
+    }
+
+    if (strpos($outputstr, '1000base') !== false) {
         return 'Gigabit';
     } elseif (strpos($outputstr, '100base') !== false ) {
         return '100 megabit';
@@ -213,7 +218,7 @@ function system_detect_physmem()
 {
     $dmesg_boot = file_get_contents('/var/run/dmesg.boot');
     preg_match_all(
-        '/^(real|avail) memory[\s]+= ([0-9]+) \(.*\)[\s]*$/m',
+        '/^(real|avail) memory[\s]+= (\d+) \(.*\)[\s]*$/m',
         $dmesg_boot, $matches 
     );
     return array(

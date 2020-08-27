@@ -106,7 +106,7 @@ function submit_recursive_destroy_fs()
         foreach ( $vollist as $volname => $voldata ) {
             $prop = zfs_filesystem_properties($volname, 'org.freebsd:swap');
             // check if volume is in use as a SWAP device
-            if ((@$prop[$volname]['org.freebsd:swap']['value'] == 'on') && @strpos(
+            if ((@$prop[$volname]['org.freebsd:swap']['value'] === 'on') && @strpos(
                     $swapctl,
                     '/dev/zvol/'.$volname
                 ) !== false) {

@@ -501,12 +501,12 @@ function submit_disks_segmentprocess()
     $url2 = ( @isset($_POST[ 'seg_segment' ]) ) ? $url . '&seg=' . $seg: $url;
 
     // calculate number of used segments
-    $segusedcount = 0;
+    /*$segusedcount = 0;
     foreach ( $pmap as $pdata ) {
-        if ((strlen(@$pdata['type']) > 0) && $pdata['type'] != 'free') {
+        if ((@$pdata['type'] != '') && $pdata['type'] !== 'free') {
             $segusedcount++;
         }
-    }
+    }*/
 
     // sanity checks
     if ($pmap == false ) {
@@ -990,7 +990,7 @@ function submit_disks_segmentprocess()
         // update/rename GPT partition label (not available for MBR)
         if (@isset($_POST['gpt_seg_label']) && @$_POST['gpt_seg_label'] != @$pmap[$seg]['label']) {
             $s = sanitize(@$_POST[ 'gpt_seg_label' ], false, $newlabel);
-            if (strlen(@$_POST[ 'gpt_seg_label' ]) < 1 ) {
+            if (@$_POST['gpt_seg_label'] == '') {
                 $newlabel = '';
             } elseif (!$s ) {
                 friendlyerror(

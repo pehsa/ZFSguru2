@@ -16,17 +16,13 @@ function content_services_iscsi()
 
     // queried iSCSI share
     $queryfs = ( @strlen($_GET[ 'query' ]) > 0 ) ? $_GET[ 'query' ] : false;
-    if ($queryfs ) {
-    }
 
     // zfs filesystem list (for creating new iSCSI share)
-    if (!$queryfs ) {
-    }
 
     // classes
     $class_notrunning = ( !$ctldrunning ) ? 'normal' : 'hidden';
     $class_noautostart = ( !$ctldautostart ) ? 'normal' : 'hidden';
-    $class_noshares = ( count($table_iscsi_sharelist) == 0 ) ? 'normal' : 'hidden';
+    $class_noshares = ( count($table_iscsi_sharelist) === 0 ) ? 'normal' : 'hidden';
     $class_query = ( $queryfs ) ? 'normal' : 'hidden';
     $class_noquery = ( !$queryfs ) ? 'normal' : 'hidden';
 

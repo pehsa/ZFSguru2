@@ -206,7 +206,7 @@ function content_disks_smart()
     }
 
     // export new tags
-    $newtags = @array(
+    return @array(
     'PAGE_ACTIVETAB' => 'SMART',
     'PAGE_TITLE' => 'SMART monitor',
     'TABLE_SMART_DISKLIST' => $disklist,
@@ -232,7 +232,6 @@ function content_disks_smart()
     'ADVICE_LCC_RATE' => $lccrate,
     'QUERY_DISK' => $query,
     );
-    return $newtags;
 }
 
 function sort_disks( $a, $b ) 
@@ -281,7 +280,7 @@ function sort_disks( $a, $b )
 
     if ($invertedsort) {
         return ( $aa < $bb ) ? 1 : -1;
-    } else {
-        return ( $aa < $bb ) ? -1 : 1;
     }
+
+    return ( $aa < $bb ) ? -1 : 1;
 }

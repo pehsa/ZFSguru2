@@ -34,7 +34,7 @@ $guru[ 'compat_max' ] = '1';
 /*
  ** Path Locations
  */
-$guru[ 'docroot' ] = dirname(dirname(__FILE__)).'/'. '/';
+$guru[ 'docroot' ] = dirname(__DIR__).'/'. '/';
 $guru[ 'dev_livecd' ] = '/dev/iso9660/ZFSGURU-LIVECD';
 $guru[ 'tempdir' ] = '/tmp/';
 

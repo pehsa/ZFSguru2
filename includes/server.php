@@ -331,9 +331,11 @@ function server_validate( $file, $filesize = false, $sha512 = false )
         return false;
     }
     if ((( int )$filesize > 0) && $filesize !== false) {
-        if (filesize($file) == 0 ) {
+        if (filesize($file) == 0) {
             return false;
-        } elseif (filesize($file) != $filesize ) {
+        }
+
+        if (filesize($file) != $filesize) {
             return false;
         }
     }

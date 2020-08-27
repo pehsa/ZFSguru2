@@ -148,7 +148,7 @@ function submit_pools_importpool()
             'b_success' 
         );
         redirect_url($url);
-    } elseif (( @strlen($poolid) > 0 )AND!$result ) {
+    } elseif ( @strlen($poolid) > 0 ) {
         friendlyerror('failed importing pool', $url);
     }
 }

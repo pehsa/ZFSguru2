@@ -27,8 +27,8 @@ function content_network_network()
         // ident
         $ident_maxlen = 50;
         if (@strlen($ifdata[ 'ident' ]) > $ident_maxlen ) {
-            $ident = '<acronym title="' . htmlentities($ifdata[ 'ident' ]) . '">'
-            . substr(htmlentities($ifdata[ 'ident' ]), 0, $ident_maxlen) . '..</acronym>';
+            $ident = '<abbr title="' . htmlentities($ifdata[ 'ident' ]) . '">'
+            . substr(htmlentities($ifdata[ 'ident' ]), 0, $ident_maxlen) . '..</abbr>';
         } else {
             $ident = htmlentities($ifdata[ 'ident' ]);
         }
@@ -53,10 +53,9 @@ function content_network_network()
     }
 
     // export new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Interfaces',
     'PAGE_TITLE' => 'Network interfaces',
     'TABLE_NETWORK_IFLIST' => $iflist
     );
-    return $newtags;
 }

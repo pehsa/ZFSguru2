@@ -58,7 +58,7 @@ function content_system_preferences()
     $timezones = '';
     $tz = fetch_timezones();
     foreach ( $tz as $timezone ) {
-        if ($timezone == $pref[ 'timezone' ] ) {
+        if ($timezone === $pref[ 'timezone' ] ) {
             $timezones .= '   <option value="' . htmlentities($timezone) . '" '
             . 'selected="selected">' . htmlentities($timezone) . '</option>' . chr(10);
         } else {
@@ -72,7 +72,7 @@ function content_system_preferences()
     $master = '';
     if (is_array($masterservers) ) {
         foreach ( $masterservers as $server ) {
-            if ($server[ 'name' ] == $pref[ 'preferred_master' ] ) {
+            if ($server[ 'name' ] === $pref[ 'preferred_master' ] ) {
                 $master .= '   <option value="' . htmlentities($server[ 'name' ]) . '"'
                 . ' selected="selected">'
                 . htmlentities($server[ 'name' ] . ' [' . strtoupper($server[ 'country' ])) . ']</option>' . chr(10);
@@ -86,7 +86,7 @@ function content_system_preferences()
     $slave = '';
     if (is_array($slaveservers) ) {
         foreach ( $slaveservers as $server ) {
-            if ($server[ 'name' ] == $pref[ 'preferred_slave' ] ) {
+            if ($server[ 'name' ] === $pref[ 'preferred_slave' ] ) {
                 $slave .= '   <option value="' . htmlentities($server[ 'name' ]) . '"'
                 . ' selected="selected">'
                 . htmlentities($server[ 'name' ] . ' [' . strtoupper($server[ 'country' ])) . ']</option>' . chr(10);
@@ -101,9 +101,9 @@ function content_system_preferences()
     if (!@isset($pref[ 'access_control' ]) ) {
         $pref[ 'access_control' ] = 2;
     }
-    $radio_ac_1 = ( $pref[ 'access_control' ] == 1 ) ? 'checked="checked"' : '';
-    $radio_ac_2 = ( $pref[ 'access_control' ] == 2 ) ? 'checked="checked"' : '';
-    $radio_ac_3 = ( $pref[ 'access_control' ] == 3 ) ? 'checked="checked"' : '';
+    $radio_ac_1 = ( $pref[ 'access_control' ] === 1 ) ? 'checked="checked"' : '';
+    $radio_ac_2 = ( $pref[ 'access_control' ] === 2 ) ? 'checked="checked"' : '';
+    $radio_ac_3 = ( $pref[ 'access_control' ] === 3 ) ? 'checked="checked"' : '';
     $class_auth_set = ( @strlen($pref[ 'authentication' ]) > 0 ) ? 'normal' : 'hidden';
     $class_auth_unset = ( @strlen($pref[ 'authentication' ]) > 0 ) ? 'hidden' : 'normal';
     $whitelist = '';
@@ -120,9 +120,9 @@ function content_system_preferences()
     exec('/bin/ls -1 ' . $guru[ 'docroot' ] . '/theme/', $output);
     if (is_array($output) ) {
         foreach ( $output as $dir ) {
-            if (($dir != 'default') && is_dir($guru['docroot'].'/theme/'.$dir)) {
+            if (($dir !== 'default') && is_dir($guru['docroot'].'/theme/'.$dir)) {
                 $themelist[] = array(
-                'THEME_ACTIVE' => ( $dir == $guru[ 'preferences' ][ 'theme' ] ) ?
+                'THEME_ACTIVE' => ( $dir === $guru[ 'preferences' ][ 'theme' ] ) ?
                 'selected="selected"' : '',
                 'THEME_DIR' => htmlentities($dir),
                 'THEME_NAME' => htmlentities(ucfirst($dir))
@@ -146,7 +146,7 @@ function content_system_preferences()
     );
     foreach ( $refresh_choices as $refreshrate => $refreshname ) {
         $refresh[] = array(
-        'REFRESH_ACTIVE' => ( ( string )@$pref[ 'refresh_rate' ] == $refreshrate ) ?
+        'REFRESH_ACTIVE' => ( ( string )@$pref[ 'refresh_rate' ] === $refreshrate ) ?
         'selected="selected"' : '',
         'REFRESH_NAME' => htmlentities($refreshname),
         'REFRESH_RATE' => $refreshrate,
@@ -156,7 +156,7 @@ function content_system_preferences()
     $timeout_choices = array( 2, 3, 4, 5, 7, 10, 15, 20, 25, 30 );
     foreach ( $timeout_choices as $timeout ) {
         $timeouts[] = array(
-        'TIMEOUT_ACTIVE' => ( @$pref[ 'connect_timeout' ] == $timeout ) ?
+        'TIMEOUT_ACTIVE' => ( @$pref[ 'connect_timeout' ] === $timeout ) ?
         'selected="selected"' : '',
         'TIMEOUT_SEC' => $timeout
         );
@@ -165,8 +165,8 @@ function content_system_preferences()
     $segment_hide = '';
     $segment_sizes = array( 8, 128, 1024, 4096 );
     foreach ( $segment_sizes as $kib ) {
-        $sel = ( $kib == @$pref[ 'segment_hide' ] ) ? ' selected="selected"' : '';
-        $segment_hide .= '   <option value="' . $kib . '"' . $sel . '>'
+        $sel = ( $kib === @$pref[ 'segment_hide' ] ) ? ' selected="selected"' : '';
+        $segment_hide .= '   <option value="' . $kib . '" ' . $sel . '>'
         . sizebinary($kib * 1024) . '</option>' . chr(10);
     }
 
@@ -223,23 +223,12 @@ function fetch_timezones()
     }
 
     // fetch system known timezones
-    $tz_system = array();
     exec('/usr/bin/find /usr/share/zoneinfo/ -type f', $rawoutput, $rv);
-    $predir_length = strlen('/usr/share/zoneinfo/');
-    if (@is_array($rawoutput) ) {
-        foreach ( $rawoutput as $directory ) {
-            if ((substr($directory, 0, $predir_length) == '/usr/share/zoneinfo/') && strlen(
-                    $directory
-                ) > $predir_length) {
-                    $tz_system[] = substr($directory, $predir_length);
-                }
-        }
-    }
 
                 // combine
     $tz_combine = ( array )extra_timezone_list();
     foreach ( $tz_php as $city ) {
-        if (!in_array($city, $tz_combine, true) && (strlen($city) > 0) && file_exists('/usr/share/zoneinfo/'.$city)) {
+        if (($city !== '') && !in_array($city, $tz_combine, true) && file_exists('/usr/share/zoneinfo/'.$city)) {
             $tz_combine[] = $city;
         }
     }
@@ -358,7 +347,7 @@ function submit_system_preferences()
             $pref[ 'timezone' ] = $_POST[ 'pref_timezone' ];
             // activate timezone for FreeBSD system as well if applicable
             $tz_map = procedure_timezone_map($pref[ 'timezone' ]);
-            if ((strlen($tz_map['tz_system']) > 0) && file_exists('/usr/share/zoneinfo/'.$tz_map['tz_system'])) {
+            if (($tz_map['tz_system'] !== '') && file_exists('/usr/share/zoneinfo/'.$tz_map['tz_system'])) {
                 // increased privileges
                 activate_library('super');
                 $cmd = '/bin/cp /usr/share/zoneinfo/' . $tz_map[ 'tz_system' ]
@@ -372,7 +361,7 @@ function submit_system_preferences()
 
         // access control
         if (@isset($_POST[ 'pref_access_control' ]) ) {
-            if (( ( int )$_POST[ 'pref_access_control' ] == 1 )OR( ( int )$_POST[ 'pref_access_control' ] == 2 )OR( ( int )$_POST[ 'pref_access_control' ] == 3 ) ) {
+            if (( ( int )$_POST[ 'pref_access_control' ] === 1 )||( ( int )$_POST[ 'pref_access_control' ] === 2 )||( ( int )$_POST[ 'pref_access_control' ] === 3 ) ) {
                 $pref[ 'access_control' ] = ( int )$_POST[ 'pref_access_control' ];
             }
         }
@@ -382,13 +371,14 @@ function submit_system_preferences()
             $whitelist_arr = explode(',', $_POST[ 'pref_access_whitelist' ]);
             $pref[ 'access_whitelist' ] = array();
             foreach ( $whitelist_arr as $ipaddr ) {
-                $pref[ 'access_whitelist' ][ trim($ipaddr) ] = trim($ipaddr);
+                $ipa = trim($ipaddr);
+                $pref[ 'access_whitelist' ][ $ipa ] = $ipa;
             }
         }
 
         // authentication
         if (@strlen($_POST[ 'pref_authentication' ]) > 0 ) {
-            if ($_POST[ 'pref_authentication' ] == @$_POST[ 'pref_authentication2' ] ) {
+            if ($_POST[ 'pref_authentication' ] === @$_POST[ 'pref_authentication2' ] ) {
                 $pref[ 'authentication' ] = $_POST[ 'pref_authentication' ];
             } else {
                 page_feedback(
@@ -421,7 +411,7 @@ function submit_system_preferences()
             );
         } else {
             // save preferences
-            if (( @is_array($pref) )and( @count($pref) > 0 ) ) {
+            if (( @is_array($pref) )&&( @count($pref) > 0 ) ) {
                 $result = procedure_writepreferences($pref);
             } else {
                 error('HARD ERROR: bad preferences data');

@@ -465,7 +465,7 @@ function submit_access_samba_shares_remove()
             $result = samba_writeconfig($newconf);
             // redirect
             if ($result !== true ) {
-                error('Error writing Samba configuration file ("' . $result . '")');
+                error('Error writing Samba configuration file ("' .false. '")');
             } else {
                 friendlynotice(
                     'removed the following shares: <b>'
@@ -512,7 +512,7 @@ function submit_access_samba_shares_advanced()
 
     // change all advanced variables related to share
     foreach ( $_POST as $postvar => $postvalue ) {
-        if ((substr($postvar, 0, strlen('advancedvar_')) == 'advancedvar_') && strlen($postvalue) > 0) {
+        if ((strpos($postvar, 'advancedvar_') === 0) && $postvalue != '') {
             $postvariable = trim(
                 str_replace(
                     '_', ' ',
@@ -525,7 +525,7 @@ function submit_access_samba_shares_advanced()
 
     // remove variables with checkbox checked
     foreach ( $_POST as $postvar => $postvalue ) {
-        if ((substr($postvar, 0, strlen('cb_advanced_')) == 'cb_advanced_') && $postvalue == 'on') {
+        if ((strpos($postvar, 'cb_advanced_') === 0) && $postvalue === 'on') {
             $postvariable = trim(
                 str_replace(
                     '_', ' ',
@@ -600,7 +600,7 @@ function submit_access_samba_shares_dragdrop()
                 ) 
             );
             foreach ( $tmp_arr as $tmp_item ) {
-                if ((strlen($tmp_item) > 0) && $tmp_item != $dragname) {
+                if (($tmp_item != '') && $tmp_item != $dragname) {
                     $aclist[ $conv_b ][ $tmp_item ] = $tmp_item;
                 }
             }
@@ -640,7 +640,7 @@ function submit_access_samba_shares_dragdrop()
                 ) 
             );
             foreach ( $tmp_arr as $tmp_item ) {
-                if ((strlen($tmp_item) > 0) && !preg_match('/(\@|\+)'.$dragname.'/', $tmp_item)) {
+                if (($tmp_item != '') && !preg_match('/(@+])'.$dragname.'/', $tmp_item)) {
                     $aclist[ $conv_b ][ $tmp_item ] = $tmp_item;
                 }
             }

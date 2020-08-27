@@ -238,9 +238,9 @@ function submit_system_tuning_advanced()
     if (@isset($_POST[ 'update_tuning' ]) ) {
         // update loadersettings with POST variables
         foreach ( $loadersettings as $name => $data ) {
-            if (( $data[ 'enabled' ] )AND( !@isset($_POST[ 'enabled_' . base64_encode($name) ]) )AND( @isset($_POST[ base64_encode($name) ]) ) ) {
+            if (( $data[ 'enabled' ] )&&( !@isset($_POST[ 'enabled_' . base64_encode($name) ]) )&&( @isset($_POST[ base64_encode($name) ]) ) ) {
                 $loadersettings[ $name ][ 'enabled' ] = false;
-            } elseif (@isset($_POST[ 'enabled_' . base64_encode($name) ])AND( @strlen($_POST[ base64_encode($name) ]) > 0 ) ) {
+            } elseif (@isset($_POST[ 'enabled_' . base64_encode($name) ])&&( @strlen($_POST[ base64_encode($name) ]) > 0 ) ) {
                 $loadersettings[ $name ] = array( 'enabled' => true,
                 'value' => $_POST[ base64_encode($name) ] );
             }

@@ -116,7 +116,7 @@ function content_status_status()
     }
     $cpu_freq_min = @min($freqrange);
     $cpu_freq_max = @max($freqrange);
-    $cpu_freq_scaling = ( ($cpu_freq_min != '')AND($cpu_freq_min != '') ) ? 'normal' : 'hidden';
+    $cpu_freq_scaling = ( ($cpu_freq_min !== '') ) ? 'normal' : 'hidden';
 
     // memory
     $memory_installed = sizebinary($physmem[ 'installed' ], 1);
@@ -125,8 +125,9 @@ function content_status_status()
     // disk drives
     $disk_count = array();
     foreach ( $physdisks as $diskname => $diskdata ) {
-        $disk_count[ disk_detect_type($diskname) ] =
-        ( int )@$disk_count[ disk_detect_type($diskname) ] + 1;
+        $ddt = disk_detect_type($diskname);
+        $disk_count[ $ddt ] =
+        ( int )@$disk_count[ $ddt ] + 1;
     }
     foreach ( $disk_count as $disktype => $nrofdisks ) {
         page_injecttag(
@@ -188,10 +189,10 @@ function content_status_status()
         $sensor[ $sensor_name ] = $value;
         $sensorclass[ $sensor_name ] = 'hidden';
         if ((strlen($value) > 1) && ( double )$value > 0) {
-            if ($sensor_name == 'fan0'
+            if ($sensor_name === 'fan0'
                 OR( ( double )$value < 99 )
             ) {
-                if ($value {            0            } == '+'
+                if (strpos($value, '+') === 0
                 ) {
                     $sensor[ $sensor_name ] = substr($value, 1);
                     $sensorclass[ $sensor_name ] = 'normal';

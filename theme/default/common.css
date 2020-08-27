@@ -870,7 +870,6 @@ div.colorbox_grey {
 	background-image: -ms-linear-gradient(#eee, #aaa);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#aaaaaa');
 	background-image: linear-gradient(#eee, #aaa);
-	cursor: default;
 }
 div.colorbox_grey:hover {
 	background-image: -moz-linear-gradient(#fff, #bbb);

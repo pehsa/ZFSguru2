@@ -82,7 +82,7 @@ function content_files_zvol()
     }
 
     // export new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Volumes',
     'PAGE_TITLE' => 'ZFS Volumes',
     'TABLE_ZVOL_VOLUMES' => $volumes,
@@ -98,7 +98,6 @@ function content_files_zvol()
     'ZVOL_QUERYBLOCKSIZE' => $queryblocksize,
     'ZVOL_QUERYRESIZE' => $queryresize
     );
-    return $newtags;
 }
 
 function submit_zvol_create() 

@@ -490,7 +490,8 @@ function content_files_query()
     $defaultsnapshotname = date('Y-m-d');
 
     // export new tags
-    $newtags = @array(
+    // return as tags
+    return @array(
     'PAGE_ACTIVETAB' => 'Filesystems',
     'PAGE_TITLE' => 'Filesystem ' . $queryfs,
     'FILES_FSSELECTBOX' => $fsselectbox,
@@ -567,9 +568,6 @@ function content_files_query()
     'QUERYFS_QUOTA' => $quota,
     'QUERYFS_QUOTARAW' => $quotaraw,
     );
-
-    // return as tags
-    return $newtags;
 }
 
 function submit_filesystem_modify() 
@@ -606,7 +604,7 @@ function submit_filesystem_modify()
         $swapctl = @implode(chr(10), $swapctl_raw);
         $fsdetails = zfs_filesystem_properties($fs, 'org.freebsd:swap');
         // disable swap
-        if ((@$fsdetails[$fs]['org.freebsd:swap']['value'] == 'on') && @strpos($swapctl, '/dev/zvol/'.$fs) !== false) {
+        if ((@$fsdetails[$fs]['org.freebsd:swap']['value'] === 'on') && @strpos($swapctl, '/dev/zvol/'.$fs) !== false) {
             $command[] = '/sbin/swapoff /dev/zvol/' . $fs;
         }
         // display message if swap volumes detected

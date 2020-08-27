@@ -70,16 +70,17 @@ function internalservice_isrunning_pf()
     // gather info
     $result = super_execute('/sbin/pfctl -s info');
 
-    if (preg_match('/^Status\: Enabled/m', $result[ 'output_str' ])) {
+    if (preg_match('/^Status: Enabled/m', $result[ 'output_str' ])) {
         return true;
     }
 
-    if (preg_match('/^Status\: Disabled/m', $result[ 'output_str' ])) {
-        return false;
-    } else {
-        page_feedback('could not determine pf firewall status', 'a_warning');
+    if (preg_match('/^Status: Disabled/m', $result[ 'output_str' ])) {
         return false;
     }
+
+    page_feedback('could not determine pf firewall status', 'a_warning');
+
+    return false;
 }
 
 function internalservice_fetch()

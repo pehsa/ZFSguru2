@@ -48,9 +48,9 @@ function content_system_install_step3()
     if (strtoupper($dist) === 'ROZ' ) {
         page_injecttag(distribution_roz($version, $source, $target));
     } elseif (strtoupper($dist) === 'ROR' ) {
-        page_injecttag(distribution_ror($version, $source, $target));
+        page_injecttag(distribution_ror());
     } elseif (strtoupper($dist) === 'ROM' ) {
-        page_injecttag(distribution_rom($version, $source, $target));
+        page_injecttag(distribution_rom());
     }
 
     // unmount media (unmounts any ZFSguru LiveCD/USB media)
@@ -142,7 +142,8 @@ function distribution_roz( $version, $source, $target )
     $targetfs = substr($version, 0, 10); /* max length of targetfs is 10 chars */
     $targetprefix = $poolname . '/zfsguru/';
     $zfslist = zfs_filesystem_list($poolname, '-r');
-    $class_targetinuse = ( @isset($zfslist[ $targetprefix . $targetfs ]) ) ?
+    $index = $targetprefix . $targetfs;
+    $class_targetinuse = ( @isset($zfslist[ $index ]) ) ?
     'normal' : 'hidden';
 
     // checksum (??)
@@ -211,12 +212,12 @@ function distribution_roz( $version, $source, $target )
     );
 }
 
-function distribution_ror( $version, $source, $target ) 
+function distribution_ror()
 {
     return array();
 }
 
-function distribution_rom( $version, $source, $target ) 
+function distribution_rom()
 {
     return array();
 }

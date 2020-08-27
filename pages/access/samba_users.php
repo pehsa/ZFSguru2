@@ -187,7 +187,7 @@ function submit_access_samba_users_adduser()
 
     // create new user
     $useroptions = '-c "Samba user" -d /nonexistent -s /sbin/nologin ' . $groupstr;
-    $result = system_adduser($newuser, false, $uid, 1000, $useroptions);
+    $result = system_adduser($newuser, $uid, 1000, $useroptions);
     if (!$result ) {
         friendlyerror('failed creating new user account', $redir);
     }
@@ -222,7 +222,7 @@ function submit_access_samba_users_modify()
 
     // delete user
     if (@isset($_POST[ 'samba_delete_user' ]) ) {
-        system_user_delete($postuser, false);
+        system_user_delete($postuser);
         redirect_url($redir);
     }
     // modify user Samba password
@@ -325,7 +325,7 @@ function submit_access_samba_users_deletegroup()
                     $usersingroup = @explode(' ', $usersingroup);
                     if (is_array($usersingroup) ) {
                         foreach ( $usersingroup as $useringroup ) {
-                            system_user_delete($useringroup, false);
+                            system_user_delete($useringroup);
                         }
                     }
                 } else {
@@ -333,7 +333,7 @@ function submit_access_samba_users_deletegroup()
                 }
             }
             // remove group
-            $result = system_group_delete($groupname, false);
+            $result = system_group_delete($groupname);
             if ($result ) {
                 redirect_url($redir);
             } else {

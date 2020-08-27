@@ -316,7 +316,7 @@ function disk_detect_physical( $diskname = false )
         }
     }
     // are we working on livecd?
-    $livecd = common_distribution_type() == 'livecd';
+    $livecd = common_distribution_type() === 'livecd';
 
     // now check if it's a real disk by determining its sector size
     // it should be 512 bytes or a multiple of that
@@ -416,21 +416,17 @@ function sort_providers( $a, $b )
 
     if (@$a[ 'start' ] > @$b[ 'start' ]) {
         return 1;
-    } else {
-        return 0;
     }
+
+    return 0;
 }
 
-function disk_detect_gpart( $device = false )
+function disk_detect_gpart( $device = '' )
 {
     // start with empty gpart array
     $gpart = array();
     // execute "gpart list" to get information about all partitions
-    if (is_string($device) ) {
-        exec('/sbin/gpart list ' . $device, $raw_output);
-    } else {
-        exec('/sbin/gpart list', $raw_output);
-    }
+    exec('/sbin/gpart list ' . $device, $raw_output);
     // split the information in chunks to deal with
     $raw_str = implode("\n", $raw_output);
     $split = preg_split('/^Geom name: (.*)/Um', $raw_str);
@@ -465,7 +461,7 @@ function disk_detect_gpart( $device = false )
         // providers
         // changed so that geom name can be included as well
         //  $partsplit = preg_split('/^[0-9]{1,3}\. Name\: (.*)$/m', $providers);
-        $partsplit = preg_split('/^[0-9]{1,3}\. Name: /m', $providers);
+        $partsplit = preg_split('/^\d{1,3}\. Name: /m', $providers);
         for ( $y = 1; $y <= ( count($partsplit) - 1 ); $y++ ) {
             $geomname = trim(substr($partsplit[ $y ], 0, strpos($partsplit[ $y ], chr(10))));
             if (!$geomname ) {
@@ -792,11 +788,7 @@ function disk_isspinning( $disk )
         return true;
     }
 
-    if (strpos($r[ 'output_str' ], 'Device is in STANDBY mode, exit') === false) {
-        return true;
-    } else {
-        return false;
-    }
+    return strpos($r['output_str'], 'Device is in STANDBY mode, exit') === false;
 }
 
 function disk_set_apm( $disk, $apm_level )

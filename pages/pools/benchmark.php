@@ -13,7 +13,7 @@ function content_pools_benchmark()
     // poollist
     $poollist = array();
     foreach ( $pools as $poolname => $data ) {
-        if (( $data[ 'status' ] === 'ONLINE' )OR( $data[ 'status' ] === 'DEGRADED' ) ) {
+        if (( $data[ 'status' ] === 'ONLINE' )||( $data[ 'status' ] === 'DEGRADED' ) ) {
             $poollist[] = array(
                 'POOLNAME' => $poolname
             );
@@ -25,13 +25,12 @@ function content_pools_benchmark()
     'normal' : 'hidden';
 
     // export new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Benchmark',
     'PAGE_TITLE' => 'Benchmark',
     'TABLE_POOLLIST' => $poollist,
     'CLASS_BENCHMARK' => $class_bench,
     );
-    return $newtags;
 }
 
 function submit_pools_benchmark() 
@@ -44,7 +43,7 @@ function submit_pools_benchmark()
 
     // sanitize input
     sanitize(@$_POST[ 'poolname' ], null, $poolname);
-    if ($poolname == '') {
+    if ($poolname === '') {
         error('sanity failure on pool name');
     }
 
@@ -53,14 +52,12 @@ function submit_pools_benchmark()
     $pool = zfs_pool_list($poolname);
 
     // variables
-    $url = 'pools.php?benchmark';
     $size = @$_POST[ 'size' ];
     $source = '/dev/zero';
     $testfilename = 'zfsguru_benchmark.000';
     $testfilesystem = $poolname . '/zfsguru-performance-test';
     $capacity = $pool[ 'size' ];
     $capacity_pct = $pool[ 'cap' ];
-    $testsize_gib = @( ( int )$size / 1024 );
     $testsize_bin = sizebinary(( ( int )$size / 1024 ) * 1024 * 1024 * 1024);
 
     // check whether test filesystem already exists
@@ -84,7 +81,7 @@ function submit_pools_benchmark()
 
     // set testfile location
     $mountpoint = @$poolfs[ $testfilesystem ][ 'mountpoint' ];
-    if (( @strlen($mountpoint) < 2 )OR( $mountpoint {        0        } !== '/' )
+    if (( @strlen($mountpoint) < 2 )||( $mountpoint {        0        } !== '/' )
     ) {
         error('Invalid mountpoint "' . $mountpoint . '"');
     }
@@ -92,7 +89,6 @@ function submit_pools_benchmark()
 
     // create score arrays
     $score = array();
-    $score_rv = array();
 
     if (@$_POST[ 'cb_normal' ] === 'on' ) {
         // dd write
@@ -100,7 +96,6 @@ function submit_pools_benchmark()
         $command = '/bin/dd if=' . $source . ' of=' . $testfile . ' bs=1m '
         . 'count=' . ( int )$size . ' 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'normal' ][ 'write' ] = @$result[ 'rv' ];
         $score[ 'normal' ][ 'write' ] = @$result[ 'output_arr' ][ 2 ];
         // cooldown
         super_execute('/bin/sync');
@@ -108,7 +103,6 @@ function submit_pools_benchmark()
         // dd read
         $command = '/bin/dd if=' . $testfile . ' of=/dev/null bs=1m 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'normal' ][ 'read' ] = @$result[ 'rv' ];
         $score[ 'normal' ][ 'read' ] = @$result[ 'output_arr' ][ 2 ];
         // remove test file
         super_execute('/bin/rm ' . $testfile);
@@ -123,7 +117,6 @@ function submit_pools_benchmark()
         $command = '/bin/dd if=' . $source . ' of=' . $testfile . ' bs=1m '
         . 'count=' . ( int )$size . ' 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'lzjb' ][ 'write' ] = @$result[ 'rv' ];
         $score[ 'lzjb' ][ 'write' ] = @$result[ 'output_arr' ][ 2 ];
         // cooldown
         super_execute('/bin/sync');
@@ -131,7 +124,6 @@ function submit_pools_benchmark()
         // dd read - LZJB compression
         $command = '/bin/dd if=' . $testfile . ' of=/dev/null bs=1m 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'lzjb' ][ 'read' ] = @$result[ 'rv' ];
         $score[ 'lzjb' ][ 'read' ] = @$result[ 'output_arr' ][ 2 ];
         // remove test file
         super_execute('/bin/rm ' . $testfile);
@@ -149,7 +141,6 @@ function submit_pools_benchmark()
         $command = '/bin/dd if=' . $source . ' of=' . $testfile . ' bs=1m '
         . 'count=' . ( int )$size . ' 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'gzip' ][ 'write' ] = @$result[ 'rv' ];
         $score[ 'gzip' ][ 'write' ] = @$result[ 'output_arr' ][ 2 ];
         // cooldown
         super_execute('/bin/sync');
@@ -157,7 +148,6 @@ function submit_pools_benchmark()
         // dd read - GZIP compression
         $command = '/bin/dd if=' . $testfile . ' of=/dev/null bs=1m 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'gzip' ][ 'read' ] = @$result[ 'rv' ];
         $score[ 'gzip' ][ 'read' ] = @$result[ 'output_arr' ][ 2 ];
         // remove test file
         super_execute('/bin/rm ' . $testfile);
@@ -170,7 +160,6 @@ function submit_pools_benchmark()
         $command = '/bin/dd if=' . $source . ' of=/dev/null bs=1m count='
         . ( int )$size . ' 2>&1';
         $result = super_execute($command);
-        $score_rv[ 'bandwidth' ][ 'read' ] = @$result[ 'rv' ];
         $score[ 'I/O' ][ 'bandwidth' ] = @$result[ 'output_arr' ][ 2 ];
     }
 
@@ -186,7 +175,7 @@ function submit_pools_benchmark()
     foreach ( $score as $testname => $testdata ) {
         foreach ( $testdata as $rw => $testoutput ) {
             $speed = array();
-            preg_match('/\(([0-9]+) bytes\/sec\)$/', $testoutput, $speed);
+            preg_match('/\((\d+) bytes\/sec\)$/', $testoutput, $speed);
             if (@isset($speed[ 1 ]) ) {
                 $finalscore[ $testname ][ $rw ] = $speed[ 1 ];
             }

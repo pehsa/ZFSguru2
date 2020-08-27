@@ -33,7 +33,7 @@ function network_interfaces()
     $detailed = array();
     foreach ( $chunks as $ifname => $ifdata ) {
         // process flags= line
-        $preg1 = '/^flags\=([0-9]+)\<([a-zA-Z0-9,_]+)\> metric ([0-9]+) mtu ([0-9]+)/';
+        $preg1 = '/^flags\=(\d+)\<([a-zA-Z0-9,_]+)\> metric (\d+) mtu (\d+)/';
         preg_match($preg1, $ifdata, $matches);
         $flags = @$matches[ 1 ];
         $flags_str = @$matches[ 2 ];
@@ -69,7 +69,7 @@ function network_interfaces()
         }
 
         // process inet6 lines
-        $preg5 = '/^[\s]*inet6 ([a-z0-9:%]+) prefixlen ([0-9]+)( scopeid (.*))?/m';
+        $preg5 = '/^[\s]*inet6 ([a-z0-9:%]+) prefixlen (\d+)( scopeid (.*))?/m';
         preg_match_all($preg5, $ifdata, $matches5);
 
         // construct inet6 array

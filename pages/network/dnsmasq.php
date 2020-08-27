@@ -156,7 +156,7 @@ function dnsmasq_readconfig( $raw = false )
     return $config;
 }
 
-function dnsmasq_writeconfig( $config )
+function dnsmasq_writeconfig()
 {
     error('todo!');
 }

@@ -49,7 +49,7 @@ function table_bulletins( $bulletins )
             continue;
         }
         // view only unread messages if applicable
-        if ((@$_GET['view'] == 'unread') && bulletin_isread($data)) {
+        if ((@$_GET['view'] === 'unread') && bulletin_isread($data)) {
             continue;
         }
 

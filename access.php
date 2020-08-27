@@ -12,6 +12,8 @@ $tabs = array(
     'SSH' => 'access.php?ssh'
 );
 
+$content = '';
+
 // select page
 if (@isset($_GET[ 'nfs' ]) ) {
     $content = content_handle('access', 'nfs');
@@ -20,7 +22,7 @@ if (@isset($_GET[ 'nfs' ]) ) {
 } elseif (@isset($_GET[ 'ssh' ]) ) {
     $content = content_handle('access', 'ssh');
 } elseif (@isset($_GET[ 'samba' ]) ) {
-    if (@isset($_GET[ 'share' ])OR @isset($_GET[ 'shares' ]) ) {
+    if (!isset($_GET['share'], $_GET['shares'])) {
         $content = content_handle('access', 'samba_shares');
     } elseif (@isset($_GET[ 'users' ]) ) {
         $content = content_handle('access', 'samba_users');

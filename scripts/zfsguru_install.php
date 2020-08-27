@@ -82,9 +82,7 @@ function install_summary()
     echo( 'source data: ' . $source . chr(10) );
     if ($data[ 'dist' ] === 'RoZ' ) {
         echo( 'boot filesystem: ' . $data[ 'bootfs' ] . chr(10) );
-    } elseif ($data[ 'dist' ] === 'RoR' ) {
-    }
-    elseif ($data[ 'dist' ] === 'RoM' ) {
+    } elseif ($data[ 'dist' ] === 'RoM' ) {
         echo( 'MBR bootcode: ' . $data[ 'path_mbr' ] . chr(10) );
         echo( 'loader bootcode: ' . $data[ 'path_loader' ] . chr(10) );
     }
@@ -159,7 +157,7 @@ function install_roz()
     die(1);
     // destroy existing boot filesystem
     // REMOVE?!
-    exec('/sbin/zfs destroy -r ' . $root . ' > /dev/null 2>&1');
+    /*exec('/sbin/zfs destroy -r ' . $root . ' > /dev/null 2>&1');
 
     // create filesystems
     echo( $tag . 'Creating ZFS filesystems' . chr(10) );
@@ -327,7 +325,7 @@ function install_roz()
     // done
     echo( chr(10) );
     echo( '*** Done! *** Reboot system now and boot from any of the pool members' );
-    flush_buffer();
+    flush_buffer();*/
 }
 
 function install_ror()
@@ -346,7 +344,7 @@ function install_rom()
     echo( $tag . 'NOT WORKING YET' . chr(10) );
     die(1);
 
-    $target = $data[ 'target' ];
+    /*$target = $data[ 'target' ];
     $tdev = '/dev/' . $target;
     $createdatapartition = false;
     $size_syspartition = 655360;
@@ -454,7 +452,7 @@ function install_rom()
     if ($rv != 0 ) {
         install_error('Could not copy web-interface', $rv);
     }
-    echo( '* done populating system filesystem' . chr(10) );
+    echo( '* done populating system filesystem' . chr(10) );*/
 
     /*
     TUNE=${SCRIPT}/tunables

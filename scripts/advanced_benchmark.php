@@ -55,7 +55,7 @@ $ld_preg_arr = array(
 // fetch disks from argv
 $disks = array();
 if (count($argv) > 1 ) {
-    for ($i = 1, $iMax = count($argv), $iMax = $iMax; $i <= $iMax; $i++ ) {
+    for ($i = 1, $iMax = count($argv); $i <= $iMax; $i++ ) {
         if (@strlen($argv[ $i ]) > 0 ) {
             $disks[] = $argv[ $i ];
         }
@@ -266,7 +266,7 @@ function zfsguru_benchmark_createpool( $raid, $vdev )
     echo( 'c' );
     $options = '-f -O atime=off ';
     // check for nested pools and use raw $vdev as string
-    if (( $raid === 'RAID1+0' )OR( $raid === 'RAIDZ+0' )OR( $raid === 'RAIDZ2+0' ) ) {
+    if (( $raid === 'RAID1+0' )||( $raid === 'RAIDZ+0' )||( $raid === 'RAIDZ2+0' ) ) {
         $command = '/sbin/zpool create ' . $options . $poolname . ' ' . $vdev;
     } else {
         $command = '/sbin/zpool create ' . $options . $poolname . ' ' . $raid . ' ' .
@@ -486,7 +486,7 @@ function zfsguru_benchmark_randomio()
     return $rioscores;
 }
 
-function zfsguru_benchmark_start( $raid, $vdev, $label, $testdisks, $datadisks )
+function zfsguru_benchmark_start($raid, $vdev, $testdisks, $datadisks)
 {
     global $data, $benchmark, $poolname;
 
@@ -537,7 +537,7 @@ function zfsguru_benchmark_start( $raid, $vdev, $label, $testdisks, $datadisks )
     zfsguru_benchmark_averagescores($score);
 
     // report scores to console output
-    zfsguru_benchmark_report($score, $raidtxt);
+    zfsguru_benchmark_report($score);
 
     // create a new benchmark chart. by doing this for every test, we allow 
     // the user to view results of the benchmark results gathered thus far.
@@ -554,7 +554,9 @@ function humansize_binary( $size_bytes )
 
     if ($size_bytes < ( 1024 * 1024 * 10 )) {
         return ( int )( $size_bytes / 1024 ) . ' KiB';
-    } elseif ($size_bytes < ( 1024 * 1024 * 1024 * 10 ) ) {
+    }
+
+    if ($size_bytes < ( 1024 * 1024 * 1024 * 10 )) {
         return ( int )( $size_bytes / ( 1024 * 1024 ) ) . ' MiB';
     } elseif ($size_bytes < ( 1024 * 1024 * 1024 * 1024 * 10 ) ) {
         return ( int )( $size_bytes / ( 1024 * 1024 * 1024 ) ) . ' GiB';
@@ -740,8 +742,10 @@ function zfsguru_benchmark_main()
         // RAID0 / stripe
         for ( $i = $start_disks; $i <= $maxdisks; $i++ ) {
             zfsguru_benchmark_start(
-                '', array_slice($disks, 0, $i),
-                'RAID0-' . $i . 'disks', $i, $i 
+                '',
+                array_slice($disks, 0, $i),
+                $i,
+                $i
             );
         }
 
@@ -749,8 +753,10 @@ function zfsguru_benchmark_main()
         if ($dc >= 2 ) {
             for ( $i = max(2, $start_disks); $i <= $maxdisks; $i++ ) {
                 zfsguru_benchmark_start(
-                    'raidz1', array_slice($disks, 0, $i),
-                    'RAID5-' . $i . 'disks', $i, $i - 1 
+                    'raidz1',
+                    array_slice($disks, 0, $i),
+                    $i,
+                    $i - 1
                 );
                 zfsguru_benchmark_processnested($dc);
             }
@@ -760,8 +766,10 @@ function zfsguru_benchmark_main()
         if ($dc >= 3 ) {
             for ( $i = max(3, $start_disks); $i <= $maxdisks; $i++ ) {
                 zfsguru_benchmark_start(
-                    'raidz2', array_slice($disks, 0, $i),
-                    'RAID6-' . $i . 'disks', $i, $i - 2 
+                    'raidz2',
+                    array_slice($disks, 0, $i),
+                    $i,
+                    $i - 2
                 );
                 zfsguru_benchmark_processnested($dc);
             }
@@ -771,8 +779,10 @@ function zfsguru_benchmark_main()
         if ($dc >= 2 ) {
             for ( $i = max(2, $start_disks); $i <= $maxdisks; $i++ ) {
                 zfsguru_benchmark_start(
-                    'mirror', array_slice($disks, 0, $i),
-                    'RAID1-' . $i . 'disks', $i, $i - ( $i / 2 ) 
+                    'mirror',
+                    array_slice($disks, 0, $i),
+                    $i,
+                    $i - ($i / 2)
                 );
                 zfsguru_benchmark_processnested($dc);
             }
@@ -790,8 +800,10 @@ function zfsguru_benchmark_main()
                     $mirrordev .= 'mirror ' . $disks[ $y * 2 - 2 ] . ' ' . $disks[ $y * 2 - 1 ] . ' ';
                 }
                 zfsguru_benchmark_start(
-                    'RAID1+0', $mirrordev, 'RAID1+0-' . $i . 'disks',
-                    $i, $i - ( $i / $chunk_m ) 
+                    'RAID1+0',
+                    $mirrordev,
+                    $i,
+                    $i - ($i / $chunk_m)
                 );
             }
         }
@@ -809,8 +821,10 @@ function zfsguru_benchmark_main()
                     . $disks[ $y * 4 - 2 ] . ' ' . $disks[ $y * 4 - 1 ] . ' ';
                 }
                 zfsguru_benchmark_start(
-                    'RAIDZ+0', $zeedev, 'RAIDZ+0-' . $i . 'disks',
-                    $i, $i - ( $i / $chunk_z ) 
+                    'RAIDZ+0',
+                    $zeedev,
+                    $i,
+                    $i - ($i / $chunk_z)
                 );
             }
         }
@@ -829,8 +843,10 @@ function zfsguru_benchmark_main()
                     . $disks[ $y * 6 - 1 ] . ' ';
                 }
                 zfsguru_benchmark_start(
-                    'RAIDZ2+0', $zeedev, 'RAIDZ2+0-' . $i . 'disks',
-                    $i, $i - ( $i / $chunk_z2 ) 
+                    'RAIDZ2+0',
+                    $zeedev,
+                    $i,
+                    $i - ($i / $chunk_z2)
                 );
             }
         }

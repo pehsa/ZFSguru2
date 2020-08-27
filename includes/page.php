@@ -48,7 +48,7 @@ function page_processtags( $source )
 
     // process table tags
     foreach ( $requestedtags as $id => $tag ) {
-        if ((substr($tag, 0, strlen('TABLE_')) == 'TABLE_') && substr($tag, -4) != '_END') {
+        if ((strpos($tag, 'TABLE_') === 0) && substr($tag, -4) !== '_END') {
             $startpos = strpos($source, $tag);
             $endpos = strpos($source, $tag);
             $preg_table = '/\%\%(' . $tag . ')\%\%(.*)\%\%(' . $tag . '_END)\%\%/Usm';
@@ -57,7 +57,7 @@ function page_processtags( $source )
                 $source
             );
             unset($requestedtags[ $id ]);
-            $endid = @array_search($tag . '_END', $requestedtags);
+            $endid = @array_search($tag.'_END', $requestedtags, true);
             if (@is_int($endid) ) {
                 unset($requestedtags[ $endid ]);
             }
@@ -79,7 +79,7 @@ function page_processtags( $source )
     // resolve and substitute all the tags
     foreach ( $requestedtags as $tag ) {
         // call function to get the contents of the tag
-        $resolved = page_resolvetag($tag, $source);
+        $resolved = page_resolvetag($tag);
         // now replace the tag with the contents instead
         if (is_array($resolved) ) {
             page_feedback(
@@ -103,7 +103,7 @@ function page_injecttag( $newtags )
     }
 }
 
-function page_resolvetag( $tag, $source )
+function page_resolvetag($tag)
 {
     global $tags;
     if (@isset($tags[ $tag ]) ) {

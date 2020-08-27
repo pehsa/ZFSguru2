@@ -20,10 +20,9 @@ function content_status_cpu()
     page_refreshinterval($refresh_sec);
 
     // export new tags
-    $newtags = array(
+    return array(
     'STATUS_CPUUSAGE' => $cpuusage,
     'STATUS_TOPOUTPUT' => $topoutput,
     'STATUS_REFRESH_SEC' => $refresh_sec
     );
-    return $newtags;
 }

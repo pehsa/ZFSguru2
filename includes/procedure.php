@@ -89,19 +89,19 @@ function procedure_readpreferences()
         page_handle($content);
         die();
         // write preferences file containing default preferences
-        procedure_writepreferences($preferences);
+        /*procedure_writepreferences($preferences);
         // set notify to inform user we created a new file
         page_feedback(
             'A new configuration file has been created at '
             . '<b>' . htmlentities(realpath($filename)) . '</b>' 
         );
         // and return default preferences
-        return $preferences;
+        return $preferences;*/
     }
     $file = @file_get_contents($filename);
     // NOTE: == operator used and not ===
     // 0 bytes written or failure writing files
-    if ($file == false ) {
+    if ($file === false ) {
         page_feedback(
             'failed reading configuration file '
             . '<b>' . $filename . '</b> - check permissions!', 'a_warning' 
@@ -241,7 +241,7 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
             die();
         }
     }
-    return $result;
+    return true;
 }
 
 function procedure_sanitize( $check_sudo = true )

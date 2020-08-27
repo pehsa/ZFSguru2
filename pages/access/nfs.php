@@ -39,13 +39,13 @@ function content_access_nfs()
     $nfsautostart = internalservice_queryautostart('nfs');
     $nfsrunning = internalservice_querystart('nfs');
 
-    $table_nfs_items = table_nfs_items($sharenfs, $showmount, $queryfs);
+    $table_nfs_items = table_nfs_items($sharenfs, $queryfs);
 
     if ($queryfs ) {
         $query_mp = htmlentities($sharenfs[ $queryfs ][ 'mountpoint' ]);
         $query_sharenfs = htmlentities($sharenfs[ $queryfs ][ 'sharenfs' ]);
         $query_showmount = htmlentities(@$showmount[ $query_mp ]);
-        $table_nfs_shareconf = table_nfs_shareconf($sharenfs, $showmount, $queryfs);
+        $table_nfs_shareconf = table_nfs_shareconf($sharenfs, $queryfs);
         $parentfs = ( @trim($sharenfs[ $queryfs ][ 'parent' ]) ) ?
         $sharenfs[ $queryfs ][ 'parent' ] : $queryfs;
         $table_nfs_children = table_nfs_children(
@@ -147,7 +147,7 @@ function content_access_nfs()
     );
 }
 
-function table_nfs_items( $sharenfs, $showmount, $queryfs = false )
+function table_nfs_items($sharenfs, $queryfs = false)
 {
     if (!@is_array($sharenfs) ) {
         return array();
@@ -264,7 +264,7 @@ function table_nfs_accesscontrol( $options )
     return $table_nfs_ac;
 }
 
-function table_nfs_shareconf( $sharenfs, $showmount, $queryfs )
+function table_nfs_shareconf($sharenfs, $queryfs)
 {
     // required library
     activate_library('nfs');
@@ -475,7 +475,7 @@ function submit_access_nfs_accesscontrol()
     }
     // Reset permissions of all files contained by filesystem and subdirectories
     if (@isset($_POST[ 'submit_access_nfs_resetpermissions' ]) ) {
-        dangerouscommand(nfs_resetpermissions($fs, false), $url);
+        dangerouscommand(nfs_resetpermissions($fs), $url);
     }
 
     // Access Control - add IP
@@ -520,7 +520,7 @@ function submit_access_nfs_accesscontrol()
                         }
                     }
                 }
-                if (( count($networkconfig) + 1 ) !=          count($sharenfs[ $fs ][ 'options' ][ 'network' ]) 
+                if (( count($networkconfig) + 1 ) !==          count($sharenfs[ $fs ][ 'options' ][ 'network' ])
                 ) {
                     friendlyerror('IP not found in access control configuration!', $url);
                 }
@@ -544,7 +544,7 @@ function submit_access_nfs_advanced()
     // data
     $url = 'access.php?nfs&q=' . @$_GET[ 'q' ];
     $nfsfs = @$_POST[ 'nfs_fsname' ];
-    if ($nfsfs == '') {
+    if ($nfsfs === '') {
         friendlyerror('invalid form submitted; missing NFS filesystem name', $url);
     }
 
@@ -553,7 +553,8 @@ function submit_access_nfs_advanced()
     foreach ( $_POST as $postname => $postvalue ) {
         if (strpos($postname, 'cb_nfsoption_') === 0) {
             $option = substr($postname, strlen('cb_nfsoption_'));
-            if (($option != 'network') && $option and @isset($_POST['text_nfsoption_'.$option])) {
+            $index = 'text_nfsoption_'.$option;
+            if (($option !== 'network') && $option && @isset($_POST[$index])) {
                 $newconfig[ $option ][] = @$_POST[ 'text_nfsoption_' . $option ];
             }
         }

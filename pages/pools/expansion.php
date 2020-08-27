@@ -22,14 +22,13 @@ function content_pools_expansion()
     $expanddisable = ( @empty($zpools) ) ? 'disabled="disabled"' : '';
 
     // new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Expansion',
     'PAGE_TITLE' => 'Expansion',
     'POOL_SELECTBOX' => $poolselectbox,
     'POOL_MEMBERDISKS' => $memberdisks,
     'POOL_EXPANDDISABLE' => $expanddisable
     );
-    return $newtags;
 }
 
 function submit_pools_expandpool() 

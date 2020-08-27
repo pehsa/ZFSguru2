@@ -29,11 +29,11 @@ function html_zfsfilesystems( $zfs_filesystem_list = false, $selectedfs = false,
     $notfirst = 0;
     if (is_array($zfs_filesystem_list) ) {
         foreach ( $zfs_filesystem_list as $fsname => $fsdata ) {
-            if (!$hidesystem OR( $hidesystem AND!preg_match('/^.+\/zfsguru/', $fsname) ) ) {
-                if (preg_match('/^[^\/]+$/', $fsname)AND $notfirst++ ) {
+            if (!preg_match('/^.+\/zfsguru/', $fsname) ) {
+                if (preg_match('/^[^\/]+$/', $fsname)&& $notfirst++ ) {
                     $options .= '<option value=""></option>';
                 }
-                if (( $fsname == $selectedfs )AND $selectedfs ) {
+                if (( $fsname == $selectedfs )&& $selectedfs ) {
                     $options .= '<option value="' . htmlentities($fsname) . '" selected="selected">'
                     . htmlentities($fsname) . '</option>' . chr(10);
                 } else {

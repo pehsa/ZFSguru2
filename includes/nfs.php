@@ -77,7 +77,7 @@ function nfs_sharenfs_list( $filesystems = false )
                 // parse either by comma-separated string or by options begining with '-'
                 if (strpos($fsdata[ 'sharenfs' ][ 'value' ], ',') !== false ) {
                     preg_match_all(
-                        '/(.+)( ((.+)))?,|$/U', $fsdata[ 'sharenfs' ][ 'value' ],
+                        '/(.+)( (.+))?,|$/U', $fsdata[ 'sharenfs' ][ 'value' ],
                         $matches 
                     );
                 } else {
@@ -171,10 +171,7 @@ function nfs_setprofile( $fs, $profile, $privateip = '0.0.0.0' )
 
 function nfs_geteasypermissions( $options )
 {
-    if (!@isset($options['maproot']) && @isset($options['alldirs']) && @$options['mapall'][0] == '1000:1000') {
-        return true;
-    }
-    return false;
+    return !@isset($options['maproot']) && @isset($options['alldirs']) && @$options['mapall'][0] === '1000:1000';
 }
 
 function nfs_seteasypermissions( $fs, $enable = true )

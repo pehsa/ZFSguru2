@@ -57,7 +57,7 @@ function content_services_install()
         // system image availability
         $sysimg_str = ( @isset($slist[ $svc ][ 'sysver' ]) ) ?
         $slist[ $svc ][ 'sysver' ] : @$curver[ 'sysver' ];
-        $avail = strlen(@$dist[ $svc ][ 'version' ]) > 0;
+        $avail = @$dist[$svc]['version'] != '';
         $infopage_downsize = sizebinary(@$dist[ $svc ][ 'filesize' ], 1);
 
         // download in progress (DIP) - boolean
@@ -72,7 +72,7 @@ function content_services_install()
             // redirect back to normal URL (without &installing suffix)
             redirect_url('services.php?install&service=' . $svc);
         }
-        $iip = $iip_progress == 'running';
+        $iip = $iip_progress === 'running';
 
         // page refresh
         $page_refresh = 2;
@@ -199,7 +199,7 @@ function content_services_install()
 
         // handle category table
         foreach ( @$categories as $cat ) {
-            if ((strlen($cat['shortname']) > 0) && $cat['shortname'] != 'restricted') {
+            if (($cat['shortname'] != '') && $cat['shortname'] !== 'restricted') {
                 // determine servicecount
                 $servicecount = 0;
                 foreach ( $services as $servicename => $servicedata ) {
@@ -333,7 +333,7 @@ function submit_services_infopage()
     // scan POST variables
     foreach ( $_POST as $name => $value ) {
         if ($name === 'download_svc' ) {
-            service_download($svc, $url2);
+            service_download($svc);
         } elseif ($name === 'install_svc' ) {
             service_install($svc);
             redirect_url($url2 . '&installing');

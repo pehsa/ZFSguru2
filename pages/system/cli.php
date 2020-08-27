@@ -16,7 +16,7 @@ function content_system_cli()
     $tags[ 'CLASS_NOOUTPUT' ] : 'hidden';
 
     // export new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Command line',
     'PAGE_TITLE' => 'Command line',
     'CLI_HOSTNAME' => $hostname,
@@ -24,7 +24,6 @@ function content_system_cli()
     'CLASS_RV' => @$class_rv,
     'CLASS_NOOUTPUT' => @$class_nooutput
     );
-    return $newtags;
 }
 
 function submit_cli_execute() 
@@ -81,7 +80,7 @@ function submit_cli_execute()
     }
 
     // export as tags
-    $newtags = array(
+    return array(
     'CLI_COMMAND' => $command,
     'CLI_OUTPUT' => @$output,
     'CLI_RV' => @$rv,
@@ -90,5 +89,4 @@ function submit_cli_execute()
     'CLASS_NOOUTPUT' => @$class_nooutput,
     'CHECKED_CLIROOT' => @$cliroot
     );
-    return $newtags;
 }

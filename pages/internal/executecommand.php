@@ -8,7 +8,7 @@ function submit_executecommand()
     // craft command array from POST data
     $command_arr = array();
     foreach ( $_POST as $name => $value ) {
-        if ((substr($name, 0, strlen('zfs_command_')) == 'zfs_command_') && strlen($value) > 0) {
+        if ((strpos($name, 'zfs_command_') === 0) && $value != '') {
             $command_arr[] = $value;
         }
     }

@@ -11,7 +11,7 @@ function background_register( $tag, $data )
     $query = background_query($tag);
 
     // sanity checks
-    if (!is_string($tag)OR($tag === '') ) {
+    if (!is_string($tag)||($tag === '') ) {
         error('cannot register background job: invalid tag provided');
     }
     if ($query[ 'exists' ] ) {
@@ -20,7 +20,7 @@ function background_register( $tag, $data )
             . htmlentities($tag) . '</b> already exists!' 
         );
     }
-    if (!is_array($data[ 'commands' ])OR empty($data[ 'commands' ]) ) {
+    if (!is_array($data[ 'commands' ])|| empty($data[ 'commands' ]) ) {
         error('cannot register background job: no command array provided');
     }
 
@@ -45,12 +45,10 @@ function background_register( $tag, $data )
         // remove stale directory
         super_execute('/bin/rm -R ' . escapeshellarg($dir));
         clearstatcache();
-        if (is_dir($dir) ) {
-            error('background directory already exists, and removing it has failed!');
-        }
+        error('background directory already exists, and removing it has failed!');
     }
     $r = super_execute('/bin/mkdir -p ' . escapeshellarg($dir));
-    if ($r[ 'rv' ] != 0 ) {
+    if ($r[ 'rv' ] !== 0 ) {
         error('could not create directory: ' . htmlentities($dir));
     }
     super_execute('/usr/sbin/chown root:888 ' . escapeshellarg($dir));
@@ -75,7 +73,7 @@ function background_register( $tag, $data )
         }
 
         // sanity
-        if (!@is_string($command)OR( @strlen($command) < 2 ) ) {
+        if (!@is_string($command)||( @strlen($command) < 2 ) ) {
             error('background: command should be a string of at least 2 characters');
         }
         // TODO: why? has to do with array sorting and overwriting integer keys?
@@ -164,7 +162,7 @@ function background_query( $tag )
     if (!is_dir($dir) ) {
         return $query;
     }
-    if (!file_exists($file_master)OR!file_exists($file_storage) ) {
+    if (!file_exists($file_master)||!file_exists($file_storage) ) {
         return $query;
     }
     if (!@is_array($storage[ 'commands' ]) ) {
@@ -208,7 +206,7 @@ function background_query( $tag )
             }
         }
     }
-    if ($query[ 'error' ]AND( $storage[ 'options' ][ 'execution' ] === 'protected' ) ) {
+    if ($query[ 'error' ]&&( $storage[ 'options' ][ 'execution' ] === 'protected' ) ) {
         $query[ 'running' ] = false;
     }
 
@@ -247,7 +245,7 @@ function background_remove( $tag )
     return ( $r[ 'rv' ] == 0 );
 }
 
-function background_kill( $tag )
+function background_kill()
 {
     error('background_kill function is not yet implemented');
 }

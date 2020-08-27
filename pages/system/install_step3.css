@@ -27,7 +27,6 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b55b8d', endC
 	background-image: linear-gradient(#b55b8d, #24121b);
 }
 input.installbutton:hover {
-	cursor: pointer;
 	cursor: hand;
 	color: #ede;
 	border: 2px solid #422;

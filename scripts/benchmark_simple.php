@@ -65,10 +65,8 @@ if (true ) {
         // process result
         if (strpos(@$output[ 2 ], 'bytes transferred in') === false ) {
             break;
-            // inactive code
-            zfsguru_benchmark_error('benchmarking dd transferred');
         }
-        preg_match('/^[0-9]+.*\(([0-9]+) bytes\/sec/', $output[ 2 ], $matches);
+        preg_match('/^\d+.*\((\d+) bytes\/sec/', $output[ 2 ], $matches);
         if (!is_numeric(@$matches[ 1 ]) ) {
             zfsguru_benchmark_error('no score detected in dd output');
         } else {

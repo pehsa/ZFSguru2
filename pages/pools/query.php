@@ -510,7 +510,7 @@ function submit_pools_operations()
             $upgrade = ( ( $nr > $poolversion )AND( $nr <= $zfsver[ 'spa' ] ) ) ?
             'normal' : 'hidden';
             $downgrade = ( $nr < $poolversion ) ? 'normal' : 'hidden';
-            if ($upgrade == 'normal' ) {
+            if ($upgrade === 'normal' ) {
                 $nr_upgrade++;
             }
             $selected = ( $nr == $zfsver[ 'spa' ] ) ? 'checked' : '';
@@ -565,7 +565,9 @@ function submit_pools_operations()
         $content = content_handle('pools', 'rename', false, true);
         page_handle($content);
         die();
-    } elseif (@isset($_POST[ 'export_pool' ]) ) {
+    }
+
+    if (@isset($_POST[ 'export_pool' ])) {
         dangerouscommand('/sbin/zpool export ' . $poolname, $url1);
     } elseif (@isset($_POST[ 'destroy_pool' ]) ) {
         // required libraries
@@ -614,7 +616,7 @@ function submit_pools_operations()
             foreach ( $vollist as $volname => $voldata ) {
                 $prop = zfs_filesystem_properties($volname, 'org.freebsd:swap');
                 // check if volume is in use as a SWAP device
-                if ((@$prop[$volname]['org.freebsd:swap']['value'] == 'on') && @strpos(
+                if ((@$prop[$volname]['org.freebsd:swap']['value'] === 'on') && @strpos(
                         $swapctl,
                         '/dev/zvol/'.$volname
                     ) !== false) {

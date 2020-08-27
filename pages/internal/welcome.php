@@ -419,7 +419,7 @@ function submit_welcome_submit_3()
         // scan for selected whole disks
         $wholedisks = array();
         foreach ( $_POST as $var => $value ) {
-            if ((substr($var, 0, strlen('addwholedisk_')) == 'addwholedisk_') && $value == 'on') {
+            if ((strpos($var, 'addwholedisk_') === 0) && $value === 'on') {
                 $wholedisks[] = substr($var, strlen('addwholedisk_'));
             }
         }
@@ -493,7 +493,7 @@ function submit_welcome_submit_3()
             clearstatcache();
             if (file_exists('/dev/gpt/' . $label) ) {
                 friendlyerror(
-                    'another disk exists with the name ' . label
+                    'another disk exists with the name ' . $label
                     . ' - please choose another pool name!', $url 
                 );
             }
@@ -551,13 +551,13 @@ function submit_welcome_submit_3()
         $mountpoint = '/' . $poolname;
 
         // determine search path
-        $searchpath = '-d /dev';
+        /*$searchpath = '-d /dev';
         if (is_dir('/dev/label') ) {
             $searchpath .= ' -d /dev/label';
         }
         if (is_dir('/dev/gpt') ) {
             $searchpath .= ' -d /dev/gpt';
-        }
+        }*/
 
         // handle sectorsize override
         $old_ashift_min = @trim(shell_exec('/sbin/sysctl -n vfs.zfs.min_auto_ashift'));
@@ -639,7 +639,7 @@ function submit_welcome_submit_3()
             'b_success' 
         );
         redirect_url($url);
-    } elseif (( @strlen($poolid) > 0 )AND!$result ) {
+    } elseif (( @strlen($poolid) > 0 )) {
         friendlyerror('failed importing pool', $url);
     }
 }

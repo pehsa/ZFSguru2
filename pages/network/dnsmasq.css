@@ -8,8 +8,6 @@ div.tower-start {
 	border: 1px solid #144;
 	border-radius: 15px 15px 0 0;
 	font-family: serif;
-	color: #401;
-	color: #144;
 	color: #333;
 	background: #555;
 	background-image: -moz-linear-gradient(#888, #555);
@@ -17,8 +15,6 @@ div.tower-start {
 	background-image: -o-linear-gradient(#888, #555);
 	background-image: -ms-linear-gradient(#888, #555);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#555555');
-	background-image: linear-gradient(#e48, #925);
-	background-image: linear-gradient(#4cd, #09849d);
 	background-image: linear-gradient(#eee, #999);
 }
 div.tower-base {

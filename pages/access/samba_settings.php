@@ -137,7 +137,7 @@ function content_access_samba_settings()
 
         if (!empty($scandir) ) {
             reset($scandir);
-            if (@isset($_GET['select']) && in_array($_GET['select'], $scandir)) {
+            if (@isset($_GET['select']) && in_array($_GET['select'], $scandir, true)) {
                 $samba_log_path = $logdir . $_GET[ 'select' ];
             }
             if (!@isset($samba_log_path) ) {
@@ -151,7 +151,7 @@ function content_access_samba_settings()
             '
    <script type="text/javascript">
     window.onload=function() {
-     var objDiv = document.getElementById("samba_logbox");
+     const objDiv = document.getElementById("samba_logbox");
      objDiv.scrollTop = objDiv.scrollHeight;
     };
    </script>' 
@@ -304,7 +304,7 @@ function submit_access_samba_settings()
         // remove extra globals
         $removeglobals = array();
         foreach ( $_POST as $name => $value ) {
-            if ((substr($name, 0, strlen('cb_removeglob_')) == 'cb_removeglob_') && $value == 'on') {
+            if ((strpos($name, 'cb_removeglob_') === 0) && $value === 'on') {
                 $removeglob = trim(
                     str_replace(
                         '_', ' ',
@@ -316,11 +316,11 @@ function submit_access_samba_settings()
         }
 
         // file permissions
-        if (@strlen($_POST[ 'special-permissions' ]) == 9 ) {
+        if (@strlen($_POST[ 'special-permissions' ]) === 9 ) {
             $special_permissions = @$_POST[ 'special-permissions' ];
             $perm_file = @substr($special_permissions, 0, 4);
             $perm_dir = @substr($special_permissions, 5, 4);
-            if (strlen($perm_dir) != 4 ) {
+            if (strlen($perm_dir) !== 4 ) {
                 error('file permissions not submitted properly');
             }
             $newconf[ 'global' ][ 'create mask' ] = $perm_file;
@@ -331,14 +331,14 @@ function submit_access_samba_settings()
         if (@$_POST[ 'cbspecial_dfree' ] === 'on' ) {
             $dfree_script = '/usr/local/www/zfsguru/scripts/dfree "%P"';
             $newconf[ 'global' ][ 'dfree command' ] = $dfree_script;
-        } elseif (( @strlen($_POST[ 'extraglobal-dfree command' ]) < 2 )OR( @$_POST[ 'extraglobal-dfree command' ] == $dfree_script ) ) {
+        } elseif (( @$_POST[ 'extraglobal-dfree command' ] === $dfree_script ) ||( @strlen($_POST[ 'extraglobal-dfree command' ]) < 2 )) {
             if (@isset($newconf[ 'global' ][ 'dfree command' ]) ) {
                 $removeglobals[ 'dfree command' ] = 'dfree command';
             }
         }
 
         // add new variable to samba share configuration
-        if ((@$_POST['newvariable_varname'] != '')AND(@$_POST['newvariable_value'] != '') ) {
+        if ((@$_POST['newvariable_varname'] !== '')&&(@$_POST['newvariable_value'] !== '') ) {
             $newconf[ 'global' ][ $_POST[ 'newvariable_varname' ] ] =
             $_POST[ 'newvariable_value' ];
         }
@@ -348,7 +348,7 @@ function submit_access_samba_settings()
 
         // redirect
         if ($result !== true ) {
-            error('Error writing Samba configuration file ("' . $result . '")');
+            error('Error writing Samba configuration file ("' .false. '")');
         } else {
             friendlynotice('Samba configuration updated!', $redir);
         }

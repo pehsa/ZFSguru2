@@ -49,7 +49,6 @@ div.squareboxcontainer a:hover {
 	text-decoration: none;
 }
 div.squareboxcontainer a:active {
-	background-color: #900;
 	background-color: #444;
 }
 div.squareboxcontainer a.squareboxactive {

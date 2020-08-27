@@ -132,9 +132,9 @@ function sort_snapshots( $a, $b )
 
     if ($invertedsort) {
         return ( $aa < $bb ) ? 1 : -1;
-    } else {
-        return ( $aa < $bb ) ? -1 : 1;
     }
+
+    return ( $aa < $bb ) ? -1 : 1;
 }
 
 function submit_snapshot_operation() 

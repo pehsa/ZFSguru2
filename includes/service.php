@@ -184,7 +184,6 @@ function service_runstatus( $svc )
     // KMOD
     $kmod = @trim(file_get_contents($spath . '/KMOD'));
     if ($kmod !== '') {
-        $kmod_arr = array();
         $procarr = explode(chr(10), $kmod);
         if (is_array($procarr) ) {
             foreach ( $procarr as $kernelmodule ) {
@@ -200,7 +199,6 @@ function service_runstatus( $svc )
                     } elseif (!$kmodloaded AND $status === 'running' ) {
                         $status = 'partial';
                     }
-                    $kmod_arr[ $kernelmodule ] = $rv == 0;
                 }
             }
         }
@@ -249,7 +247,7 @@ function service_start_blocking( $svc, $timeout_sec = 15, $runagain_sec = 10 )
             return false;
         }
 
-        if ($status == 'running') {
+        if ($status === 'running') {
             return true;
         }
         if ($count++ % $runagaincycles == 0 ) {
@@ -300,7 +298,7 @@ function service_stop_blocking( $svc, $timeout_sec = 15, $runagain_sec = 6 )
             return false;
         }
 
-        if ($status == 'stopped') {
+        if ($status === 'stopped') {
             return true;
         }
         if ($count++ % $runagaincycles == 0 ) {
@@ -334,7 +332,9 @@ function service_queryautostart( $svc )
 
     if ($rv == 5) {
         return false;
-    } elseif ($rv == 6 OR $rv === null ) {
+    }
+
+    if ($rv == 6 OR $rv === null) {
         return null;
     } else {
         page_feedback(
@@ -396,13 +396,11 @@ function service_download_progress( $svc )
     $targetfile = $dirs[ 'download' ] . '/' . $dist[ $svc ][ 'filename' ];
 
     // retrieve status of background download
-    $status = server_download_bg_query(
-        $uri, $dist[ $svc ][ 'filesize' ],
-        $dist[ $svc ][ 'sha512' ] 
-    );
-
     // return status
-    return $status;
+    return server_download_bg_query(
+        $uri, $dist[ $svc ][ 'filesize' ],
+        $dist[ $svc ][ 'sha512' ]
+    );
 }
 
 function service_install( $svc )
@@ -506,9 +504,9 @@ function service_install_progress( $svc )
 
     if (@$query[ 'running' ] === true) {
         return 'running';
-    } else {
-        return 'finished';
     }
+
+    return 'finished';
 }
 
 function service_install_postprocess( $svc )
@@ -535,7 +533,7 @@ function service_install_postprocess( $svc )
     // 4 = success, requires reboot of webserver
     // 5 = failed, requires internet access
     foreach ( $query[ 'ctag' ] as $name => $data ) {
-        if (( $name != 'install' )AND( $data[ 'rv' ] != 0 )) {
+        if (( $name !== 'install' )AND( $data[ 'rv' ] != 0 )) {
             page_feedback(
                 'service ' . htmlentities($svc) . ' could not be installed - '
                 . htmlentities($name) . '-phase failed with code ' . $data[ 'rv' ], 'a_error'
@@ -544,7 +542,7 @@ function service_install_postprocess( $svc )
             return false;
         }
 
-        if ($name == 'install') {
+        if ($name === 'install') {
             if ($data['rv'] == 1) {
                 page_feedback(
                     'service '.htmlentities($svc).' could not be installed - '
@@ -712,7 +710,7 @@ function service_upgrade( $svc )
 
     // notify user of result
     if ($result[ 'rv' ] != 0 ) {
-        error('could not extract to ' . $sroot . '!', 'a_failure');
+        error('could not extract to ' . $sroot . '!');
     }
 
     // run install script of new version
@@ -977,28 +975,28 @@ function service_runcontrol_isenabled( $rc, $rcfile = false )
 
     // look for non-commented out $rc line
     if (preg_match($preg, $rcconf, $matches) ) {
-        if (@strtoupper($matches[ 1 ]) == 'YES') {
+        if (@strtoupper($matches[ 1 ]) === 'YES') {
             return true;
         }
 
-        if (@strtoupper($matches[ 1 ]) == 'NO') {
+        if (@strtoupper($matches[ 1 ]) === 'NO') {
             return false;
-        } else {
-            return ( string )@$matches[ 1 ];
         }
+
+        return ( string )@$matches[ 1 ];
     } elseif (!$rcfile ) {
         $rcdefaults = file_get_contents('/etc/defaults/rc.conf');
         unset($matches);
         if (preg_match($preg, $rcdefaults, $matches) ) {
-            if (@strtoupper($matches[ 1 ]) == 'YES') {
+            if (@strtoupper($matches[ 1 ]) === 'YES') {
                 return true;
             }
 
-            if (@strtoupper($matches[ 1 ]) == 'NO') {
+            if (@strtoupper($matches[ 1 ]) === 'NO') {
                 return false;
-            } else {
-                return ( string )@$matches[ 1 ];
             }
+
+            return ( string )@$matches[ 1 ];
         } else {
             return false;
         }

@@ -79,12 +79,11 @@ function content_files_browse()
     $browsebox = implode(chr(10), $lsarr);
 
     // new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'File browser',
     'PAGE_TITLE' => 'File browser',
     'CLASS_AJAX' => $class_ajax,
     'FILES_WD' => $wd,
     'FILES_BROWSEBOX' => $browsebox
     );
-    return $newtags;
 }

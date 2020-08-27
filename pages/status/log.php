@@ -33,7 +33,7 @@ function content_status_log()
         '
   <script type="text/javascript">
    window.onload=function() {
-    var objDiv = document.getElementById("status_logbox");
+    const objDiv = document.getElementById("status_logbox");
     objDiv.scrollTop = objDiv.scrollHeight;
    };
   </script>' 

@@ -98,9 +98,9 @@ function content_system_migration()
         // document root
         $docroot = $guru[ 'docroot' ];
         // size of system files
-        $sysfiles = migration_sysfiles();
+        $msysfiles = migration_sysfiles();
         $size = array();
-        foreach ( $sysfiles as $systag => $sysfiles ) {
+        foreach ( $msysfiles as $systag => $sysfiles ) {
             foreach ( $sysfiles as $sysfile ) {
                 if (is_dir($sysfile) ) {
                     @$size[ $systag ] += @( int )filesize($sysfile);
@@ -187,10 +187,10 @@ function submit_system_migration()
         $mig_size = 666;
         $mig_date = time();
         // fetch sysfiles array
-        $sysfiles = migration_sysfiles();
+        $msysfiles = migration_sysfiles();
         // determine which sysfiles were selected by user
         $selected = array();
-        foreach ( $sysfiles as $systag => $sysfiles ) {
+        foreach ( $msysfiles as $systag => $sysfiles ) {
             foreach ( $sysfiles as $sysfile ) {
                 if (@$_POST[ 'mig_cfg_' . $systag ] === 'on' ) {
                     $selected[] = $systag;
@@ -222,21 +222,28 @@ function submit_system_migration()
          // light
         case 'promote':
             migration_promote($mig_id);
+            break;
         case 'modify':
             friendlyerror('modify not yet implemented', $url2);
+            break;
         case 'delete':
             migration_deleteprofile($mig_id);
             page_feedback('profile deleted!', 'c_notice');
             redirect_url($url);
+            break;
             // heavy
         case 'update':
             friendlyerror('update not yet implemented', $url2);
+            break;
         case 'activate':
             friendlyerror('activation not yet implemented', $url2);
+            break;
         case 'download':
             friendlyerror('download not yet implemented', $url2);
+            break;
         case 'prune':
             migration_prune($mig_id);
+            break;
         default:
         }
     }

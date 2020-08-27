@@ -90,7 +90,7 @@ function content_pools_slog()
     }
 
     // check whether pool is healthy when selected
-    if ($querypool && ($zpools[$querypool]['status'] != 'ONLINE') and ($zpools[$querypool]['status'] != 'DEGRADED')) {
+    if ($querypool && ($zpools[$querypool]['status'] !== 'ONLINE') and ($zpools[$querypool]['status'] !== 'DEGRADED')) {
         friendlyerror(
             'pool <b>' . $querypool . '</b> can not be used, because the '
             . 'pool is <b>' . $zpools[ $querypool ][ 'status' ] . '</b>!', 'pools.php?slog'

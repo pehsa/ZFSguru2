@@ -51,7 +51,7 @@ function content_pools_create()
     $memberdisks = html_memberdisks();
 
     // new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Create',
     'PAGE_TITLE' => 'Create new pool',
     'RADIO_MODERNZFS' => $radio_modernzfs,
@@ -60,7 +60,6 @@ function content_pools_create()
     'POOL_SPALIST' => $poolspa,
     'POOL_MEMBERDISKS' => $memberdisks
     );
-    return $newtags;
 }
 
 function submit_pools_createpool() 
@@ -74,7 +73,7 @@ function submit_pools_createpool()
     $sectorsize = ( @$_POST[ 'new_zpool_sectorsize' ] ) ?
     ( int )$_POST[ 'new_zpool_sectorsize' ] : 512;
     $recordsize = @$_POST[ 'new_zpool_recordsize' ];
-    $force = @$_POST[ 'new_zpool_force' ] == 'on';
+    $force = @$_POST[ 'new_zpool_force' ] === 'on';
     $url = 'pools.php?create';
     $url2 = 'pools.php?query=' . $new_zpool;
 

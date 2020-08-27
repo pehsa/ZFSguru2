@@ -13,7 +13,9 @@ function persistent_read( $section = false )
 
     if ($section == false) {
         return $arr;
-    } elseif (@!isset($arr[ $section ]) ) {
+    }
+
+    if (@!isset($arr[ $section ])) {
         return false;
     } else {
         return $arr[ $section ];

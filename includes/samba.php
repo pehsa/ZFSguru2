@@ -10,10 +10,10 @@ function samba_readconfig()
     }
 
     // begin by splitting the configuration file in three chunks
-    $split = preg_split('/^\#(\=)+(.*)(\=)+\r?$/m', $rawtext);
+    $split = preg_split('/^#(=)+(.*)(=)+\r?$/m', $rawtext);
     // now fetch all the global variables
     preg_match_all(
-        '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*\=[ ]*(.*)$/Um',
+        '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*=[ ]*(.*)$/Um',
         $split[ 1 ], $global
     );
     if (is_array($global) ) {
@@ -25,8 +25,8 @@ function samba_readconfig()
     }
 
     // now work on the shares
-    $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]/Um', $split[ 2 ]);
-    preg_match_all('/^\[([a-zA-Z0-9]+)\]/Um', $split[ 2 ], $sharenames_match);
+    $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)]/Um', $split[ 2 ]);
+    preg_match_all('/^\[([a-zA-Z0-9]+)]/Um', $split[ 2 ], $sharenames_match);
     $sharenames = $sharenames_match[ 1 ];
     // the following did not work, due to PREG_SPLIT_DELIM_CAPTURE messing
     // with the results. unknown issue; to be looked at?
@@ -37,7 +37,7 @@ function samba_readconfig()
     if (is_array($sharesplit) ) {
         foreach ( $sharesplit as $sid => $singleshare ) {
             preg_match_all(
-                '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*\=[ ]*(.*)$/m',
+                '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*=[ ]*(.*)$/m',
                 $singleshare, $sharecontents
             );
             $sharename = @$sharenames[ $sid - 1 ];
@@ -475,19 +475,19 @@ function samba_share_accesstype( $perm )
     }
     return 'custom';
 
-    if (@$perm[ 'readonly' ][ 0 ] === 'guest' ) {
+    /*if (@$perm[ 'readonly' ][ 0 ] === 'guest' ) {
         $atype = 'public';
     } elseif (in_array('@share', @$perm['noaccess'], true)) {
         $atype = 'access disabled';
     } else {
         $atype = '?';
     }
-    return $atype;
+    return $atype;*/
 }
 
 function samba_variables_global()
 {
-    $globalvars = array(
+    return array(
     'abort shutdown script',
     'acl allow execute always',
     'acl compatibility',
@@ -739,12 +739,11 @@ function samba_variables_global()
     'write raw',
     'wtmp directory'
     );
-    return $globalvars;
 }
 
 function samba_variables_share()
 {
-    $sharevars = array(
+    return array(
     'access based share enum',
     'acl check permissions',
     'acl group control',
@@ -879,7 +878,6 @@ function samba_variables_share()
     'write cache size',
     'write list'
     );
-    return $sharevars;
 }
 
 function samba_variables_alias()

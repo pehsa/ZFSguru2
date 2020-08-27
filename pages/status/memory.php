@@ -43,7 +43,7 @@ function content_status_memory()
         '/^(Virtual|Real|Shared Virtual|Shared Real) Memory:[\s]+'
         . '\(Total: ([0-9]+)K Active: ([0-9]+)K\)$/m', $vmtotal, $vmpreg 
     );
-    preg_match('/^Free Memory Pages:[\s]+([0-9]+)K$/m', $vmtotal, $freepreg);
+    preg_match('/^Free Memory Pages:[\s]+(\d+)K$/m', $vmtotal, $freepreg);
 
     // unknown memory
     $unknownmem = $mem - ( int )array_sum($top);

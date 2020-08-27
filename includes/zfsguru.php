@@ -365,7 +365,7 @@ function zfsguru_locatesystem()
 
     // look for unknown system version on LiveCD
     $sha512_livecd = @trim(file_get_contents($livecd . '.sha512'));
-    if ((strlen($sha512_livecd) == 128) && !in_array($locate['checksum'], $sha512) && @is_readable($livecd)) {
+    if ((strlen($sha512_livecd) == 128) && !in_array($locate['checksum'], $sha512, true) && @is_readable($livecd)) {
         $name = 'LiveCD-unknown';
         $locate[ 'checksum' ][ $sha512_livecd ] = $name;
         $locate[ 'name' ][ $name ] = array(
@@ -381,7 +381,7 @@ function zfsguru_locatesystem()
     foreach ( $usb as $number => $path ) {
         if (@is_readable($path) ) {
             $sha512_usb = @trim(file_get_contents($path . '.sha512'));
-            if ((strlen($sha512_livecd) == 128) && !in_array($sha512_usb, $sha512)) {
+            if ((strlen($sha512_livecd) == 128) && !in_array($sha512_usb, $sha512, true)) {
                 $name = 'USB-unknown-' . ( int )$number;
                 $locate[ 'checksum' ][ $sha512_usb ] = $name;
                 $locate[ 'name' ][ $name ] = array(
@@ -538,9 +538,9 @@ function zfsguru_install( $postdata )
     if ($dist === 'RoZ' ) {
         $commands = zfsguru_install_roz($postdata, $version, $source, $target);
     } elseif ($dist === 'RoR' ) {
-        $commands = zfsguru_install_ror($postdata, $version, $source, $target);
+        $commands = zfsguru_install_ror($postdata);
     } elseif ($dist === 'RoM' ) {
-        $commands = zfsguru_install_rom($postdata, $version, $source, $target);
+        $commands = zfsguru_install_rom($postdata);
     } else {
         error('invalid distribution: "' . htmlentities($dist) . '"');
     }
@@ -804,9 +804,9 @@ function zfsguru_install_rom( $postdata )
     die('RoM install');
 
     // legacy:
-    $idata[ 'path_mbr' ] = @$_POST[ 'path_boot_mbr' ];
+    /*$idata[ 'path_mbr' ] = @$_POST[ 'path_boot_mbr' ];
     $idata[ 'path_loader' ] = @$_POST[ 'path_boot_loader' ];
-    $idata[ 'loaderconf' ] = $guru[ 'docroot' ] . '/files/emb_loader.conf';
+    $idata[ 'loaderconf' ] = $guru[ 'docroot' ] . '/files/emb_loader.conf';*/
 }
 
 function zfsguru_install_progress( & $activetask, & $installtasks )
@@ -859,19 +859,20 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
         }
 
         return true;
-    } else {
-        // running
-        $activetask = $desc[ 'INIT' ];
-        foreach ( $query[ 'storage' ][ 'commands' ] as $tag => $data ) {
-            $prefix = ( strpos($tag, '-') !== false ) ?
-            substr($tag, 0, strpos($tag, '-')) : $tag;
-            if (!( strlen($query[ 'ctag' ][ $tag ][ 'rv' ]) > 0 ) ) {
-                $activetask = $desc[ $prefix ];
-                break;
-            }
-        }
-        return true;
     }
+
+    // running
+    $activetask = $desc[ 'INIT' ];
+    foreach ($query[ 'storage' ][ 'commands' ] as $tag => $data ) {
+        $prefix = ( strpos($tag, '-') !== false ) ?
+        substr($tag, 0, strpos($tag, '-')) : $tag;
+        if (!( strlen($query[ 'ctag' ][ $tag ][ 'rv' ]) > 0 ) ) {
+            $activetask = $desc[ $prefix ];
+            break;
+        }
+    }
+
+    return true;
 }
 
 function zfsguru_update_webinterface( $tarball )

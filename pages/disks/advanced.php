@@ -10,6 +10,7 @@ function content_disks_advanced()
 
     // queried disk
     $query = (@$_GET['query'] != '') ? $_GET[ 'query' ] : false;
+    $cap = null;
 
     // detailed information when querying disk
     if ($query ) {
@@ -91,7 +92,7 @@ function content_disks_advanced()
         if (is_array(@$cap[ 'main' ]) ) {
             foreach ( @$cap[ 'main' ] as $property => $value ) {
                 // add 'rpm' suffix to the "media RPM" property value
-                if (( $property === 'media RPM' )AND( is_numeric($value) ) ) {
+                if (( $property === 'media RPM' )&&( is_numeric($value) ) ) {
                     $value .= 'rpm';
                 }
                 // add new row
@@ -218,7 +219,7 @@ function content_disks_advanced()
     $class_nodetails = ( $query AND $cap ) ? 'hidden' : 'normal';
 
     // export new tags
-    $newtags = @array(
+    return @array(
     'PAGE_ACTIVETAB' => 'Advanced',
     'PAGE_TITLE' => 'Advanced disk settings',
     'TABLE_POWERLIST' => $powertable,
@@ -235,7 +236,6 @@ function content_disks_advanced()
     'APM_CURRENT' => $apm_current,
     'QUERY_DISK' => $query
     );
-    return $newtags;
 }
 
 function decode_raw_apmsetting( $rawapm ) 
@@ -246,7 +246,7 @@ function decode_raw_apmsetting( $rawapm )
     if (strpos($rawapm, '0x') === 0) {
         return @hexdec($rawapm);
     }
-    if (( ( $p = strpos($rawapm, '/0x80') ) != false )AND( is_numeric(
+    if (( ( $p = strpos($rawapm, '/0x80') ) != false )&&( is_numeric(
         @$rawapm {
         $p + 5
         } 
@@ -254,7 +254,7 @@ function decode_raw_apmsetting( $rawapm )
     ) {
         return @hexdec(substr($rawapm, strpos($rawapm, '/0x80') + 5));
     }
-    if (( strpos($rawapm, '/0x') != false )AND( is_numeric(
+    if (( strpos($rawapm, '/0x') != false )&&( is_numeric(
         $rawapm {
         0
         } 
@@ -304,7 +304,7 @@ function submit_disks_advanced()
     }
 
     // APM setting change
-    if (@isset($_POST[ 'apm_submit' ])AND( is_numeric($_POST[ 'apm_newsetting' ]) ) ) {
+    if (@isset($_POST[ 'apm_submit' ])&&( is_numeric($_POST[ 'apm_newsetting' ]) ) ) {
         if ($_POST['apm_setting_disk'] != '') {
             $redir .= '&query=' . $_POST[ 'apm_setting_disk' ];
         } else {

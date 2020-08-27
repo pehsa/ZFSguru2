@@ -31,7 +31,7 @@ function dmi_decode()
 
     $dmidata = array();
     for ($i = 1, $iMax = count($split); $i <= $iMax; $i++ ) {
-        @preg_match('/^(0x[0-9a-fA-F]+), DMI type ([0-9]+), ([^\n]+)\n([^\n]+)\n(.+)$/s', $split[ $i ], $matches);
+        @preg_match('/^(0x[0-9a-fA-F]+), DMI type (\d+), ([^\n]+)\n([^\n]+)\n(.+)$/s', $split[ $i ], $matches);
         @preg_match_all('/^[\s]*(.+): (.+)$/m', $matches[ 5 ], $datamatches);
         $data = array();
         if (@strlen($matches[ 1 ]) < 1 ) {

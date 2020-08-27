@@ -103,7 +103,7 @@ function gurudb_validate( $newgeneral )
         );
         return false;
     }
-    if (!preg_match('/([0-9]+)\:([0-9]+)/', $newgeneral[ 'compat' ], $matches)) {
+    if (!preg_match('/(\d+):(\d+)/', $newgeneral[ 'compat' ], $matches)) {
         page_feedback(
             'downloaded GuruDB rejected: unknown compatibility',
             'a_failure'
@@ -117,7 +117,9 @@ function gurudb_validate( $newgeneral )
             . 'update web-interface and try again', 'a_failure'
         );
         return false;
-    } elseif (( int )$matches[ 2 ] < $guru[ 'compat_min' ] ) {
+    }
+
+    if (( int )$matches[ 2 ] < $guru[ 'compat_min' ]) {
         page_feedback(
             'downloaded GuruDB rejected: database is too old (compat)',
             'a_failure'

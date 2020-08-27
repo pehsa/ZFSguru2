@@ -29,7 +29,7 @@ function zfs_featureflags()
         return array();
     }
     preg_match_all(
-        '/^([a-zA-Z0-9_]+)[\s]*(\((.*)\))?[\s]*\n[\s]*(.*\.?)$/m',
+        '/^(\w+)[\s]*(\((.*)\))?[\s]*\n[\s]*(.*\.?)$/m',
         $match[ 1 ], $matches 
     );
     $featureflags = array();
@@ -349,7 +349,7 @@ function zfs_pool_getbootfs( $poolname )
     // fetch bootfs property
     $result = super_execute('/sbin/zpool get bootfs ' . $poolname);
     if (@strlen($result[ 'output_arr' ][ 1 ]) > 0 ) {
-        $preg_string = '/^[^\s]+[\s]+[^\s]+[\s]+([^\s]+)[\s]+[^\s]+$/m';
+        $preg_string = '/^\S+[\s]+\S+[\s]+(\S+)[\s]+\S+$/m';
         preg_match($preg_string, $result[ 'output_arr' ][ 1 ], $matches);
         if (@strlen($matches[ 1 ]) > 0 ) {
             return $matches[ 1 ];
@@ -376,20 +376,18 @@ function zfs_pool_ismember( $disk, $strict_comparison = true )
     $status_all = zfs_pool_status_all();
     foreach ( $status_all as $poolname => $poolstatus ) {
         foreach ( $poolstatus[ 'members' ] as $data ) {
-            if ($data[ 'name' ] == $disk) {
+            if ($data[ 'name' ] === $disk) {
                 return $poolname;
             }
 
-            if (!$strict_comparison) {
-                if (substr($data[ 'name' ], 0, strlen($disk)) == $disk ) {
-                    return $poolname;
-                }
+            if (!$strict_comparison && strpos($data['name'], $disk) === 0) {
+                return $poolname;
             }
         }
     }
     return false;
 
-    if (is_array($poolstatus[ 'members' ]) ) {
+    /*if (is_array($poolstatus[ 'members' ]) ) {
         foreach ( $poolstatus[ 'members' ] as $data ) {
             if ($data[ 'name' ] == $disk) {
                 return true;
@@ -402,7 +400,7 @@ function zfs_pool_ismember( $disk, $strict_comparison = true )
             }
         }
     }
-    return false;
+    return false;*/
 }
 
 function zfs_pool_memberdetails( $poolstatus, $poolname )
@@ -462,21 +460,21 @@ function zfs_pool_ashift( $poolname )
         . ' | grep ashift' 
     );
     if (preg_match(
-        '/^[\s]*ashift\=([0-9]+)/m', $result[ 'output_str' ],
+        '/^[\s]*ashift=(\d+)/m', $result[ 'output_str' ],
         $matches
     )) {
         return $matches[ 1 ];
     }
 
     if (preg_match(
-        '/^[\s]*ashift\:[\s]*([0-9]+)/m', $result[ 'output_str' ],
+        '/^[\s]*ashift:[\s]*(\d+)/m', $result[ 'output_str' ],
         $matches
     )
     ) {
         return $matches[ 1 ];
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function zfs_pool_isreservedname( $poolname )
@@ -607,11 +605,7 @@ function zfs_filesystem_issystemfs( $fsname )
         $fsbase = @substr($fsbase, 0, $basepos);
     }
 
-    return ($fsbase == 'zfsguru') or (substr(
-                $fsbase,
-                0,
-                strlen('zfsguru-system')
-            ) == 'zfsguru-system') or ($fsbase == 'SWAP001');
+    return ($fsbase === 'zfsguru') or (strpos($fsbase, 'zfsguru-system') === 0) or ($fsbase === 'SWAP001');
 }
 
 
@@ -677,7 +671,7 @@ function zfs_pool_import_list( $deleted = false )
                 foreach ( $split as $splitid => $poolchunk ) {
                     if (@( int )$splitid > 0 ) {
                         // preg_match('/^[\s]*pool\: (.*)$/m', $poolchunk, $preg_pool);
-                        preg_match('/^[\s]*id: ([0-9]*)$/m', $poolchunk, $preg_id);
+                        preg_match('/^[\s]*id: (\d*)$/m', $poolchunk, $preg_id);
                         preg_match('/^[\s]*state: (.*)$/m', $poolchunk, $preg_state);
                         // $pool = (@$preg_pool[1]) ? $preg_pool[1] : false;
                         $pool = trim(substr($poolchunk, 0, strpos($poolchunk, chr(10))));
@@ -754,7 +748,7 @@ function zfs_extractsubmittedvdevs( $url )
 {
     $member_disks = array();
     foreach ( $_POST as $id => $val ) {
-        if (($val == 'on') && preg_match('/^addmember_(.*)$/', $id, $addmember) && @strlen($addmember[1]) > 0) {
+        if (($val === 'on') && preg_match('/^addmember_(.*)$/', $id, $addmember) && @strlen($addmember[1]) > 0) {
             $member_disks[] = $addmember[ 1 ];
         }
     }

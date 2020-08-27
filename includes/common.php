@@ -71,20 +71,17 @@ function sizebinary( $bytes, $precision = 0 )
     return round($bytes, $precision) . ' ' . $units[ $pow ];
 }
 
-function sanitize( $input, $rules = false, & $modify = null, $maxlen = 0 )
+function sanitize( $input, $rules = 'a-zA-Z0-9_-', & $modify = null, $maxlen = 0 )
 {
-    if (!is_string($rules) ) {
-        $rules = 'a-zA-Z0-9_-';
-    }
-    if ($maxlen == 0 ) {
+    if ($maxlen === 0 ) {
         $modify = preg_replace('/[^' . $rules . ']/', '', $input);
     } else {
         $modify = substr(preg_replace('/[^' . $rules . ']/', '', $input), 0, $maxlen);
     }
-    if ($modify == '' ) {
+    if ($modify === '' ) {
         return false;
     }
-    return ( $modify == $input );
+    return ( $modify === $input );
 }
 
 function common_dirs()
@@ -124,14 +121,14 @@ function powercache_read( $element = false, $serve_expired = false )
     // check for element
     if (@isset($arr[ $element ]) ) {
         $expired = @$arr[ $element ][ 'expiry' ] <= time();
-        if (( !$expired )OR( $expired AND $serve_expired ) ) {
+        if (( !$expired )||( $serve_expired ) ) {
             return $arr[ $element ][ 'data' ];
         }
 
         return false;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function powercache_store( $element = false, $data = false, $expiry = 5 )
@@ -307,7 +304,7 @@ function timekeeper( $name = false )
 
 function viewarray( $arr ) 
 {
-    echo( '<table cellpadding="0" cellspacing="0" border="1">' );
+    echo( '<table style="padding: 0; border-collapse: collapse; border-spacing: 0; border: 1px;">' );
     foreach ( ( array )$arr as $key1 => $elem1 ) {
         echo( '<tr>' );
         echo( '<td>' . htmlentities($key1) . '&nbsp;</td>' );
@@ -324,7 +321,7 @@ function viewarray( $arr )
 function extarray( $arr ) 
 {
     echo( '<td>' );
-    echo( '<table cellpadding="0" cellspacing="0" border="1">' );
+    echo( '<table  style="padding: 0; border-collapse: collapse; border-spacing: 0; border: 1px;">' );
     foreach ( $arr as $key => $elem ) {
         echo( '<tr>' );
         echo( '<td>' . htmlentities($key) . '&nbsp;</td>' );

@@ -31,7 +31,6 @@ input.createpoolbutton {
 	background-image: linear-gradient(#b55b8d, #24121b);
 }
 input.createpoolbutton:hover {
-	cursor: pointer;
 	cursor: hand;
 	color: #ede;
 	border: 2px solid #422;

@@ -105,7 +105,7 @@ function table_system_bootlist( & $advice )
                 $class_bootstatus = 'red';
             }
             // action button classes
-            $act = $bootstatus == 'Activated';
+            $act = $bootstatus === 'Activated';
             $class_activate = ( !$act ) ? 'normal' : 'hidden';
             $class_inactivate = ( $act AND $emode ) ? 'normal' : 'hidden';
             $class_noinactivate = ( $act AND!$emode ) ? 'normal' : 'hidden';

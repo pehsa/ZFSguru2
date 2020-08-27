@@ -68,12 +68,11 @@ function content_internal_dangerouscommand( $data )
     }
 
     // export new tags
-    $newtags = array(
+    return array(
     'PAGE_TITLE' => 'Dangerous command execution',
     'TABLE_COMMANDLIST' => $commandlist,
     'COMMAND_STR' => $command_str,
     'COMMAND_COUNT' => $commandcount,
     'REDIRECT_URL' => @$data[ 'redirect_url' ]
     );
-    return $newtags;
 }

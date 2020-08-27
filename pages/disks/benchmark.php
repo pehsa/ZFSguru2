@@ -41,7 +41,7 @@ function content_disks_benchmark()
         $lastdate = 0;
         exec('/usr/bin/find ' . $guru[ 'docroot' ] . '/benchmarks/ -type f', $output);
         foreach ( $output as $line ) {
-            if ((substr(@basename($line), 0, strlen('simplebench_')) == 'simplebench_') && ($mtime = filemtime(
+            if ((strpos(@basename($line), 'simplebench_') === 0) && ($mtime = filemtime(
                     $line
                 )) > $lastdate) {
                     $lastdate = $mtime;
@@ -327,7 +327,7 @@ function submit_disks_benchmark_start()
     $data[ 'rio_alignment' ] = ( int )$_POST[ 'rio_alignment' ];
     $data[ 'rio_queuedepth' ] = ( int )$_POST[ 'rio_queuedepth' ];
     $data[ 'sectorsize_override' ] = ( int )$_POST[ 'sectorsize_override' ];
-    $data[ 'secure_erase' ] = @$_POST[ 'secure_erase' ] == 'on';
+    $data[ 'secure_erase' ] = @$_POST[ 'secure_erase' ] === 'on';
 
     // kill powerd daemon for accurate frequency scanning
     service_manage_rc('powerd', 'stop', true);

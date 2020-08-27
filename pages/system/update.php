@@ -30,7 +30,7 @@ function content_system_update()
     $class_eu_unknown = ( $euversion == false ) ? 'normal' : 'hidden';
 
     // craft new tags
-    $newtags = array(
+    return array(
     'PAGE_ACTIVETAB' => 'Update',
     'PAGE_TITLE' => 'Update',
     'TABLE_WEBIVERSIONS' => $table_webiversions,
@@ -42,7 +42,6 @@ function content_system_update()
     'EU_VERSION' => htmlentities($euversion),
     'EU_B64' => htmlentities(base64_encode($euversion)),
     );
-    return $newtags;
 }
 
 function sort_webinterfaces( $a, $b ) 

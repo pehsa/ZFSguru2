@@ -28,8 +28,13 @@ function content_system_install_step1()
 
     // table: systemversions
     $systemversions = table_systemversions(
-        $system, $locate, $currentver,
-        $platform, $dist, $dip, $avail, $obsolete 
+        $system,
+        $locate,
+        $currentver,
+        $platform,
+        $dip,
+        $avail,
+        $obsolete
     );
 
     // automatic page refresh
@@ -81,8 +86,14 @@ function sort_system( $a, $b )
     return 1;
 }
 
-function table_systemversions( $system, $locate, $currentver, $platform,
-    $dist, & $dip, & $avail, & $obsolete 
+function table_systemversions(
+    $system,
+    $locate,
+    $currentver,
+    $platform,
+    &$dip,
+    &$avail,
+    &$obsolete
 ) {
     // query download location
     $dirs = common_dirs();
@@ -124,7 +135,7 @@ function table_systemversions( $system, $locate, $currentver, $platform,
 
         // hide system version if obsolete
         // unless currently running that version or mounted a LiveCD with that version
-        if (((@$data['branch'] == 'obsolete') and (!@isset($_GET['displayobsolete']))) && ($data['sha512'] != $currentver['sha512']) && !$available) {
+        if (((@$data['branch'] === 'obsolete') and (!@isset($_GET['displayobsolete']))) && ($data['sha512'] != $currentver['sha512']) && !$available) {
             $obsolete++;
             continue;
         }

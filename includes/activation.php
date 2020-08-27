@@ -30,7 +30,6 @@ function activation_submit( $activationType, $earlyFeedback, $feedbackText )
 
     // set activation URL
     $url = '/zfsguru_activate.php';
-    $aliveurl = '/zfsguru_alive.txt';
 
     // fetch current system data (sysver + dist)
     $currentver = common_systemversion();
@@ -60,7 +59,7 @@ function activation_submit( $activationType, $earlyFeedback, $feedbackText )
     $uuid = ( @$matches[ 1 ] ) ?: '';
 
     // return UUID or return false on failure
-    if (@$result[ 'success' ]AND($uuid != '') ) {
+    if (@$result[ 'success' ]&&($uuid != '') ) {
         // remove late activation data (just in case)
         activate_library('persistent');
         persistent_remove('activation_delayed');
@@ -104,7 +103,7 @@ function activation_post_request( $host, $url, $postdata, $useragent = false )
 
     // open socket
     $fp = fsockopen($host, $http_port, $errno, $errstr, $http_timeout);
-    if (( $fp == false )OR( $errno > 0 ) ) {
+    if (( $fp == false )||( $errno > 0 ) ) {
         return array(
         'success' => false,
         'errno' => $errno,
@@ -186,7 +185,7 @@ function activation_delayed()
     );
 
     // process result
-    if (is_string($uuid)AND($uuid !== '') ) {
+    if (is_string($uuid)&&($uuid !== '') ) {
         // save preferences so UUID gets permanent
         $guru[ 'preferences' ][ 'uuid' ] = $uuid;
         procedure_writepreferences($guru[ 'preferences' ]);
@@ -214,11 +213,11 @@ function activation_hwchange( $storenewhash = false )
     $dpos = strrpos($dmesg, ' The FreeBSD Project.');
     $dmesg = substr($dmesg, ( int )$dpos);
     // search for interface MAC
-    $rxp = '/^[a-z]+[0-9]+\: Ethernet address\: (([0-9a-f]{2}\:){5}[0-9a-f]{2})/m';
+    $rxp = '/^[a-z]+\d+\: Ethernet address\: (([0-9a-f]{2}\:){5}[0-9a-f]{2})/m';
     preg_match_all($rxp, $dmesg, $mac_matches);
     $mac = array();
     foreach ( $mac_matches[ 1 ] as $id => $macaddr ) {
-        if ($macaddr != '') {
+        if ($macaddr !== '') {
             $mac[] = $macaddr;
         }
     }
@@ -236,15 +235,16 @@ function activation_hwchange( $storenewhash = false )
         return false;
     }
 
-    if (( $currenthash != $hwhash )AND!$storenewhash) {
+    if (( $currenthash !== $hwhash )&&!$storenewhash) {
         return true;
-    } elseif (( $currenthash != $hwhash )AND $storenewhash ) {
+    }
+
+    if (( $currenthash !== $hwhash )&& $storenewhash) {
         persistent_store('hardware_hash', $hwhash);
         return true;
     }
-    else {
-        return false;
-    }
+
+    return false;
 }
 
 function activation_info()
@@ -253,7 +253,7 @@ function activation_info()
 
     // activation UUID
     $uuid = @$guru[ 'preferences' ][ 'uuid' ];
-    if ($uuid == '') {
+    if ($uuid === '') {
         return false;
     }
 
@@ -284,7 +284,7 @@ function activation_info()
         return $arr;
     }
 
-    if (@strlen($result[ 'body' ]) > 0) {
+    if (@strlen($result[ 'body' ]) === 0) {
         page_feedback(
             'could not retrieve activation details, response by server: '
             . htmlentities($result[ 'body' ]), 'a_error'
