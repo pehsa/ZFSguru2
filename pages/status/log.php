@@ -14,18 +14,18 @@ function content_status_log()
     if (isset($_GET[ 'system' ]) ) {
         $tabbar_tab = '&system';
         $log_name = 'System message log';
-        $log_output = htmlentities(trim(`cat /var/log/messages`));
+        $log_output = htmlentities(trim(shell_exec("cat /var/log/messages")));
     } elseif (isset($_GET[ 'webserver' ]) ) {
         $tabbar_tab = '&webserver';
         $log_name = 'Webserver log';
         // TODO: make lighttpd/apache independent
-        $log_output = htmlentities(trim(`cat /var/log/lighttpd/error.log`));
+        $log_output = htmlentities(trim(shell_exec("cat /var/log/lighttpd/error.log")));
     }
     else {
         // default tab:
         $tabbar_tab = '';
         $log_name = 'Kernel log';
-        $log_output = htmlentities(trim(`dmesg`));
+        $log_output = htmlentities(trim(shell_exec("dmesg")));
     }
 
     // add javascript code to scroll to bottom of pre scrollbox

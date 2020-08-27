@@ -13,7 +13,7 @@ function content_pools_benchmark()
     // poollist
     $poollist = array();
     foreach ( $pools as $poolname => $data ) {
-        if (( $data[ 'status' ] == 'ONLINE' )OR( $data[ 'status' ] == 'DEGRADED' ) ) {
+        if (( $data[ 'status' ] === 'ONLINE' )OR( $data[ 'status' ] === 'DEGRADED' ) ) {
             $poollist[] = array(
                 'POOLNAME' => $poolname
             );
@@ -44,7 +44,7 @@ function submit_pools_benchmark()
 
     // sanitize input
     sanitize(@$_POST[ 'poolname' ], null, $poolname);
-    if (strlen($poolname) < 1 ) {
+    if ($poolname == '') {
         error('sanity failure on pool name');
     }
 
@@ -84,7 +84,7 @@ function submit_pools_benchmark()
 
     // set testfile location
     $mountpoint = @$poolfs[ $testfilesystem ][ 'mountpoint' ];
-    if (( @strlen($mountpoint) < 2 )OR( $mountpoint {        0        } != '/' ) 
+    if (( @strlen($mountpoint) < 2 )OR( $mountpoint {        0        } !== '/' )
     ) {
         error('Invalid mountpoint "' . $mountpoint . '"');
     }
@@ -94,7 +94,7 @@ function submit_pools_benchmark()
     $score = array();
     $score_rv = array();
 
-    if (@$_POST[ 'cb_normal' ] == 'on' ) {
+    if (@$_POST[ 'cb_normal' ] === 'on' ) {
         // dd write
         super_execute('/sbin/zfs set compression=off ' . $testfilesystem);
         $command = '/bin/dd if=' . $source . ' of=' . $testfile . ' bs=1m '
@@ -117,7 +117,7 @@ function submit_pools_benchmark()
         sleep(10);
     }
 
-    if (@$_POST[ 'cb_lzjb' ] == 'on' ) {
+    if (@$_POST[ 'cb_lzjb' ] === 'on' ) {
         // dd write - LZJB compression
         super_execute('/sbin/zfs set compression=lzjb ' . $testfilesystem);
         $command = '/bin/dd if=' . $source . ' of=' . $testfile . ' bs=1m '
@@ -140,7 +140,7 @@ function submit_pools_benchmark()
         sleep(10);
     }
 
-    if (@$_POST[ 'cb_gzip' ] == 'on' ) {
+    if (@$_POST[ 'cb_gzip' ] === 'on' ) {
         // dd write - GZIP compression
         super_execute('/bin/rm ' . $testfile);
         super_execute('/bin/sync');
@@ -166,7 +166,7 @@ function submit_pools_benchmark()
         sleep(10);
     }
 
-    if (@$_POST[ 'cb_zeronull' ] == 'on' ) {
+    if (@$_POST[ 'cb_zeronull' ] === 'on' ) {
         $command = '/bin/dd if=' . $source . ' of=/dev/null bs=1m count='
         . ( int )$size . ' 2>&1';
         $result = super_execute($command);

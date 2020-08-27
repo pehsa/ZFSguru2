@@ -121,14 +121,14 @@ function table_servicelist( $installedservices, $servicedb, $categories )
     $table = array();
     foreach ( $installedservices as $service => $data ) {
         $activerow = ( @$_GET[ 'query' ] == $service ) ? 'activerow' : 'normal';
-        if ($data[ 'status' ] == 'passive' ) {
+        if ($data[ 'status' ] === 'passive' ) {
             $status = 'PASSIVE';
             $class_status = 'grey';
-        } elseif ($data[ 'status' ] == 'running' ) {
+        } elseif ($data[ 'status' ] === 'running' ) {
             $status = 'RUNNING';
             $class_status = 'green';
         }
-        elseif ($data[ 'status' ] == 'stopped' ) {
+        elseif ($data[ 'status' ] === 'stopped' ) {
             $status = 'STOPPED';
             $class_status = 'red';
         }
@@ -151,10 +151,10 @@ function table_servicelist( $installedservices, $servicedb, $categories )
         // classes
         $class_upgrade = ( $newerversion ) ? 'normal' : 'hidden';
         $class_noupgrade = ( !$newerversion ) ? 'normal' : 'hidden';
-        $class_startbutton = @( ( $data[ 'status' ] != 'running' )AND( $data[ 'status' ] != 'passive' )AND $data[ 'can_start' ] ) ?
+        $class_startbutton = @( ( $data[ 'status' ] !== 'running' )AND( $data[ 'status' ] !== 'passive' )AND $data[ 'can_start' ] ) ?
         'normal' : 'hidden';
-        $class_stopbutton = @( $data[ 'can_stop' ]AND( $data[ 'status' ] == 'running'
-        OR $data[ 'status' ] == 'unknown' ) ) ? 'normal' : 'hidden';
+        $class_stopbutton = @( $data[ 'can_stop' ]AND( $data[ 'status' ] === 'running'
+        OR $data[ 'status' ] === 'unknown' ) ) ? 'normal' : 'hidden';
 
         // autostart
         timerstart('service_queryautostart (' . $service . ')', 'content');
@@ -209,7 +209,7 @@ function submit_services_manage()
 
     foreach ( $_POST as $name => $value ) {
 
-        if (substr($name, 0, strlen('svc_start_')) == 'svc_start_' ) {
+        if (strpos($name, 'svc_start_') === 0) {
             // start service
             $svc = trim(substr($name, strlen('svc_start_'), -2));
             $result = service_start_blocking($svc);
@@ -221,7 +221,7 @@ function submit_services_manage()
             }
         }
 
-        if (substr($name, 0, strlen('svc_stop_')) == 'svc_stop_' ) {
+        if (strpos($name, 'svc_stop_') === 0) {
             // stop service
             $svc = trim(substr($name, strlen('svc_stop_'), -2));
             $result = service_stop_blocking($svc);
@@ -232,7 +232,7 @@ function submit_services_manage()
             }
         }
 
-        if (substr($name, 0, strlen('svc_autostart_y_')) == 'svc_autostart_y_' ) {
+        if (strpos($name, 'svc_autostart_y_') === 0) {
             // autostart
             $svc = trim(substr(substr($name, strlen('svc_autostart_y_')), 0, -2));
             $result = service_autostart($svc, true);
@@ -241,7 +241,7 @@ function submit_services_manage()
             }
         }
 
-        if (substr($name, 0, strlen('svc_autostart_n_')) == 'svc_autostart_n_' ) {
+        if (strpos($name, 'svc_autostart_n_') === 0) {
             // do not autostart
             $svc = trim(substr(substr($name, strlen('svc_autostart_n_')), 0, -2));
             $result = service_autostart($svc, false);

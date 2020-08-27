@@ -75,14 +75,14 @@ function content_system_migration()
     }
 
     // classes
-    $class_query = ( strlen($query) > 0 ) ? 'normal' : 'hidden';
-    $class_migspecial = ( @$qmig[ 'type' ] == 'special' ) ? 'normal' : 'hidden';
-    $class_miglight = ( @$qmig[ 'type' ] == 'light' ) ? 'normal' : 'hidden';
-    $class_migheavy = ( @$qmig[ 'type' ] == 'heavy' ) ? 'normal' : 'hidden';
-    $class_migfree = ( @$qmig[ 'type' ] == 'free' ) ? 'normal' : 'hidden';
+    $class_query = ($query != '') ? 'normal' : 'hidden';
+    $class_migspecial = ( @$qmig[ 'type' ] === 'special' ) ? 'normal' : 'hidden';
+    $class_miglight = ( @$qmig[ 'type' ] === 'light' ) ? 'normal' : 'hidden';
+    $class_migheavy = ( @$qmig[ 'type' ] === 'heavy' ) ? 'normal' : 'hidden';
+    $class_migfree = ( @$qmig[ 'type' ] === 'free' ) ? 'normal' : 'hidden';
 
     // page specific
-    if ($class_migfree == 'normal' ) {
+    if ($class_migfree === 'normal' ) {
         // check for services
         activate_library('service');
         $slist = service_list();
@@ -192,7 +192,7 @@ function submit_system_migration()
         $selected = array();
         foreach ( $sysfiles as $systag => $sysfiles ) {
             foreach ( $sysfiles as $sysfile ) {
-                if (@$_POST[ 'mig_cfg_' . $systag ] == 'on' ) {
+                if (@$_POST[ 'mig_cfg_' . $systag ] === 'on' ) {
                     $selected[] = $systag;
                 }
             }

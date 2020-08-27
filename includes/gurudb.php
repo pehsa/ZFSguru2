@@ -12,7 +12,7 @@ function gurudb_fetch( $item, $file = false, $silent = false )
     $output = shell_exec($command);
     if (( $output === null )AND!$silent ) {
         page_feedback('tar error extracting GuruDB, item: ' . htmlentities($item), 'a_warning');
-    } elseif (substr($item, -4) == '.ser' ) {
+    } elseif (substr($item, -4) === '.ser' ) {
         $o = unserialize($output)or $o = array();
         if (!is_array($o) ) {
             die('DEBUG: notarray!!!');
@@ -69,9 +69,9 @@ function gurudb_distribution( $sysver = false, $platform = false, $file = false 
     $dist = gurudb_fetch("distribution/$sysver-$platform.ser", $file, true);
     if (is_array($dist) ) {
         return $dist;
-    } else {
-        return array();
     }
+
+    return array();
 }
 
 function gurudb_bulletin( $file = false ) 
@@ -96,33 +96,35 @@ function gurudb_validate( $newgeneral )
         );
         return false;
     }
-    if ($newgeneral[ 'ident' ] != 'ZFSGURU:GURUDB' ) {
+    if ($newgeneral[ 'ident' ] !== 'ZFSGURU:GURUDB' ) {
         page_feedback(
             'downloaded GuruDB rejected: invalid identification',
             'a_failure' 
         );
         return false;
     }
-    if (!preg_match('/([0-9]+)\:([0-9]+)/', $newgeneral[ 'compat' ], $matches) ) {
+    if (!preg_match('/([0-9]+)\:([0-9]+)/', $newgeneral[ 'compat' ], $matches)) {
         page_feedback(
             'downloaded GuruDB rejected: unknown compatibility',
-            'a_failure' 
+            'a_failure'
         );
         return false;
-    } elseif (( int )$matches[ 1 ] > $guru[ 'compat_max' ] ) {
+    }
+
+    if (( int )$matches[ 1 ] > $guru[ 'compat_max' ]) {
         page_feedback(
             'downloaded GuruDB rejected: database exceeds compatibility - '
-            . 'update web-interface and try again', 'a_failure' 
+            . 'update web-interface and try again', 'a_failure'
         );
         return false;
-    }
-    elseif (( int )$matches[ 2 ] < $guru[ 'compat_min' ] ) {
+    } elseif (( int )$matches[ 2 ] < $guru[ 'compat_min' ] ) {
         page_feedback(
             'downloaded GuruDB rejected: database is too old (compat)',
-            'a_failure' 
+            'a_failure'
         );
         return false;
     }
+
     // all tests positive; return success
     return true;
 }
@@ -146,17 +148,19 @@ function gurudb_update()
 
     // download to temp folder (?)
     $result = server_download($uri, false, false, true, $localdb);
-    if ($result === false ) {
+    if ($result === false) {
         page_feedback(
             'could not download new GuruDB database from remote servers!',
-            'a_error' 
+            'a_error'
         );
         page_feedback(
             'if you have no internet connection, you can disable remote '
-            . 'file downloading on the System->Preferences->Advanced page', 'c_notice' 
+            . 'file downloading on the System->Preferences->Advanced page', 'c_notice'
         );
         return false;
-    } elseif ($result !== null ) {
+    }
+
+    if ($result !== null) {
         // read GuruDB
         $newgeneral = gurudb_general($result);
         // validate downloaded GuruDB database
@@ -171,7 +175,7 @@ function gurudb_update()
         // copy new version to web interface configuration directory
         exec(
             '/bin/mv ' . escapeshellarg($result) . ' '
-            . escapeshellarg(dirname($localdb) . '/new.gurudb'), $output, $rv 
+            . escapeshellarg(dirname($localdb) . '/new.gurudb'), $output, $rv
         );
         if ($rv != 0 ) {
             error('error moving GuruDB file to web-interface directory (1)');
@@ -179,7 +183,7 @@ function gurudb_update()
         // backup old version
         exec(
             '/bin/cp -p ' . escapeshellarg($localdb) . ' '
-            . escapeshellarg(dirname($localdb) . '/old.gurudb') . ' 2>&1', $output, $rv 
+            . escapeshellarg(dirname($localdb) . '/old.gurudb') . ' 2>&1', $output, $rv
         );
         if ($rv != 0 ) {
             error('error moving GuruDB file to web-interface directory (2)');
@@ -187,7 +191,7 @@ function gurudb_update()
         // replace old version with new version
         exec(
             '/bin/mv ' . escapeshellarg(dirname($localdb) . '/new.gurudb')
-            . ' ' . escapeshellarg($localdb), $output, $rv 
+            . ' ' . escapeshellarg($localdb), $output, $rv
         );
         if ($rv != 0 ) {
             error('error moving GuruDB file to web-interface directory (3)');
@@ -197,7 +201,7 @@ function gurudb_update()
         $newdate = date('j M Y @ H:i e', $newgeneral[ 'timestamp' ]);
         page_feedback(
             'installed new GuruDB database, created on: <b>' . $newdate . '</b>',
-            'c_notice' 
+            'c_notice'
         );
     }
 

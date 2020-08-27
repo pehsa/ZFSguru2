@@ -5,7 +5,7 @@ function content_system_cli()
     global $tags;
 
     // hostname
-    $hostname = trim(`hostname`);
+    $hostname = trim(shell_exec("hostname"));
 
     // visible classes
     $class_output = ( @isset($tags[ 'CLASS_OUTPUT' ]) ) ?
@@ -57,10 +57,10 @@ function submit_cli_execute()
     }
 
     // hostname
-    $hostname = trim(`hostname`);
+    $hostname = trim(shell_exec("hostname"));
 
     // check for root or normal execution
-    if (@$_POST[ 'cli_root' ] == 'on' ) {
+    if (@$_POST[ 'cli_root' ] === 'on' ) {
         activate_library('super');
         $result = super_execute($command);
         $rv = $result[ 'rv' ];

@@ -9,15 +9,15 @@ function content_system_booting()
     $table_bootlist = table_system_bootlist($advice);
 
     // check expert mode (allows doing stupid things)
-    $emode = ( @isset($_GET[ 'expertmode' ]) ) ? true : false;
+    $emode = @isset($_GET[ 'expertmode' ]);
     $class_normal = ( !$emode ) ? 'normal' : 'hidden';
     $class_expert = ( $emode ) ? 'normal' : 'hidden';
 
     // advice
-    $class_adv_noboot = ( $advice == 'noboot' ) ? 'normal' : 'hidden';
-    $class_adv_oneboot = ( $advice == 'oneboot' ) ? 'normal' : 'hidden';
-    $class_adv_multiboot = ( $advice == 'multiboot' ) ? 'normal' : 'hidden';
-    $class_adv_conflict = ( $advice == 'conflict' ) ? 'normal' : 'hidden';
+    $class_adv_noboot = ( $advice === 'noboot' ) ? 'normal' : 'hidden';
+    $class_adv_oneboot = ( $advice === 'oneboot' ) ? 'normal' : 'hidden';
+    $class_adv_multiboot = ( $advice === 'multiboot' ) ? 'normal' : 'hidden';
+    $class_adv_conflict = ( $advice === 'conflict' ) ? 'normal' : 'hidden';
     $class_adv_expert = ( $emode ) ? 'normal' : 'hidden';
 
     // export new tags
@@ -50,7 +50,7 @@ function table_system_bootlist( & $advice )
     $bootablepools = 0;
 
     // check expert mode (allows doing stupid things)
-    $emode = ( @isset($_GET[ 'expertmode' ]) ) ? true : false;
+    $emode = @isset($_GET[ 'expertmode' ]);
 
     // create boot list table
     $table_bootlist = array();
@@ -71,13 +71,13 @@ function table_system_bootlist( & $advice )
             if (!preg_match('/^([^\/]+)\/zfsguru\/([^\/]+)$/', $fsname) ) {
                 continue;
             }
-            if ($fsdata[ 'mountpoint' ] != 'legacy' ) {
+            if ($fsdata[ 'mountpoint' ] !== 'legacy' ) {
                 continue;
             }
             // advice
-            if ($advice == 'noboot' ) {
+            if ($advice === 'noboot' ) {
                 $advice = 'oneboot';
-            } elseif ($advice == 'oneboot' ) {
+            } elseif ($advice === 'oneboot' ) {
                 $advice = 'multiboot';
             }
             // row status (highlight when current row has activated bootfs)
@@ -97,15 +97,15 @@ function table_system_bootlist( & $advice )
                 $bootstatus = 'Inactive';
             }
             // boot status class
-            if ($bootstatus == 'Activated' ) {
+            if ($bootstatus === 'Activated' ) {
                 $class_bootstatus = 'green';
-            } elseif ($bootstatus == 'Inactive' ) {
+            } elseif ($bootstatus === 'Inactive' ) {
                 $class_bootstatus = 'grey';
             } else {
                 $class_bootstatus = 'red';
             }
             // action button classes
-            $act = ( $bootstatus == 'Activated' ) ? true : false;
+            $act = $bootstatus == 'Activated';
             $class_activate = ( !$act ) ? 'normal' : 'hidden';
             $class_inactivate = ( $act AND $emode ) ? 'normal' : 'hidden';
             $class_noinactivate = ( $act AND!$emode ) ? 'normal' : 'hidden';
@@ -140,19 +140,19 @@ function submit_system_bootfs()
     // traverse POST variables
     if (is_array($_POST) ) {
         foreach ( $_POST as $name => $value ) {
-            if (substr($name, 0, strlen('activate_bootfs_')) == 'activate_bootfs_' ) {
+            if (strpos($name, 'activate_bootfs_') === 0) {
                 $bootfs = base64_decode(substr($name, strlen('activate_bootfs_')));
                 $poolname = substr($bootfs, 0, strpos($bootfs, '/'));
                 dangerouscommand('/sbin/zpool set bootfs="' . $bootfs . '" ' . $poolname, $url);
             }
         }
     }
-    if (substr($name, 0, strlen('inactivate_bootfs_')) == 'inactivate_bootfs_' ) {
+    if (strpos($name, 'inactivate_bootfs_') === 0) {
         $bootfs = base64_decode(substr($name, strlen('inactivate_bootfs_')));
         $poolname = substr($bootfs, 0, strpos($bootfs, '/'));
         dangerouscommand('/sbin/zpool set bootfs="" ' . $poolname, $url);
     }
-    if (substr($name, 0, strlen('delete_bootfs_')) == 'delete_bootfs_' ) {
+    if (strpos($name, 'delete_bootfs_') === 0) {
         $bootfs = base64_decode(substr($name, strlen('delete_bootfs_')));
         $poolname = substr($bootfs, 0, strpos($bootfs, '/'));
         dangerouscommand('/sbin/zfs destroy -R ' . $bootfs, $url);

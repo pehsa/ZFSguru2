@@ -53,7 +53,7 @@ function submit_pools_expandpool()
     if (@$status[ 'pool' ] != $zpool_name ) {
         friendlyerror('this pool is unknown to the system', $url);
     }
-    if (( @$status[ 'state' ] != 'ONLINE' )AND( @$status[ 'state' ] != 'DEGRADED' ) ) {
+    if (( @$status[ 'state' ] !== 'ONLINE' )AND( @$status[ 'state' ] !== 'DEGRADED' ) ) {
         friendlyerror(
             'this pool is not healthy (<b>'
             . @$status[ 'state' ] . '</b> instead of ONLINE or DEGRADED)', $url 
@@ -93,15 +93,15 @@ function submit_pools_expandpool()
     }
 
     // process 2-way or 3-way or 4-way mirrors
-    if ($redundancy == 'mirror2'
-        OR $redundancy == 'mirror3'
-        OR $redundancy == 'mirror4' 
+    if ($redundancy === 'mirror2'
+        OR $redundancy === 'mirror3'
+        OR $redundancy === 'mirror4'
     ) {
         $member_arr = array();
         $member_str = '';
         for ( $i = 2; $i <= 10; $i++ ) {
             if ($redundancy == 'mirror' . $i ) {
-                for ( $y = 0; $y <= 255; $y = $y + $i ) {
+                for ($y = 0; $y <= 255; $y += $i) {
                     if (@isset($vdev[ 'member_disks' ][ $y ]) ) {
                         for ( $z = 0; $z <= ( $i - 1 ); $z++ ) {
                             $member_arr[ $y ][] = $vdev[ 'member_disks' ][ $y + $z ];
@@ -126,7 +126,7 @@ function submit_pools_expandpool()
     $old_ashift_max = @trim(shell_exec('/sbin/sysctl -n vfs.zfs.max_auto_ashift'));
     $new_ashift = 9;
     for ( $new_ashift = 9; $new_ashift <= 17; $new_ashift++ ) {
-        if (pow(2, $new_ashift) == $sectorsize ) {
+        if ((2 ** $new_ashift) == $sectorsize ) {
             break;
         }
     }
@@ -139,8 +139,8 @@ function submit_pools_expandpool()
 
     // prepend commands for sectorsize override
     if (is_numeric($sectorsize) ) {
-        $commands[] = '/sbin/sysctl vfs.zfs.min_auto_ashift=' . ( int )$new_ashift;
-        $commands[] = '/sbin/sysctl vfs.zfs.max_auto_ashift=' . ( int )$new_ashift;
+        $commands[] = '/sbin/sysctl vfs.zfs.min_auto_ashift=' .$new_ashift;
+        $commands[] = '/sbin/sysctl vfs.zfs.max_auto_ashift=' .$new_ashift;
     }
 
     // actual expansion command

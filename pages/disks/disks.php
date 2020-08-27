@@ -20,10 +20,10 @@ function content_disks_disks()
 
     // sorting
     $sort = @$_GET[ 'sort' ];
-    $invertedsort = ( @isset($_GET[ 'inverted' ]) ) ? true : false;
+    $invertedsort = @isset($_GET[ 'inverted' ]);
     $sorted = $disks;
     $sortsuffix = array();
-    if (strlen($sort) > 0 ) {
+    if ($sort != '') {
         uasort($sorted, 'sort_disks');
     }
     if (!$invertedsort AND $sort ) {
@@ -46,12 +46,12 @@ function content_disks_disks()
 
             // classes
             $class_activerow = ( $querydisk == $diskname ) ? 'activerow' : 'normal';
-            $class_hdd = ( $disktype == 'hdd' ) ? 'normal' : 'hidden';
-            $class_ssd = ( $disktype == 'ssd' ) ? 'normal' : 'hidden';
-            $class_flash = ( $disktype == 'flash' ) ? 'normal' : 'hidden';
-            $class_memdisk = ( $disktype == 'memdisk' ) ? 'normal' : 'hidden';
-            $class_usbstick = ( $disktype == 'usbstick' ) ? 'normal' : 'hidden';
-            $class_network = ( $disktype == 'network' ) ? 'normal' : 'hidden';
+            $class_hdd = ( $disktype === 'hdd' ) ? 'normal' : 'hidden';
+            $class_ssd = ( $disktype === 'ssd' ) ? 'normal' : 'hidden';
+            $class_flash = ( $disktype === 'flash' ) ? 'normal' : 'hidden';
+            $class_memdisk = ( $disktype === 'memdisk' ) ? 'normal' : 'hidden';
+            $class_usbstick = ( $disktype === 'usbstick' ) ? 'normal' : 'hidden';
+            $class_network = ( $disktype === 'network' ) ? 'normal' : 'hidden';
 
             // acquire GNOP sector size (for sectorsize override)
             $gnop_sect = ( int )@$gnop[ 'label/' . $labels[ $diskname ] ][ 'sectorsize' ];
@@ -106,7 +106,7 @@ function content_disks_disks()
                 $labelstr .= 'GEOM: ' . @htmlentities($labels[ $diskname ]);
             }
             if (@strlen($gpart[ $diskname ][ 'label' ]) > 0 ) {
-                if (strlen($labelstr) > 0 ) {
+                if ($labelstr !== '') {
                     $labelstr .= '<br />';
                 }
                 $labelstr .= 'GPT: ' . @htmlentities($gpart[ $diskname ][ 'label' ]);
@@ -136,7 +136,7 @@ function content_disks_disks()
     $class_labelconflict = ( $labelconflict ) ? 'normal' : 'hidden';
     $class_nodevnode = ( $nodevnode ) ? 'normal' : 'hidden';
     $class_nolabeldev = ( $nolabeldev ) ? 'normal' : 'hidden';
-    $nolabeldev_labels = @implode($nolabeldev_arr, ', ');
+    $nolabeldev_labels = @implode(', ', $nolabeldev_arr);
 
     // process queried disk (for format box)
     if ($querydisk ) {
@@ -197,36 +197,38 @@ function sort_disks( $a, $b )
     $attr = false;
 
     // set easy to search attributes
-    if ($sort == 'disk' ) {
+    if ($sort === 'disk' ) {
         $attr = 'disk_name';
-    } elseif ($sort == 'size' ) {
+    } elseif ($sort === 'size' ) {
         $attr = 'mediasize';
-    } elseif ($sort == 'sector' ) {
+    } elseif ($sort === 'sector' ) {
         $attr = 'sectorsize';
     }
 
     if ($attr ) {
         $aa = @$a[ $attr ];
         $bb = @$b[ $attr ];
-    } elseif ($sort == 'label' ) {
+    } elseif ($sort === 'label' ) {
         $aa = 'label/' . @$labels[ $a[ 'disk_name' ] ];
-        if ($aa == 'label/' ) {
+        if ($aa === 'label/' ) {
             $aa = 'gpt/' . @$gpart[ $a[ 'disk_name' ] ][ 'label' ];
         }
         $bb = 'label/' . @$labels[ $b[ 'disk_name' ] ];
-        if ($bb == 'label/' ) {
+        if ($bb === 'label/' ) {
             $bb = 'gpt/' . @$gpart[ $b[ 'disk_name' ] ][ 'label' ];
         }
     }
-    elseif ($sort == 'ident' ) {
+    elseif ($sort === 'ident' ) {
         $aa = @$dmesg[ $a[ 'disk_name' ] ];
         $bb = @$dmesg[ $b[ 'disk_name' ] ];
     }
 
     // compare aa to bb
-    if ($aa == $bb ) {
+    if ($aa == $bb) {
         return 0;
-    } elseif ($invertedsort ) {
+    }
+
+    if ($invertedsort) {
         return ( $aa < $bb ) ? 1 : -1;
     } else {
         return ( $aa < $bb ) ? -1 : 1;
@@ -258,7 +260,7 @@ function submit_disks_formatdisk()
     // sanity on label name
     $san_geom = sanitize(@$_POST[ 'geom_label' ], null, $geom_label, 16);
     $san_gpt = sanitize(@$_POST[ 'gpt_label' ], null, $gpt_label, 16);
-    if (@$_POST[ 'format_type' ] == 'geom' ) {
+    if (@$_POST[ 'format_type' ] === 'geom' ) {
         $disklabel = 'label/' . $geom_label;
         if (!$san_geom ) {
             friendlyerror(
@@ -266,7 +268,7 @@ function submit_disks_formatdisk()
                 . '(alphanumerical + underscore + dash characters allowed', $url2 
             );
         }
-    } elseif (@$_POST[ 'format_type' ] == 'gpt' ) {
+    } elseif (@$_POST[ 'format_type' ] === 'gpt' ) {
         $disklabel = 'gpt/' . $gpt_label;
         if (!$san_gpt ) {
             friendlyerror(
@@ -302,7 +304,7 @@ function submit_disks_formatdisk()
     }
 
     // random write
-    if (@$_POST[ 'random_write' ] == 'on' ) {
+    if (@$_POST[ 'random_write' ] === 'on' ) {
         $result = super_script('random_write', $disk);
         if ($result[ 'rv' ] != 0 AND $result[ 'rv' ] != 1 ) {
             error(
@@ -313,7 +315,7 @@ function submit_disks_formatdisk()
         }
     }
     // zero-write
-    if (@$_POST[ 'zero_write' ] == 'on' ) {
+    if (@$_POST[ 'zero_write' ] === 'on' ) {
         $result = super_script('zero_write', $disk);
         if ($result[ 'rv' ] != 0 AND $result[ 'rv' ] != 1 ) {
             error(
@@ -324,7 +326,7 @@ function submit_disks_formatdisk()
         }
     }
     // secure erase
-    if (@$_POST[ 'secure_erase' ] == 'on' ) {
+    if (@$_POST[ 'secure_erase' ] === 'on' ) {
         $result = super_script('secure_erase', $disk);
         if ($result[ 'rv' ] != 0 AND $result[ 'rv' ] != 1 ) {
             error(
@@ -356,13 +358,13 @@ function submit_disks_formatdisk()
     }
 
     // GEOM formatting
-    if (@$_POST[ 'format_type' ] == 'geom' ) {
+    if (@$_POST[ 'format_type' ] === 'geom' ) {
         // create new GEOM label
         super_script('geom_label_create', $disk . ' ' . $geom_label);
     }
 
     // GPT formatting
-    if (@$_POST[ 'format_type' ] == 'gpt' ) {
+    if (@$_POST[ 'format_type' ] === 'gpt' ) {
         // gather diskinfo
         $diskinfo = disk_info($disk);
 
@@ -419,7 +421,7 @@ function submit_disks_formatdisk()
     usleep(50);
 
     // redirect
-    $label = ( $_POST[ 'format_type' ] == 'geom' ) ? $geom_label : $gpt_label;
+    $label = ( $_POST[ 'format_type' ] === 'geom' ) ? $geom_label : $gpt_label;
     friendlynotice(
         'disk <b>' . htmlentities($disk) . '</b> has been formatted with '
         . '<b>' . @strtoupper($_POST[ 'format_type' ]) . '</b>, and will be identified by '
@@ -439,7 +441,7 @@ function submit_disks_massprocess()
     // construct array of disks selected
     $disks = array();
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('selectdisk_')) == 'selectdisk_' ) {
+        if (strpos($name, 'selectdisk_') === 0) {
             $disks[] = substr($name, strlen('selectdisk_'));
         }
     }
@@ -448,7 +450,7 @@ function submit_disks_massprocess()
     $commands = array();
 
     // determine action to perform
-    if ($action == 'formatgpt' ) {
+    if ($action === 'formatgpt' ) {
         // required library
         activate_library('disk');
 
@@ -479,7 +481,7 @@ function submit_disks_massprocess()
 
         // label base (prefix)
         $s = sanitize(@$_POST[ 'massprocess_label' ], false, $labelbase);
-        if (!$s OR strlen($labelbase) < 1 ) {
+        if (!$s OR $labelbase == '') {
             friendlyerror(
                 'please enter a label prefix consisting of alphanumerical, '
                 . 'dash (-) or underscore (_) characters', $url 
@@ -518,7 +520,7 @@ function submit_disks_massprocess()
             $commands[] = $guru[ 'docroot' ] . '/scripts/create_gpt_partitions.sh '
             . $disk . ' "' . $labelname . '" ' . $data_size . ' ' . $pmbr . ' ' . $gptzfsboot;
         }
-    } elseif ($action == 'formatmbr' ) {
+    } elseif ($action === 'formatmbr' ) {
         // required library
         activate_library('disk');
 
@@ -577,22 +579,22 @@ function submit_disks_massprocess()
             . $disk . ' "' . $labelname . '" ' . $data_size . ' ' . $pmbr . ' ' . $zfsboot;
         }
     }
-    elseif ($action == 'delete' ) {
+    elseif ($action === 'delete' ) {
         foreach ( $disks as $disk ) {
             $commands[] = $guru[ 'docroot' ] . '/scripts/format_disk.sh ' . $disk;
         }
     }
-    elseif ($action == 'zerowrite' ) {
+    elseif ($action === 'zerowrite' ) {
         foreach ( $disks as $disk ) {
             $commands[] = $guru[ 'docroot' ] . '/scripts/zero_write.sh ' . $disk;
         }
     }
-    elseif ($action == 'randomwrite' ) {
+    elseif ($action === 'randomwrite' ) {
         foreach ( $disks as $disk ) {
             $commands[] = $guru[ 'docroot' ] . '/scripts/random_write.sh ' . $disk;
         }
     }
-    elseif ($action == 'trimerase' ) {
+    elseif ($action === 'trimerase' ) {
         foreach ( $disks as $disk ) {
             $commands[] = $guru[ 'docroot' ] . '/scripts/secure_erase.sh ' . $disk;
         }

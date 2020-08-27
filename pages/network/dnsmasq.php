@@ -54,7 +54,7 @@ function content_panel_dnsmasq()
     $netif = network_interfaces();
     $table_dhcp_if = array();
     foreach ( $netif as $ifname => $ifdata ) {
-        if (substr($ifname, 0, 2) != 'lo' ) {
+        if (strpos($ifname, 'lo') !== 0) {
             $maskhex = @$ifdata[ 'inet' ][ 0 ][ 'netmask' ];
             $mask = '';
             if ($maskhex ) {
@@ -123,13 +123,13 @@ function dnsmasq_readconfig( $raw = false )
 
     // match: ^ var= value # comment $
     preg_match_all(
-        '/^[\s]*([^\#\s\n][^\=\n]*)[\s]*\='
-        . '[\s]*([^\#\n]+)[\s]*(\#[\s]*(.*))?[\s]*$/Um', $contents, $matches1 
+        '/^[\s]*([^#\s\n][^=\n]*)[\s]*='
+        . '[\s]*([^#\n]+)[\s]*(#[\s]*(.*))?[\s]*$/Um', $contents, $matches1
     );
 
     // match: ^ var # comment $
     preg_match_all(
-        '/^[\s]*([^\#\s\n][^\=\n]*)[\s]*(\#[\s]*(.*))?[\s]*$/Um',
+        '/^[\s]*([^#\s\n][^=\n]*)[\s]*(#[\s]*(.*))?[\s]*$/Um',
         $contents, $matches2 
     );
 
@@ -141,12 +141,12 @@ function dnsmasq_readconfig( $raw = false )
     $allthree = array( 'dns', 'dhcp', 'tftp' );
     foreach ( $allthree as $servicetype ) {
         foreach ( $matches1[ 1 ] as $id => $varname ) {
-            if (@in_array($varname, $dnsmasq[ $servicetype ][ 'string' ]) ) {
+            if (@in_array($varname, $dnsmasq[$servicetype]['string'], true)) {
                 $config[ $servicetype ][ 'string' ][ $varname ] = $matches1[ 2 ][ $id ];
             }
         }
         foreach ( $matches2[ 1 ] as $id => $varname ) {
-            if (@in_array($varname, $dnsmasq[ $servicetype ][ 'switch' ]) ) {
+            if (@in_array($varname, $dnsmasq[$servicetype]['switch'], true)) {
                 $config[ $servicetype ][ 'switch' ][ $varname ] = $matches2[ 2 ][ $id ];
             }
         }

@@ -77,7 +77,7 @@ div.fsbuttonbox table tr th {
 	font-variant: small-caps;
 	text-transform: lowercase;
 	letter-spacing: 2px;
-	text-shadow: 1px 1px 0px #fff, -1px -1px 0px #ddd;
+	text-shadow: 1px 1px 0 #fff, -1px -1px 0 #ddd;
 	padding: 1px 0;
 }
 div.fsbuttonbox table tr th span {

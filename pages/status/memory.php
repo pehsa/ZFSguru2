@@ -23,7 +23,7 @@ function content_status_memory()
     $top[ 'free' ] = @convertunitsize($topmemory[ 8 ]);
     preg_match(
         '/^Swap: ([0-9]+[KMGT]) Total,( ([0-9]+[KMGT]) Used,)? '
-        . '([0-9]+[KMGT]) Free(, ([0-9]+)\% Inuse)?$/m', $topoutput, $swapmemory 
+        . '([0-9]+[KMGT]) Free(, ([0-9]+)% Inuse)?$/m', $topoutput, $swapmemory
     );
     $topswap[ 'total' ] = @convertunitsize($swapmemory[ 1 ]);
     $topswap[ 'free' ] = @convertunitsize($swapmemory[ 4 ]);
@@ -46,12 +46,12 @@ function content_status_memory()
     preg_match('/^Free Memory Pages:[\s]+([0-9]+)K$/m', $vmtotal, $freepreg);
 
     // unknown memory
-    $unknownmem = ( int )$mem - ( int )array_sum($top);
+    $unknownmem = $mem - ( int )array_sum($top);
 
     // memory breakdown
     $mem_virtual_total = @sizebinary($vmpreg[ 2 ][ 0 ] * 1024, 1);
     $mem_virtual_active = @sizebinary($vmpreg[ 3 ][ 0 ] * 1024, 1);
-    $mem_human = @sizebinary(( int )$mem, 1);
+    $mem_human = @sizebinary($mem, 1);
     $mem_active = @sizebinary($top[ 'active' ], 1);
     $mem_inact = @sizebinary($top[ 'inact' ], 1);
     $mem_cache = @sizebinary($top[ 'cache' ], 1);
@@ -124,7 +124,7 @@ function content_status_memory()
 
 function convertunitsize( $string )
 {
-    if (strlen($string) < 1 ) {
+    if ($string == '') {
         return 0;
     }
     $lastchar = $string {

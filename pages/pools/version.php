@@ -62,10 +62,10 @@ function submit_pools_version()
     $zpl = @$_POST[ 'zpl_version' ];
     $spa = @$_POST[ 'spa_version' ];
     $suffix = '';
-    if (strlen($spa) > 0 ) {
+    if ($spa != '') {
         $suffix .= '&spa=' . ( int )$spa;
     }
-    if (strlen($zpl) > 0 ) {
+    if ($zpl != '') {
         $suffix .= '&zpl=' . ( int )$zpl;
     }
     if (@isset($_POST[ 'submit_goback' ]) ) {

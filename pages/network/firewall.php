@@ -9,7 +9,7 @@ function content_network_firewall()
 
     // read pf.conf manual page
     if (is_executable('/usr/local/bin/man2html') ) {
-        $pfman = `/usr/bin/man pf.conf | /usr/local/bin/man2html -bare 2>&1`;
+        $pfman = shell_exec("/usr/bin/man pf.conf | /usr/local/bin/man2html -bare 2>&1");
         $pfman = substr($pfman, strpos($pfman, '<H2>'));
     } else {
         $pfman = '<p><b>Note:</b> since you are running an older system version, '

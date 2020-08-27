@@ -59,7 +59,7 @@ if (true ) {
         $alignedoffset = floor($calculatedoffset / $alignment) * $alignment;
 
         $ddread = 'dd if=/dev/' . $diskname . ' of=/dev/null iseek=' . $alignedoffset
-        . ' bs=' . $blocksize . ' count=' . ( int )$blockcount . ' 2>&1';
+        . ' bs=' . $blocksize . ' count=' .$blockcount. ' 2>&1';
         $output = array();
         exec($ddread, $output);
         // process result
@@ -224,7 +224,7 @@ function zfsguru_benchmark_createchart( $finalscore = false )
 
     // draw horizontal units
     $increment = 1;
-    for ( $i = 1; $i <= $units_x; $i = $i + $increment ) {
+    for ($i = 1; $i <= $units_x; $i += $increment) {
         imagettftext(
             $image, 9, 0, $frame[ 'start' ][ 'x' ] - 3 + ( $i * $resolution_x ),
             $frame[ 'end' ][ 'y' ] + 15, $colors[ 'txt' ], $font, $i 
@@ -235,7 +235,7 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     $start = array( 'x' => 2, 'y' => 305 );
     $step = array( 'x' => 0, 'y' => ( -1 * $resolution_y ) );
     $increment = 1;
-    for ( $i = 0; $i <= $units_y; $i = $i + $increment ) {
+    for ($i = 0; $i <= $units_y; $i += $increment) {
         imagettftext(
             $image, 7, 0, 2,
             $frame[ 'end' ][ 'y' ] + 4 + ( $i * $step[ 'y' ] ), $colors[ 'txt' ], $font,
@@ -271,7 +271,7 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     }
 
     // write png file to disk
-    $filename = trim(`realpath .`) . '/benchmarks/simplebench_' . $diskname . '.png';
+    $filename = trim(shell_exec("realpath .")) . '/benchmarks/simplebench_' . $diskname . '.png';
     imagepng($image, $filename);
     @imagedestroy($image);
 }

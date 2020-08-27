@@ -11,9 +11,9 @@ function server_download( $uri, $filesize = false, $sha512 = false,
     if (@file_exists($downloadpath) ) {
         if (server_validate($downloadpath, $filesize) ) {
             return $downloadpath;
-        } else {
-            unlink($downloadpath);
         }
+
+        unlink($downloadpath);
     }
     if (@file_exists($downloadpath) ) {
         error('file ' . basename($uri) . ' already exists in the download directory!');
@@ -38,16 +38,18 @@ function server_download( $uri, $filesize = false, $sha512 = false,
         $downloadedfile = server_download_try(
             $url, $dirs[ 'download' ], $filesize, $ims, $invalidsize 
         );
-        if ($downloadedfile === null ) {
+        if ($downloadedfile === null) {
             return null;
-        } elseif ($downloadedfile !== false ) {
+        }
+
+        if ($downloadedfile !== false) {
             if (server_validate($downloadedfile, $filesize, $sha512) ) {
                 break;
-            } else {
-                // remove downloaded file that failed validation
-                @unlink($downloadedfile);
-                $invalid++;
             }
+
+            // remove downloaded file that failed validation
+            @unlink($downloadedfile);
+            $invalid++;
         }
         if ($invalidsize ) {
             $invalid++;
@@ -118,10 +120,8 @@ function server_download_try( $url, $downloaddir, $filesize = false,
     if (@file_exists($downloadpath) ) {
         unlink($downloadpath);
     }
-    if ($rv == 1 ) {
-        if (strpos($output[ 0 ], 'size mismatch') !== false ) {
-            $invalidsize = true;
-        }
+    if (($rv == 1) && strpos($output[0], 'size mismatch') !== false) {
+        $invalidsize = true;
     }
     return false;
 }
@@ -202,15 +202,16 @@ function server_download_bg_query( $uri, $filesize = false, $sha512 = false )
                 'b_success' 
             );
             return true;
-        } else {
-            // remove downloaded file that failed validation
-            unlink($filepath);
-            page_feedback(
-                'downloaded file rejected: ' . htmlentities(basename($uri)),
-                'a_warning' 
-            );
-            return false;
         }
+
+        // remove downloaded file that failed validation
+        unlink($filepath);
+        page_feedback(
+            'downloaded file rejected: ' . htmlentities(basename($uri)),
+            'a_warning'
+        );
+
+        return false;
     }
 
     // if none of the above, then an error occurred or the file does not exist
@@ -295,7 +296,7 @@ function server_find( $failedservers = array(), & $serverlist = false, $master =
     }
     // try other servers in list
     foreach ( $serverlist as $server ) {
-        if (!in_array($server[ 'name' ], $failedservers) ) {
+        if (!in_array($server['name'], $failedservers, true)) {
             return $server;
         }
     }
@@ -329,13 +330,11 @@ function server_validate( $file, $filesize = false, $sha512 = false )
     if (!@file_exists($file) ) {
         return false;
     }
-    if (( int )$filesize > 0 ) {
-        if ($filesize !== false ) {
-            if (filesize($file) == 0 ) {
-                return false;
-            } elseif (filesize($file) != $filesize ) {
-                return false;
-            }
+    if ((( int )$filesize > 0) && $filesize !== false) {
+        if (filesize($file) == 0 ) {
+            return false;
+        } elseif (filesize($file) != $filesize ) {
+            return false;
         }
     }
     if (@strlen($sha512) > 0 ) {

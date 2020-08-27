@@ -30,7 +30,7 @@ $zvolname = 'guruzvoltest';
 
 // internal variables
 $benchmark = array();
-$datfilename = trim(`realpath .`) . '/benchmarks/startbenchmark.dat';
+$datfilename = trim(shell_exec("realpath .")) . '/benchmarks/startbenchmark.dat';
 $expected_magic_string = 'XX00XXBENCHMARKXX00XX';
 $dd_preg = '/^[0-9]+ bytes transferred in [0-9\.]+ secs '
     . '\(([0-9]+) bytes\/sec\)$/m';
@@ -55,7 +55,7 @@ $ld_preg_arr = array(
 // fetch disks from argv
 $disks = array();
 if (count($argv) > 1 ) {
-    for ( $i = 1; $i <= count($argv); $i++ ) {
+    for ($i = 1, $iMax = count($argv), $iMax = $iMax; $i <= $iMax; $i++ ) {
         if (@strlen($argv[ $i ]) > 0 ) {
             $disks[] = $argv[ $i ];
         }
@@ -64,7 +64,7 @@ if (count($argv) > 1 ) {
 @reset($disks);
 
 // determine manual or web-gui test and set variables accordingly
-if ($argv[ 1 ] == 'startbenchmark' ) {
+if ($argv[ 1 ] === 'startbenchmark' ) {
     // start benchmark initiated via web-interface
 
     // read benchmark information file
@@ -81,7 +81,7 @@ if ($argv[ 1 ] == 'startbenchmark' ) {
     $disks = $data[ 'disks' ];
     $data[ 'gigabyte' ] = ( double )$data[ 'testsize_gib' ];
     $data[ 'gigabyte_nf' ] = number_format($data[ 'gigabyte' ], 3, '.', '');
-    $data[ 'diskcount' ] = ( int )@count($data[ 'disks' ]);
+    $data[ 'diskcount' ] = @count($data[ 'disks' ]);
     $data[ 'test_seq' ] = ( @$data[ 'tests' ][ 'sequential' ] ) ? true : false;
     $data[ 'test_rio' ] = ( @$data[ 'tests' ][ 'randomio' ] ) ? true : false;
     // use sector override function if applicable (this creates .nop providers)
@@ -96,7 +96,7 @@ if ($argv[ 1 ] == 'startbenchmark' ) {
     // get data from argv (command line parameters)
     $disks = array();
     if (count($argv) > 1 ) {
-        for ( $i = 1; $i <= count($argv); $i++ ) {
+        for ($i = 1, $iMax = count($argv); $i <= $iMax; $i++ ) {
             if (@strlen($argv[ $i ]) > 0 ) {
                 $disks[] = $argv[ $i ];
             }
@@ -106,7 +106,7 @@ if ($argv[ 1 ] == 'startbenchmark' ) {
     // use default values for $data array
     $data = $chartdefault;
     // and finally set diskcount
-    $data[ 'diskcount' ] = ( int )@count($disks);
+    $data[ 'diskcount' ] = @count($disks);
 }
 
 
@@ -266,7 +266,7 @@ function zfsguru_benchmark_createpool( $raid, $vdev )
     echo( 'c' );
     $options = '-f -O atime=off ';
     // check for nested pools and use raw $vdev as string
-    if (( $raid == 'RAID1+0' )OR( $raid == 'RAIDZ+0' )OR( $raid == 'RAIDZ2+0' ) ) {
+    if (( $raid === 'RAID1+0' )OR( $raid === 'RAIDZ+0' )OR( $raid === 'RAIDZ2+0' ) ) {
         $command = '/sbin/zpool create ' . $options . $poolname . ' ' . $vdev;
     } else {
         $command = '/sbin/zpool create ' . $options . $poolname . ' ' . $raid . ' ' .
@@ -404,9 +404,9 @@ function zfsguru_benchmark_randomio()
 
     // acquire disk information
     $zvol_sectorsize = ( int )
-    `diskinfo $zvoldev | awk '{print $2}'`;
+    shell_exec("diskinfo \$zvoldev | awk '{print \$2}'");
     $zvol_mediasize = ( int )
-    `diskinfo $zvoldev | awk '{print $3}'`;
+    shell_exec("diskinfo \$zvoldev | awk '{print \$3}'");
 
     // write random/zero data to zvol
     // $source = '/dev/urandom';
@@ -502,9 +502,9 @@ function zfsguru_benchmark_start( $raid, $vdev, $label, $testdisks, $datadisks )
 
     // $raidtxt (used for chart colortag as well)
     $raidtxt = ( $raid == '' ) ? 'RAID0' : $raid;
-    $raidtxt = ( $raid == 'mirror' ) ? 'RAID1' : $raidtxt;
-    $raidtxt = ( $raid == 'raidz1' ) ? 'RAIDZ' : $raidtxt;
-    $raidtxt = ( $raid == 'raidz2' ) ? 'RAIDZ2' : $raidtxt;
+    $raidtxt = ( $raid === 'mirror' ) ? 'RAID1' : $raidtxt;
+    $raidtxt = ( $raid === 'raidz1' ) ? 'RAIDZ' : $raidtxt;
+    $raidtxt = ( $raid === 'raidz2' ) ? 'RAIDZ2' : $raidtxt;
 
     // inject data in $data array for easy sharing across functions
     $data[ 'raidtxt' ] = $raidtxt;
@@ -548,9 +548,11 @@ function zfsguru_benchmark_start( $raid, $vdev, $label, $testdisks, $datadisks )
 
 function humansize_binary( $size_bytes )
 {
-    if ($size_bytes < ( 1024 * 10 ) ) {
+    if ($size_bytes < ( 1024 * 10 )) {
         return $size_bytes . ' B';
-    } elseif ($size_bytes < ( 1024 * 1024 * 10 ) ) {
+    }
+
+    if ($size_bytes < ( 1024 * 1024 * 10 )) {
         return ( int )( $size_bytes / 1024 ) . ' KiB';
     } elseif ($size_bytes < ( 1024 * 1024 * 1024 * 10 ) ) {
         return ( int )( $size_bytes / ( 1024 * 1024 ) ) . ' MiB';
@@ -661,10 +663,10 @@ function zfsguru_benchmark_createchart( $benchmarkrunning = true )
         }
         // set correct filename depending on whether benchmark is still running
         if ($benchmarkrunning ) {
-            $filename = trim(`realpath .`) . '/benchmarks/running_' . $test . '.png';
+            $filename = trim(shell_exec("realpath .")) . '/benchmarks/running_' . $test . '.png';
         } else {
             // final benchmark score
-            $filename = trim(`realpath .`) . '/benchmarks/bench_' . $test . '.png';
+            $filename = trim(shell_exec("realpath .")) . '/benchmarks/bench_' . $test . '.png';
             // also remove temporary benchmarks; we don't need those anymore
             exec('/bin/rm benchmarks/running_* 2>&1');
         }

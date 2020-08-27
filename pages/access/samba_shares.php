@@ -41,7 +41,7 @@ function content_access_samba_shares()
     $class_notrunning = ( !$isrunning ) ? 'normal' : 'hidden';
     $class_corruptconfig = ( $sambaconf === false ) ? 'normal' : 'hidden';
     $class_noshares = ( @count($sambaconf[ 'shares' ]) < 1 ) ? 'normal' : 'hidden';
-    $class_deleteselectedshares = ( $class_noshares == 'hidden' ) ?
+    $class_deleteselectedshares = ( $class_noshares === 'hidden' ) ?
     '' : 'disabled="disabled"';
 
     // get samba user group list
@@ -53,7 +53,7 @@ function content_access_samba_shares()
     // queried share
     $queryshare = @$_GET[ 'share' ];
     $class_noquery = 'normal';
-    if (strlen($queryshare) < 1 ) {
+    if ($queryshare == '') {
         // activate library for shares_zfsfslist
         activate_library('html');
         if (@strpos($_GET[ 'newshare' ], '/') !== false ) {
@@ -160,15 +160,15 @@ function table_samba_sharelist( $sambaconf )
             // read only = yes (inverted synonym: writeable)
             // guest ok = no (inverted synonym: guest ok)
             $adv_nobrowse = '';
-            if (@$share[ 'browseable' ] == 'no' ) {
+            if (@$share[ 'browseable' ] === 'no' ) {
                 $adv_nobrowse = 'selected';
             }
             $adv_noreadonly = '';
-            if (@$share[ 'read only' ] == 'no' ) {
+            if (@$share[ 'read only' ] === 'no' ) {
                 $adv_noreadonly = 'selected';
             }
             $adv_guestnotok = '';
-            if (@$share[ 'guest ok' ] == 'no' ) {
+            if (@$share[ 'guest ok' ] === 'no' ) {
                 $adv_guestnotok = 'selected';
             }
 
@@ -289,7 +289,7 @@ function table_samba_groups( $grouplist )
             );
         }
         $class_hasusers = ( !empty($table_users) ) ? 'normal' : 'hidden';
-        $stdgroup = ( $groupname == 'share' );
+        $stdgroup = ( $groupname === 'share' );
         $display_shares = ( $stdgroup ) ? 'Everyone' :
         htmlentities(ucfirst($groupname));
         $display_users = ( $stdgroup ) ? 'Standard users' :
@@ -315,10 +315,10 @@ function table_samba_share_accesslist( $accesstype, $sharename, $sambaconf )
     $shareperms = samba_share_permissions($sambaconf, $sharename);
     if (@is_array($shareperms[ $accesstype ]) ) {
         foreach ( $shareperms[ $accesstype ] as $name ) {
-            if ($name == 'guest' ) {
+            if ($name === 'guest' ) {
                 $type = 'sambaguestxx';
                 $image = 'user-guest';
-            } elseif (( $name {           0          } == '+' )OR( $name {           0          } == '@' ) 
+            } elseif (( $name {           0          } == '+' )OR( $name {           0          } === '@' )
             ) {
                 $type = 'sambagroupxx';
                 $image = 'group';
@@ -327,9 +327,9 @@ function table_samba_share_accesslist( $accesstype, $sharename, $sambaconf )
                 $type = 'standarduser';
                 $image = 'user';
             }
-            $rname = ( $type == 'sambagroupxx' ) ? substr($name, 1) : $name;
-            $uname = ( $name == '+share'
-            OR $name == '@share' ) ? 'Everyone' : $rname;
+            $rname = ( $type === 'sambagroupxx' ) ? substr($name, 1) : $name;
+            $uname = ( $name === '+share'
+            OR $name === '@share' ) ? 'Everyone' : $rname;
             $table_accesslist[] = array(
             'SP_TYPE' => $type,
             'SP_NAME' => htmlentities($rname),
@@ -365,7 +365,7 @@ function submit_access_samba_shares_create()
 
     // call functions
     $sambaconf = samba_readconfig();
-    if ($zfsfs == '/mp/' ) {
+    if ($zfsfs === '/mp/' ) {
         $mountpoint = $custommp;
     } else {
         $zfsmp = zfs_filesystem_properties($zfsfs, 'mountpoint');
@@ -382,13 +382,13 @@ function submit_access_samba_shares_create()
             );
         }
     }
-    if (strlen($sambasharename) < 1 ) {
+    if ($sambasharename == '') {
         friendlyerror('failed creating a samba name for this filesystem', $url);
     }
     if (@isset($sambaconf[ 'shares' ][ $sambasharename ]) ) {
         friendlyerror('this share name already exists!', $url);
     }
-    if ($mountpoint {        0        } != '/' 
+    if ($mountpoint {        0        } !== '/'
     ) {
         friendlyerror(
             'incorrect mountpoint supplied; '
@@ -406,18 +406,18 @@ function submit_access_samba_shares_create()
     'write list' => '@share'
     );
     // apply access profile
-    if ($accessprofile == 'public' ) {
+    if ($accessprofile === 'public' ) {
         $newshare[ 'guest ok' ] = 'yes';
         $newshare[ 'read only' ] = 'no';
-    } elseif ($accessprofile == 'private' ) {
+    } elseif ($accessprofile === 'private' ) {
         $newshare[ 'write list' ] = $accessprivate;
-    } elseif ($accessprofile == 'noaccess' ) {
+    } elseif ($accessprofile === 'noaccess' ) {
         unset($newshare[ 'write list' ]);
     }
     // add new share and save configuration
     $sambaconf[ 'shares' ][ $sambasharename ] = $newshare;
     $result = samba_writeconfig($sambaconf);
-    if ($result AND( $zfsfs == '/mp/' ) ) {
+    if ($result AND( $zfsfs === '/mp/' ) ) {
         page_feedback(
             'created a new share called <b>' . htmlentities($sambasharename)
             . '</b> pointing to <b>' . htmlentities($mountpoint) . '</b>', 'b_success' 
@@ -454,7 +454,7 @@ function submit_access_samba_shares_remove()
         $newconf = $sambaconf;
         $removed_arr = array();
         foreach ( $_POST as $name => $value ) {
-            if (substr($name, 0, strlen('cb_sambashare_')) == 'cb_sambashare_' ) {
+            if (strpos($name, 'cb_sambashare_') === 0) {
                 $sharename = trim(substr($name, strlen('cb_sambashare_')));
                 $removed_arr[] = $sharename;
                 unset($newconf[ 'shares' ][ $sharename ]);
@@ -512,36 +512,32 @@ function submit_access_samba_shares_advanced()
 
     // change all advanced variables related to share
     foreach ( $_POST as $postvar => $postvalue ) {
-        if (substr($postvar, 0, strlen('advancedvar_')) == 'advancedvar_' ) {
-            if (strlen($postvalue) > 0 ) {
-                $postvariable = trim(
-                    str_replace(
-                        '_', ' ',
-                        substr($postvar, strlen('advancedvar_')) 
-                    ) 
-                );
-                $sambaconf[ 'shares' ][ $sharename ][ $postvariable ] = $postvalue;
-            }
+        if ((substr($postvar, 0, strlen('advancedvar_')) == 'advancedvar_') && strlen($postvalue) > 0) {
+            $postvariable = trim(
+                str_replace(
+                    '_', ' ',
+                    substr($postvar, strlen('advancedvar_'))
+                )
+            );
+            $sambaconf[ 'shares' ][ $sharename ][ $postvariable ] = $postvalue;
         }
     }
 
     // remove variables with checkbox checked
     foreach ( $_POST as $postvar => $postvalue ) {
-        if (substr($postvar, 0, strlen('cb_advanced_')) == 'cb_advanced_' ) {
-            if ($postvalue == 'on' ) {
-                $postvariable = trim(
-                    str_replace(
-                        '_', ' ',
-                        substr($postvar, strlen('cb_advanced_')) 
-                    ) 
-                );
-                unset($sambaconf[ 'shares' ][ $sharename ][ $postvariable ]);
-            }
+        if ((substr($postvar, 0, strlen('cb_advanced_')) == 'cb_advanced_') && $postvalue == 'on') {
+            $postvariable = trim(
+                str_replace(
+                    '_', ' ',
+                    substr($postvar, strlen('cb_advanced_'))
+                )
+            );
+            unset($sambaconf[ 'shares' ][ $sharename ][ $postvariable ]);
         }
     }
 
     // add new variable to samba share configuration
-    if (strlen($newvar_varname) > 0 AND strlen($newvar_value) > 0 ) {
+    if ($newvar_varname != '' AND $newvar_value != '') {
         $sambaconf[ 'shares' ][ $sharename ][ $newvar_varname ] = $newvar_value;
     }
 
@@ -581,15 +577,15 @@ function submit_access_samba_shares_dragdrop()
     );
 
     // act depending on drag and drop type
-    if ($dragtype == 'standarduser'
-        OR $dragtype == 'useringroup' 
+    if ($dragtype === 'standarduser'
+        OR $dragtype === 'useringroup'
     ) {
         $list_arr = @explode(
             ' ', trim(
                 $sambaconf[ 'shares' ][ $sharename ][ $conv[ $dragtarget ] ] 
             ) 
         );
-        if (in_array($dragname, $list_arr) ) {
+        if (in_array($dragname, $list_arr, true)) {
             friendlyerror(
                 'user <b>' . htmlentities($dragname) . '</b> already part of this '
                 . 'access list', $redir 
@@ -604,10 +600,8 @@ function submit_access_samba_shares_dragdrop()
                 ) 
             );
             foreach ( $tmp_arr as $tmp_item ) {
-                if (strlen($tmp_item) > 0 ) {
-                    if ($tmp_item != $dragname ) {
-                        $aclist[ $conv_b ][ $tmp_item ] = $tmp_item;
-                    }
+                if ((strlen($tmp_item) > 0) && $tmp_item != $dragname) {
+                    $aclist[ $conv_b ][ $tmp_item ] = $tmp_item;
                 }
             }
         }
@@ -625,13 +619,13 @@ function submit_access_samba_shares_dragdrop()
         }
         // save configuration
         samba_writeconfig($sambaconf);
-    } elseif ($dragtype == 'sambagroup' ) {
+    } elseif ($dragtype === 'sambagroup' ) {
         $list_arr = @explode(
             ' ', trim(
                 $sambaconf[ 'shares' ][ $sharename ][ $conv[ $dragtarget ] ] 
             ) 
         );
-        if (in_array('+' . $dragname, $list_arr)OR in_array('@' . $dragname, $list_arr) ) {
+        if (in_array('+'.$dragname, $list_arr, true) OR in_array('@'.$dragname, $list_arr, true)) {
             friendlyerror(
                 'group <b>' . htmlentities($dragname) . '</b> already part of this '
                 . 'access list', $redir 
@@ -646,10 +640,8 @@ function submit_access_samba_shares_dragdrop()
                 ) 
             );
             foreach ( $tmp_arr as $tmp_item ) {
-                if (strlen($tmp_item) > 0 ) {
-                    if (!preg_match('/(\@|\+)' . $dragname . '/', $tmp_item) ) {
-                        $aclist[ $conv_b ][ $tmp_item ] = $tmp_item;
-                    }
+                if ((strlen($tmp_item) > 0) && !preg_match('/(\@|\+)'.$dragname.'/', $tmp_item)) {
+                    $aclist[ $conv_b ][ $tmp_item ] = $tmp_item;
                 }
             }
         }
@@ -664,15 +656,15 @@ function submit_access_samba_shares_dragdrop()
         }
         samba_writeconfig($sambaconf);
     }
-    elseif ($dragtype == 'sambaguest' ) {
-        if ($dragtarget == 'fullaccess' ) {
+    elseif ($dragtype === 'sambaguest' ) {
+        if ($dragtarget === 'fullaccess' ) {
             $sambaconf[ 'shares' ][ $sharename ][ 'guest ok' ] = 'yes';
             $sambaconf[ 'shares' ][ $sharename ][ 'read only' ] = 'no';
-        } elseif ($dragtarget == 'readonly' ) {
+        } elseif ($dragtarget === 'readonly' ) {
             $sambaconf[ 'shares' ][ $sharename ][ 'guest ok' ] = 'yes';
             $sambaconf[ 'shares' ][ $sharename ][ 'read only' ] = 'yes';
         }
-        elseif ($dragtarget == 'noaccess' ) {
+        elseif ($dragtarget === 'noaccess' ) {
             $sambaconf[ 'shares' ][ $sharename ][ 'guest ok' ] = 'no';
         }
         // save samba configuration

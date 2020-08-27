@@ -76,9 +76,9 @@ function sort_system( $a, $b )
     $platform = common_systemplatform();
     if ($a[ $platform ][ 'date' ] > $b[ $platform ][ 'date' ] ) {
         return -1;
-    } else {
-        return 1;
     }
+
+    return 1;
 }
 
 function table_systemversions( $system, $locate, $currentver, $platform,
@@ -124,13 +124,9 @@ function table_systemversions( $system, $locate, $currentver, $platform,
 
         // hide system version if obsolete
         // unless currently running that version or mounted a LiveCD with that version
-        if (( @$data[ 'branch' ] == 'obsolete' )AND( !@isset($_GET[ 'displayobsolete' ]) ) ) {
-            if ($data[ 'sha512' ] != $currentver[ 'sha512' ] ) {
-                if (!$available ) {
-                    $obsolete++;
-                    continue;
-                }
-            }
+        if (((@$data['branch'] == 'obsolete') and (!@isset($_GET['displayobsolete']))) && ($data['sha512'] != $currentver['sha512']) && !$available) {
+            $obsolete++;
+            continue;
         }
 
         // check compatibility with ZFSguru web-interface
@@ -220,7 +216,7 @@ function submit_system_install_download()
     // system version
     $sysver = '';
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('download_')) == 'download_' ) {
+        if (strpos($name, 'download_') === 0) {
             $sysver = @base64_decode(substr($name, strlen('download_')));
         }
     }
@@ -241,7 +237,7 @@ function submit_system_install_download()
     $reserved = 64 * 1024 * 1024;
     if (disk_free_space($dirs[ 'download' ]) <        ( @$sys[ 'filesize' ] + $reserved ) 
     ) {
-        if ($dist == 'livecd' ) {
+        if ($dist === 'livecd' ) {
             error(
                 'Insufficient free memory; '
                 . 'LiveCD is bound by RAM size; add more RAM!' 

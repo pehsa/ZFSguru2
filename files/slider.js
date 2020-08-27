@@ -46,7 +46,7 @@ function getImageSliderHeight(){
 		slider_handle_image_obj.src = form_widget_amount_slider_handle;
 	}
 	if(slider_handle_image_obj.width>0){
-		return;
+
 	}else{
 		setTimeout('getImageSliderHeight()',50);
 	}

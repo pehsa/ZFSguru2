@@ -27,7 +27,7 @@ function content_disks_benchmark()
     // select tab and perform actions for that tab
 
     /* SIMPLE BENCHMARK */
-    if ($tabbar_tab == 'simplebench' ) {
+    if ($tabbar_tab === 'simplebench' ) {
         // required library
         activate_library('disk');
 
@@ -41,11 +41,11 @@ function content_disks_benchmark()
         $lastdate = 0;
         exec('/usr/bin/find ' . $guru[ 'docroot' ] . '/benchmarks/ -type f', $output);
         foreach ( $output as $line ) {
-            if (substr(@basename($line), 0, strlen('simplebench_')) == 'simplebench_' ) {
-                if (( $mtime = filemtime($line) ) > $lastdate ) {
+            if ((substr(@basename($line), 0, strlen('simplebench_')) == 'simplebench_') && ($mtime = filemtime(
+                    $line
+                )) > $lastdate) {
                     $lastdate = $mtime;
                 }
-            }
         }
         $curdate = time();
         $diff = $curdate - $lastdate;
@@ -95,12 +95,12 @@ function content_disks_benchmark()
 
             // classes
             $class_active = ( $disk[ 'disk_name' ] == $disk_bench ) ? 'activerow' : 'normal';
-            $class_hdd = ( $disktype == 'hdd' ) ? 'normal' : 'hidden';
-            $class_ssd = ( $disktype == 'ssd' ) ? 'normal' : 'hidden';
-            $class_flash = ( $disktype == 'flash' ) ? 'normal' : 'hidden';
-            $class_memdisk = ( $disktype == 'memdisk' ) ? 'normal' : 'hidden';
-            $class_usbstick = ( $disktype == 'usbstick' ) ? 'normal' : 'hidden';
-            $class_network = ( $disktype == 'network' ) ? 'normal' : 'hidden';
+            $class_hdd = ( $disktype === 'hdd' ) ? 'normal' : 'hidden';
+            $class_ssd = ( $disktype === 'ssd' ) ? 'normal' : 'hidden';
+            $class_flash = ( $disktype === 'flash' ) ? 'normal' : 'hidden';
+            $class_memdisk = ( $disktype === 'memdisk' ) ? 'normal' : 'hidden';
+            $class_usbstick = ( $disktype === 'usbstick' ) ? 'normal' : 'hidden';
+            $class_network = ( $disktype === 'network' ) ? 'normal' : 'hidden';
 
             $table_disks[] = @array(
             'CLASS_ACTIVEROW' => $class_active,
@@ -117,12 +117,12 @@ function content_disks_benchmark()
     }
 
     /* ADVANCED BENCHMARK */
-    elseif ($tabbar_tab == 'advancedbench' ) {
+    elseif ($tabbar_tab === 'advancedbench' ) {
         // advanced benchmarking
         $class_advanced = 'normal';
 
         // livecd performance warning
-        if (common_distribution_type() == 'livecd' ) {
+        if (common_distribution_type() === 'livecd' ) {
             page_feedback(
                 'LiveCD detected, ZFS performance is severely restricted '
                 . 'on the LiveCD! Consider installing Root-on-ZFS first.', 'a_warning' 
@@ -169,7 +169,7 @@ function content_disks_benchmark()
             $interrupted = false;
             if (( @file_exists($benchpath . 'running_seqread.png') )OR( @file_exists($benchpath . 'running_raidtest.read.png') ) ) {
                 $interrupted = true;
-            } elseif (( !$completed )AND( strlen($benchoutput) > 0 ) ) {
+            } elseif (( !$completed )AND($benchoutput !== '') ) {
                 $interrupted = true;
             }
 
@@ -227,7 +227,7 @@ function submit_disks_benchmark_simple()
     // disk to benchmark
     $disk = false;
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('simplebench_submit_')) == 'simplebench_submit_' ) {
+        if (strpos($name, 'simplebench_submit_') === 0) {
             $disk = substr($name, strlen('simplebench_submit_'));
         }
     }
@@ -278,14 +278,14 @@ function submit_disks_benchmark_start()
     $data[ 'magic_string' ] = $guru[ 'benchmark_magic_string' ];
     $len = strlen('addmember_');
     foreach ( @$_POST as $name => $value ) {
-        if (( substr($name, 0, $len) == 'addmember_' )AND( $value == 'on' ) ) {
+        if ((strpos($name, 'addmember_') === 0)AND( $value === 'on' ) ) {
             $data[ 'disks' ][] = trim(substr($name, $len));
         }
     }
-    if (@$_POST[ 'test_seq' ] == 'on' ) {
+    if (@$_POST[ 'test_seq' ] === 'on' ) {
         $data[ 'tests' ][ 'sequential' ] = true;
     }
-    if (@$_POST[ 'test_rio' ] == 'on' ) {
+    if (@$_POST[ 'test_rio' ] === 'on' ) {
         $data[ 'tests' ][ 'randomio' ] = true;
     }
 
@@ -327,7 +327,7 @@ function submit_disks_benchmark_start()
     $data[ 'rio_alignment' ] = ( int )$_POST[ 'rio_alignment' ];
     $data[ 'rio_queuedepth' ] = ( int )$_POST[ 'rio_queuedepth' ];
     $data[ 'sectorsize_override' ] = ( int )$_POST[ 'sectorsize_override' ];
-    $data[ 'secure_erase' ] = ( @$_POST[ 'secure_erase' ] == 'on' ) ? true : false;
+    $data[ 'secure_erase' ] = @$_POST[ 'secure_erase' ] == 'on';
 
     // kill powerd daemon for accurate frequency scanning
     service_manage_rc('powerd', 'stop', true);
@@ -339,13 +339,13 @@ function submit_disks_benchmark_start()
     $data[ 'sysinfo' ][ 'product_version' ] = $guru[ 'product_version_string' ];
     $data[ 'sysinfo' ][ 'distribution' ] = $currentver[ 'dist' ];
     $data[ 'sysinfo' ][ 'system_version' ] = $currentver[ 'sysver' ];
-    $data[ 'sysinfo' ][ 'cpu_name' ] = trim(`sysctl -n hw.model`);
-    $data[ 'sysinfo' ][ 'cpu_count' ] = ( int )( `sysctl -n hw.ncpu` );
-    $freq_ghz = ( int )( `sysctl -n dev.cpu.0.freq` ) / 1000;
+    $data[ 'sysinfo' ][ 'cpu_name' ] = trim(shell_exec("sysctl -n hw.model"));
+    $data[ 'sysinfo' ][ 'cpu_count' ] = ( int )(shell_exec("sysctl -n hw.ncpu"));
+    $freq_ghz = ( int )(shell_exec("sysctl -n dev.cpu.0.freq")) / 1000;
     $data[ 'sysinfo' ][ 'cpu_freq_ghz' ] = @number_format($freq_ghz, 1);
-    $physmem_gib = ( int )( `sysctl -n hw.physmem` ) / ( 1024 * 1024 * 1024 );
+    $physmem_gib = ( int )(shell_exec("sysctl -n hw.physmem")) / ( 1024 * 1024 * 1024 );
     $data[ 'sysinfo' ][ 'physmem_gib' ] = @number_format($physmem_gib, 1);
-    $kmem_gib = ( int )( `sysctl -n vm.kmem_size` ) / ( 1024 * 1024 * 1024 );
+    $kmem_gib = ( int )(shell_exec("sysctl -n vm.kmem_size")) / ( 1024 * 1024 * 1024 );
     $data[ 'sysinfo' ][ 'kmem_gib' ] = @number_format($kmem_gib, 1);
     if (@$_SESSION[ 'loaderconf_needreboot' ] === true ) {
         $data[ 'sysinfo' ][ 'contamination' ] = true;
@@ -355,7 +355,7 @@ function submit_disks_benchmark_start()
 
     // serialize and write array to file
     $serial = serialize($data);
-    $filename = trim(`realpath .`) . '/benchmarks/startbenchmark.dat';
+    $filename = trim(shell_exec("realpath .")) . '/benchmarks/startbenchmark.dat';
     exec('/bin/rm ' . $filename);
     $result = file_put_contents($filename, $serial, LOCK_EX);
     if ($result === false ) {

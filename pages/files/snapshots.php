@@ -5,7 +5,7 @@ function content_files_snapshots()
     global $sort, $invertedsort;
 
     // snapshot list
-    $snaplist = htmlentities(trim(`zfs list -t snapshot`));
+    $snaplist = htmlentities(trim(shell_exec("zfs list -t snapshot")));
 
     // required library
     activate_library('zfs');
@@ -22,7 +22,7 @@ function content_files_snapshots()
     }
     $query_hidden = 'hidden';
     $query_visible = 'hidden';
-    if (@$prop[ $queryfs ][ 'snapdir' ][ 'value' ] == 'visible' ) {
+    if (@$prop[ $queryfs ][ 'snapdir' ][ 'value' ] === 'visible' ) {
         $query_visible = 'normal';
     } else {
         $query_hidden = 'normal';
@@ -30,10 +30,10 @@ function content_files_snapshots()
 
     // sorting
     $sort = @$_GET[ 'sort' ];
-    $invertedsort = ( @isset($_GET[ 'inverted' ]) ) ? true : false;
+    $invertedsort = @isset($_GET[ 'inverted' ]);
     $sorted = ( is_array($snapshots) ) ? $snapshots : array();
     $sortsuffix = array();
-    if (strlen($sort) > 0 ) {
+    if ($sort != '') {
         uasort($sorted, 'sort_snapshots');
     }
     if (!$invertedsort AND $sort ) {
@@ -71,8 +71,8 @@ function content_files_snapshots()
     'PAGE_ACTIVETAB' => 'Snapshots',
     'PAGE_TITLE' => 'Snapshots',
     'TABLE_SNAPSHOTS' => $table_snapshots,
-    'CLASS_QUERY' => ( strlen($query) > 0 ) ? 'normal' : 'hidden',
-    'CLASS_NOQUERY' => ( strlen($query) > 0 ) ? 'hidden' : 'normal',
+    'CLASS_QUERY' => ($query != '') ? 'normal' : 'hidden',
+    'CLASS_NOQUERY' => ($query != '') ? 'hidden' : 'normal',
     'CLASS_SNAPHIDDEN' => $query_hidden,
     'CLASS_SNAPVISIBLE' => $query_visible,
     'SORT_FS' => @$sortsuffix[ 'fs' ],
@@ -90,7 +90,7 @@ function convertsuffix( $size_string )
     $sizeunits = array( 'B', 'K', 'M', 'G', 'T', 'E' );
     foreach ( $sizeunits as $index => $unit ) {
         if (strpos($size_string, $unit) > 0 ) {
-            $indexfactor = pow(1000, $index);
+            $indexfactor = 1000 ** $index;
             return ( ( int )$size_string * $indexfactor );
         }
     }
@@ -103,22 +103,22 @@ function sort_snapshots( $a, $b )
     $attr = false;
 
     // set easy to search attributes
-    if ($sort == 'used' ) {
+    if ($sort === 'used' ) {
         $attr = 'used';
-    } elseif ($sort == 'refer' ) {
+    } elseif ($sort === 'refer' ) {
         $attr = 'refer';
     }
 
     if ($attr ) {
         $aa = @$a[ $attr ];
         $bb = @$b[ $attr ];
-    } elseif ($sort == 'fs' ) {
+    } elseif ($sort === 'fs' ) {
         $a_fs = substr($a[ 'name' ], 0, strpos($a[ 'name' ], '@'));
         $b_fs = substr($b[ 'name' ], 0, strpos($b[ 'name' ], '@'));
         $aa = $a_fs;
         $bb = $b_fs;
     }
-    elseif ($sort == 'name' ) {
+    elseif ($sort === 'name' ) {
         $a_name = substr($a[ 'name' ], strpos($a[ 'name' ], '@') + 1);
         $b_name = substr($b[ 'name' ], strpos($b[ 'name' ], '@') + 1);
         $aa = $a_name;
@@ -126,9 +126,11 @@ function sort_snapshots( $a, $b )
     }
 
     // compare aa to bb
-    if ($aa == $bb ) {
+    if ($aa == $bb) {
         return 0;
-    } elseif ($invertedsort ) {
+    }
+
+    if ($invertedsort) {
         return ( $aa < $bb ) ? 1 : -1;
     } else {
         return ( $aa < $bb ) ? -1 : 1;
@@ -141,7 +143,7 @@ function submit_snapshot_operation()
     $url = 'files.php?snapshots';
     $snapshots = array();
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('snapshot_')) == 'snapshot_' ) {
+        if (strpos($name, 'snapshot_') === 0) {
             $snap = substr($name, strlen('snapshot_'));
             $snapfs = base64_decode(substr($snap, 0, strpos($snap, '@')));
             $snapname = base64_decode(substr($snap, strpos($snap, '@') + 1));
@@ -155,7 +157,7 @@ function submit_snapshot_operation()
     // rollback
     if (@isset($_POST[ 'submit_rollback' ]) ) {
         foreach ( $snapshots as $name => $operation ) {
-            if ($operation == 'rollback' ) {
+            if ($operation === 'rollback' ) {
                 $commands[] = '/sbin/zfs rollback ' . $name;
             }
         }
@@ -164,15 +166,15 @@ function submit_snapshot_operation()
     // clone
     if (@isset($_POST[ 'submit_clone' ]) ) {
         foreach ( $snapshots as $name => $operation ) {
-            if ($operation == 'clone' ) {
+            if ($operation === 'clone' ) {
                 $clonename = @$_POST[ 'clone_name' ];
-                if (strlen($clonename) < 1 ) {
+                if ($clonename == '') {
                     friendlyerror('please enter a new name for the cloned filesystem', $url);
                 }
                 // add clone command to command array
                 $commands[] = '/sbin/zfs clone ' . $name . ' ' . $clonename;
                 // add promote command to command array if applicable
-                if (@$_POST[ 'clone_promote' ] == 'on' ) {
+                if (@$_POST[ 'clone_promote' ] === 'on' ) {
                     $commands[] = '/sbin/zfs promote ' . $clonename;
                 }
                 // do not search for other submitted filesystems to clone
@@ -184,7 +186,7 @@ function submit_snapshot_operation()
     // destroy
     if (@isset($_POST[ 'submit_destroy' ]) ) {
         foreach ( $snapshots as $name => $operation ) {
-            if ($operation == 'destroy' ) {
+            if ($operation === 'destroy' ) {
                 $commands[] = '/sbin/zfs destroy ' . $name;
             }
         }
@@ -193,7 +195,7 @@ function submit_snapshot_operation()
     // promote
     if (@isset($_POST[ 'submit_promote' ]) ) {
         foreach ( $snapshots as $name => $operation ) {
-            if ($operation == 'promote' ) {
+            if ($operation === 'promote' ) {
                 $commands[] = '/sbin/zfs promote ' . $name;
             }
         }
@@ -215,7 +217,7 @@ function submit_snapshot_visibility()
     $url = 'files.php?snapshots=' . $snapshot;
 
     // sanity
-    if (strlen($snapshot) < 1 ) {
+    if ($snapshot == '') {
         friendlyerror('no snapshot submitted', $url);
     }
 

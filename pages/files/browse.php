@@ -8,15 +8,13 @@ function content_files_browse()
     $ajaxplorer = is_dir('/usr/local/www/ajaxplorer');
     if ($ajaxplorer AND( @strlen($_GET[ 'browse' ]) < 1 ) ) {
         // check for interface link to ajaxplorer, and create if missing
-        if (!is_link('interface/ajaxplorer') ) {
-            if (!file_exists('interface/ajaxplorer') ) {
-                // create symbolic link using super privileges
-                activate_library('super');
-                super_execute(
-                    '/bin/ln -s /usr/local/www/ajaxplorer '
-                    . $guru[ 'docroot' ] . '/interface/ajaxplorer' 
-                );
-            }
+        if (!is_link('interface/ajaxplorer') && !file_exists('interface/ajaxplorer')) {
+            // create symbolic link using super privileges
+            activate_library('super');
+            super_execute(
+                '/bin/ln -s /usr/local/www/ajaxplorer '
+                . $guru[ 'docroot' ] . '/interface/ajaxplorer'
+            );
         }
         // use the AjaxPlorer file browser instead of default
         $content = content_handle('files', 'browse-ajax');
@@ -28,7 +26,7 @@ function content_files_browse()
     $class_ajax = ( $ajaxplorer ) ? 'normal' : 'hidden';
 
     // working directory
-    if (strlen(@$_GET[ 'browse' ]) > 0 ) {
+    if (@$_GET['browse'] != '') {
         $wd = $_GET[ 'browse' ];
         // redirect if path differs from realpath; for .. and symlinks
         if (realpath($wd) != $wd ) {

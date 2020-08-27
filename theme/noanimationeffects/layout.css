@@ -55,7 +55,7 @@ letter-spacing:2px;
 font-weight:bold;
 font-size:230%;
 text-decoration:none;
-text-shadow:0px -1px 1px rgba(0,0,0,0.5);
+text-shadow:0 -1px 1px rgba(0,0,0,0.5);
 }
 
 #logotitle:hover
@@ -104,7 +104,7 @@ text-decoration:underline;
 display:block;
 clear:both;
 min-height:15px;
-margin-top:0px;
+margin-top:0;
 text-align:left;
 box-sizing:border-box;
 border-bottom:1px solid #666;
@@ -115,7 +115,7 @@ border-radius:10px;
 
 div.menu-spacer
 {
-margin:0px 0 0px 20px;
+margin:0 0 0 20px;
 letter-spacing:2px;
 }
 

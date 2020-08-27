@@ -39,7 +39,7 @@ function content_pools_cache()
         $class_spa_ok = ( $poolspa >= $minimal_spa_version ) ? 'normal' : 'hidden';
         $class_spa_low = ( $poolspa < $minimal_spa_version ) ? 'normal' : 'hidden';
 
-        $zpool_status = `zpool status $poolname`;
+        $zpool_status = shell_exec("zpool status \$poolname");
         if (strpos($zpool_status, 'raidz3') !== false ) {
             $redundancy = 'RAID7 (triple parity)';
         } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -52,17 +52,17 @@ function content_pools_cache()
             $redundancy = 'RAID0 (no redundancy)';
         }
         $statusclass = 'normal';
-        if ($pooldata[ 'status' ] == 'ONLINE' ) {
+        if ($pooldata[ 'status' ] === 'ONLINE' ) {
             $statusclass = 'green pool_online';
-        } elseif ($pooldata[ 'status' ] == 'FAULTED' ) {
+        } elseif ($pooldata[ 'status' ] === 'FAULTED' ) {
             $statusclass = 'red pool_faulted';
-            if ($class == 'normal' ) {
+            if ($class === 'normal' ) {
                 $class = 'failurerow pool_faulted';
             }
         }
-        elseif ($pooldata[ 'status' ] == 'DEGRADED' ) {
+        elseif ($pooldata[ 'status' ] === 'DEGRADED' ) {
             $statusclass = 'amber pool_degraded';
-            if ($class == 'normal' ) {
+            if ($class === 'normal' ) {
                 $class = 'warningrow pool_degraded';
             }
         }
@@ -83,13 +83,11 @@ function content_pools_cache()
     }
 
     // check whether pool is healthy when selected
-    if ($querypool ) {
-        if (( $zpools[ $querypool ][ 'status' ] != 'ONLINE' )AND( $zpools[ $querypool ][ 'status' ] != 'DEGRADED' ) ) {
-            friendlyerror(
-                'pool <b>' . $querypool . '</b> can not be used, because the '
-                . 'pool is <b>' . $zpools[ $querypool ][ 'status' ] . '</b>!', 'pools.php?cache' 
-            );
-        }
+    if ($querypool && ($zpools[$querypool]['status'] != 'ONLINE') and ($zpools[$querypool]['status'] != 'DEGRADED')) {
+        friendlyerror(
+            'pool <b>' . $querypool . '</b> can not be used, because the '
+            . 'pool is <b>' . $zpools[ $querypool ][ 'status' ] . '</b>!', 'pools.php?cache'
+        );
     }
 
     // member disks
@@ -111,7 +109,7 @@ function content_pools_cache()
             $outputarr = explode(chr(10), @$pquery[ 'ctag' ][ $device ][ 'stdout' ]);
             $oarr = preg_split('/ +/m', @$outputarr[ 2 ]);
             $score = ( int )@$oarr[ 2 ];
-            if (( $score == 0 )AND( strlen(@$outputarr[ 2 ]) > 0 ) ) {
+            if (( $score == 0 )AND(@$outputarr[2] != '') ) {
                 $testrunning = true;
                 $benchmarkrunning = true;
             } else {
@@ -165,8 +163,8 @@ function content_pools_cache()
     'normal' : 'hidden';
     $class_step3_testing = ( $benchmarkrunning ) ? 'normal' : 'hidden';
     $class_step4 = ( $performancetested ) ? 'normal' : 'hidden';
-    $class_step2_now = ( $class_step2 == 'normal'
-    AND $class_step3 != 'normal' ) ?
+    $class_step2_now = ( $class_step2 === 'normal'
+    AND $class_step3 !== 'normal' ) ?
     'normal' : 'hidden';
 
     // set automatic refresh when benchmark is running
@@ -213,7 +211,7 @@ function submit_pool_cache()
     $selecteddisks = array();
     if (@isset($_POST[ 'select_memberdisks' ]) ) {
         foreach ( $_POST as $name => $value ) {
-            if (substr($name, 0, strlen('addmember_')) == 'addmember_' ) {
+            if (strpos($name, 'addmember_') === 0) {
                 $selecteddisks[] = substr($name, strlen('addmember_'));
             }
         }
@@ -228,7 +226,7 @@ function submit_pool_cache()
 
     // sanity check on pool
     $pool = @$_POST[ 'pool' ];
-    if (strlen($pool) < 1 ) {
+    if ($pool == '') {
         friendlyerror('please select a pool first', $url1);
     }
 
@@ -273,7 +271,7 @@ function submit_pool_cache()
         activate_library('background');
         background_remove('pool_cache_benchmark');
         // TRIM erase selected devices when applicable
-        if (@$_POST[ 'cb_trim_erase' ] == 'on' ) {
+        if (@$_POST[ 'cb_trim_erase' ] === 'on' ) {
             foreach ( $selecteddevices as $device ) {
                 $command[] = $guru[ 'docroot' ] . '/scripts/secure_erase.sh ' . $device;
             }

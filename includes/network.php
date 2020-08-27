@@ -4,7 +4,7 @@ function network_interfaces()
 {
     // fetch dmesg.boot
     $dmesg = file_get_contents('/var/run/dmesg.boot');
-    $dmesg .= chr(10) . `dmesg`;
+    $dmesg .= chr(10) .shell_exec("dmesg");
 
     // fetch ifconfig raw output
     exec('/sbin/ifconfig', $ifconfig);
@@ -17,7 +17,7 @@ function network_interfaces()
             $ifconfig_str .= $line . chr(10);
         }
         $arr = preg_split(
-            '/^([a-zA-Z0-9]*)\: /m', $ifconfig_str,
+            '/^([a-zA-Z0-9]*): /m', $ifconfig_str,
             null, PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE 
         );
         // for every even array ID we process two array IDs at once
@@ -142,15 +142,15 @@ function network_interfaces()
 
 function network_checkinterface( $ifname )
 {
-    if (substr($ifname, 0, 2) == 'lo' ) {
+    if (strpos($ifname, 'lo') === 0) {
         return 'loopback';
     }
     $interfaces = network_interfaces();
     if (stripos(@$interfaces[ $ifname ][ 'media' ], 'Wireless') !== false ) {
         return 'wireless';
-    } else {
-        return 'wired';
     }
+
+    return 'wired';
 }
 
 function network_sockstat() 
@@ -162,7 +162,7 @@ function network_sockstat()
     if (is_array($output) ) {
         foreach ( $output as $line ) {
             $split = preg_split('/\s/', $line, -1, PREG_SPLIT_NO_EMPTY);
-            if ($split[ 0 ] == 'USER' ) {
+            if ($split[ 0 ] === 'USER' ) {
                 foreach ( $split as $id => $description ) {
                     $desc[ $id ] = strtolower($description);
                 } 

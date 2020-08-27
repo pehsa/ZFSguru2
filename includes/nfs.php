@@ -62,9 +62,9 @@ function nfs_sharenfs_list( $filesystems = false )
     // assemble nfslist array
     $nfslist = array();
     foreach ( $sharenfs as $fsname => $fsdata ) {
-        if (@$mp[ $fsname ][ 'mountpoint' ][ 'value' ] {        0        } == '/' 
+        if (@$mp[ $fsname ][ 'mountpoint' ][ 'value' ] {        0        } === '/'
         ) {
-            if (( $fsname == $filesystems )OR( @$fsdata[ 'sharenfs' ][ 'value' ] != 'off' ) ) {
+            if (( $fsname == $filesystems )OR( @$fsdata[ 'sharenfs' ][ 'value' ] !== 'off' ) ) {
                 $inherited = !in_array(
                     @$fsdata[ 'sharenfs' ][ 'source' ],
                     array( 'local', 'received' ) 
@@ -77,17 +77,17 @@ function nfs_sharenfs_list( $filesystems = false )
                 // parse either by comma-separated string or by options begining with '-'
                 if (strpos($fsdata[ 'sharenfs' ][ 'value' ], ',') !== false ) {
                     preg_match_all(
-                        '/(.+)(\ ((.+)))?\,|$/U', $fsdata[ 'sharenfs' ][ 'value' ],
+                        '/(.+)( ((.+)))?,|$/U', $fsdata[ 'sharenfs' ][ 'value' ],
                         $matches 
                     );
                 } else {
                     preg_match_all(
-                        '/\-([^\s\=\-\ ]+)((\=|\ )([^\s\=\-]+))?/',
+                        '/-([^\s=\- ]+)(([= ])([^\s=\-]+))?/',
                         $fsdata[ 'sharenfs' ][ 'value' ], $matches 
                     );
                 }
                 foreach ( $matches[ 1 ] as $id => $optionname ) {
-                    if (strlen(trim($optionname)) > 0 ) {
+                    if (trim($optionname) !== '') {
                         $options[ trim($optionname) ][] = trim($matches[ 4 ][ $id ]);
                     }
                 }
@@ -122,14 +122,14 @@ function nfs_showmount_list()
 
 function nfs_getprofile( $sharenfs_fs )
 {
-    if ($sharenfs_fs[ 'sharenfs' ] == 'off' ) {
+    if ($sharenfs_fs[ 'sharenfs' ] === 'off' ) {
         return 'notshared';
     }
     $options = @$sharenfs_fs[ 'options' ];
-    if (@$options[ 'mask' ][ 0 ] == '0.0.0.0' ) {
+    if (@$options[ 'mask' ][ 0 ] === '0.0.0.0' ) {
         return 'public';
     }
-    if (@$options[ 'network' ][ 0 ] == '0.0.0.0/0' ) {
+    if (@$options[ 'network' ][ 0 ] === '0.0.0.0/0' ) {
         return 'public';
     }
     if (@count($options[ 'network' ]) < 1 ) {
@@ -143,13 +143,13 @@ function nfs_getprofile( $sharenfs_fs )
 
 function nfs_setprofile( $fs, $profile, $privateip = '0.0.0.0' )
 {
-    if ($profile == 'public' ) {
+    if ($profile === 'public' ) {
         return nfs_setsharenfs(
             $fs, array( 'network' => array( '0.0.0.0/0' ),
             'mask' => array( '0.0.0.0' ) ) 
         );
     }
-    if ($profile == 'protected' ) {
+    if ($profile === 'protected' ) {
         return nfs_setsharenfs(
             $fs, array( 'network' => array(
             '10.0.0.0/8',
@@ -158,25 +158,21 @@ function nfs_setprofile( $fs, $profile, $privateip = '0.0.0.0' )
             ) ), array( 'mask' ) 
         );
     }
-    if ($profile == 'private' ) {
+    if ($profile === 'private' ) {
         return nfs_setsharenfs(
             $fs, array( 'network' => array( $privateip . '/32' ) ),
             array( 'mask' ) 
         );
     }
-    if ($profile == 'notshared' ) {
+    if ($profile === 'notshared' ) {
         return nfs_setsharenfs($fs, 'off');
     }
 }
 
 function nfs_geteasypermissions( $options )
 {
-    if (!@isset($options[ 'maproot' ]) ) {
-        if (@isset($options[ 'alldirs' ]) ) {
-            if (@$options[ 'mapall' ][ 0 ] == '1000:1000' ) {
-                return true;
-            }
-        }
+    if (!@isset($options['maproot']) && @isset($options['alldirs']) && @$options['mapall'][0] == '1000:1000') {
+        return true;
     }
     return false;
 }
@@ -192,15 +188,15 @@ function nfs_seteasypermissions( $fs, $enable = true )
             'maproot',
             ) 
         );
-    } else {
-        return nfs_setsharenfs(
-            $fs, array(), array(
-            'alldirs',
-            'mapall',
-            'maproot',
-            ) 
-        );
     }
+
+    return nfs_setsharenfs(
+        $fs, array(), array(
+        'alldirs',
+        'mapall',
+        'maproot',
+        )
+    );
 }
 
 function nfs_getreadonly( $options )
@@ -212,9 +208,9 @@ function nfs_setreadonly( $fs, $on = true )
 {
     if ($on ) {
         return nfs_setsharenfs($fs, array( 'ro' => array() ));
-    } else {
-        return nfs_setsharenfs($fs, array(), array( 'ro' ));
     }
+
+    return nfs_setsharenfs($fs, array(), array( 'ro' ));
 }
 
 function nfs_resetpermissions( $fs )
@@ -224,7 +220,7 @@ function nfs_resetpermissions( $fs )
 
     // get zfs mountpoint for given filesystem
     $zfsprop = zfs_filesystem_properties($fs, 'mountpoint,mounted');
-    if (@$zfsprop[ $fs ][ 'mounted' ][ 'value' ] != 'yes' ) {
+    if (@$zfsprop[ $fs ][ 'mounted' ][ 'value' ] !== 'yes' ) {
         error('cannot reset permissions, filesystem "' . htmlentities($fs) . '" is not mounted!');
     }
     $mp = @$zfsprop[ $fs ][ 'mountpoint' ][ 'value' ];

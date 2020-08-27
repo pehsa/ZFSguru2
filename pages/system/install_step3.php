@@ -22,34 +22,34 @@ function content_system_install_step3()
     // classes
     $class_dist = ( $dist ) ? 'normal' : 'hidden';
     $class_nodist = ( !$dist ) ? 'normal' : 'hidden';
-    $class_roz = ( strtoupper($dist) == 'ROZ' ) ? 'normal' : 'hidden';
-    $class_ror = ( strtoupper($dist) == 'ROR' ) ? 'normal' : 'hidden';
-    $class_rom = ( strtoupper($dist) == 'ROM' ) ? 'normal' : 'hidden';
-    $class_roz_active = ( strtoupper($dist) == 'ROZ' ) ? 'squareboxactive' : '';
-    $class_ror_active = ( strtoupper($dist) == 'ROR' ) ? 'squareboxactive' : '';
-    $class_rom_active = ( strtoupper($dist) == 'ROM' ) ? 'squareboxactive' : '';
+    $class_roz = ( strtoupper($dist) === 'ROZ' ) ? 'normal' : 'hidden';
+    $class_ror = ( strtoupper($dist) === 'ROR' ) ? 'normal' : 'hidden';
+    $class_rom = ( strtoupper($dist) === 'ROM' ) ? 'normal' : 'hidden';
+    $class_roz_active = ( strtoupper($dist) === 'ROZ' ) ? 'squareboxactive' : '';
+    $class_ror_active = ( strtoupper($dist) === 'ROR' ) ? 'squareboxactive' : '';
+    $class_rom_active = ( strtoupper($dist) === 'ROM' ) ? 'squareboxactive' : '';
     $class_roz_disabled = ( @$disabled[ 'ROZ' ] ) ? 'squareboxdisabled' : '';
     $class_ror_disabled = ( @$disabled[ 'ROR' ] ) ? 'squareboxdisabled' : '';
     $class_rom_disabled = ( @$disabled[ 'ROM' ] ) ? 'squareboxdisabled' : '';
     // legacy remove?
-    $class_gptdisk = ( $target == 'gpt' ) ? 'normal' : 'hidden';
-    $class_rawdisk = ( $target == 'raw' ) ? 'normal' : 'hidden';
-    $class_zfspool = ( $target == 'zfs' ) ? 'normal' : 'hidden';
+    $class_gptdisk = ( $target === 'gpt' ) ? 'normal' : 'hidden';
+    $class_rawdisk = ( $target === 'raw' ) ? 'normal' : 'hidden';
+    $class_zfspool = ( $target === 'zfs' ) ? 'normal' : 'hidden';
 
     // mount LiveCD or USB media when applicable
-    if ($source == 'livecd' ) {
+    if ($source === 'livecd' ) {
         zfsguru_mountlivecd();
     }
-    if ($source == 'usb' ) {
+    if ($source === 'usb' ) {
         zfsguru_mountusb();
     }
 
     // process distribution tags
-    if (strtoupper($dist) == 'ROZ' ) {
+    if (strtoupper($dist) === 'ROZ' ) {
         page_injecttag(distribution_roz($version, $source, $target));
-    } elseif (strtoupper($dist) == 'ROR' ) {
+    } elseif (strtoupper($dist) === 'ROR' ) {
         page_injecttag(distribution_ror($version, $source, $target));
-    } elseif (strtoupper($dist) == 'ROM' ) {
+    } elseif (strtoupper($dist) === 'ROM' ) {
         page_injecttag(distribution_rom($version, $source, $target));
     }
 
@@ -114,7 +114,7 @@ function distribution_roz( $version, $source, $target )
     $sysloc = @$locate[ 'name' ][ $version ][ 'path' ];
 
     // target ("ZFS: <poolname>")
-    if (substr($target, 0, strlen('ZFS: ')) != 'ZFS: ' ) {
+    if (strpos($target, 'ZFS: ') !== 0) {
         friendlyerror(
             'Root-on-ZFS distribution can only be installed on a ZFS pool!',
             'system.php?install&version=' . $version . '&source=' . $source 
@@ -173,7 +173,7 @@ function distribution_roz( $version, $source, $target )
         //    continue;
         $swapname = $name;
         $selected = '';
-        if ($value == '2.0' ) {
+        if ($value === '2.0' ) {
             $swapname = $name . ' (default)';
             $selected = 'selected="selected"';
         }

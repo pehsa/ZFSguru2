@@ -23,8 +23,8 @@ function content_access_samba_users_tags()
     // samba user list
     $samba_userlist = '';
     foreach ( $sysusers as $userdata ) {
-        if ($userdata[ 'username' ] != 'root'
-            AND $userdata[ 'username' ] != 'nobody' 
+        if ($userdata[ 'username' ] !== 'root'
+            AND $userdata[ 'username' ] !== 'nobody'
         ) {
             $samba_userlist .= '   <option value="' . $userdata[ 'username' ] . '">'
             . htmlentities($userdata[ 'username' ]) . '</option>' . chr(10);
@@ -63,7 +63,7 @@ function table_samba_groups( $grouplist )
             );
         }
         $class_hasusers = ( !empty($table_users) ) ? 'normal' : 'hidden';
-        $stdgroup = ( $groupname == 'share' );
+        $stdgroup = ( $groupname === 'share' );
         $display_shares = ( $stdgroup ) ? 'Everyone' :
         htmlentities(ucfirst($groupname));
         $display_users = ( $stdgroup ) ? 'Samba users' :
@@ -97,11 +97,11 @@ function submit_access_samba_users_dragdrop()
     // move user to different group
     // 'default' is the default string of HTML hidden elements; they need to be
     // changed by javascript; we do not accept them otherwise
-    if (( @$_POST[ 'samba_users_oldgroup' ] != 'default' )AND( @$_POST[ 'samba_users_newgroup' ] != 'default' )AND( @isset($_POST[ 'samba_users_oldgroup' ]) )AND( @isset($_POST[ 'samba_users_newgroup' ]) )AND( strlen(@$_POST[ 'samba_users_user' ]) > 0 ) ) {
+    if (( @$_POST[ 'samba_users_oldgroup' ] !== 'default' )AND( @$_POST[ 'samba_users_newgroup' ] !== 'default' )AND( @isset($_POST[ 'samba_users_oldgroup' ]) )AND( @isset($_POST[ 'samba_users_newgroup' ]) )AND(@$_POST['samba_users_user'] != '') ) {
         $sambauser = $_POST[ 'samba_users_user' ];
         $oldgroup = $_POST[ 'samba_users_oldgroup' ];
         $newgroup = $_POST[ 'samba_users_newgroup' ];
-        if ($newgroup == 'share' ) {
+        if ($newgroup === 'share' ) {
             $newgroup = '1000';
         }
         // this code had a regression in 10.0-RC, so we use workaround instead
@@ -140,12 +140,12 @@ function submit_access_samba_users_adduser()
 
     // POST variables
     $postgroup = @trim($_POST[ 'groupname' ]);
-    $postuser = @trim(strtolower($_POST[ 'samba_adduser_' . $postgroup ]));
+    $postuser = @strtolower(trim($_POST['samba_adduser_'.$postgroup]));
     $postpasswd = @trim($_POST[ 'samba_adduserpassword_' . $postgroup ]);
 
     // sanity on username
     sanitize($postuser, 'a-z0-9\_\-\.', $newuser);
-    if (strlen($newuser) < 1 ) {
+    if ($newuser == '') {
         redirect_url($redir);
     }
     if ($newuser != $postuser ) {
@@ -153,7 +153,7 @@ function submit_access_samba_users_adduser()
     }
     // check whether chosen reserved name
     $reserveduserslist = array( 'guest', 'share', 'everyone' );
-    if (in_array($newuser, $reserveduserslist) ) {
+    if (in_array($newuser, $reserveduserslist, true)) {
         friendlyerror(
             'you have chosen a reserved name, please choose a different'
             . ' name!', $redir 
@@ -183,7 +183,7 @@ function submit_access_samba_users_adduser()
     }
 
     // set user group
-    $groupstr = ( $postgroup == 'share' ) ? '' : '-G ' . $postgroup;
+    $groupstr = ( $postgroup === 'share' ) ? '' : '-G ' . $postgroup;
 
     // create new user
     $useroptions = '-c "Samba user" -d /nonexistent -s /sbin/nologin ' . $groupstr;
@@ -212,11 +212,11 @@ function submit_access_samba_users_modify()
     // POST variables
     $postgroup = @trim($_POST[ 'groupname' ]);
     $postdelete = @$_POST[ 'samba_delete_user_' . $postgroup ];
-    $postuser = @trim(strtolower($_POST[ 'samba_modify_username_' . $postgroup ]));
+    $postuser = @strtolower(trim($_POST['samba_modify_username_'.$postgroup]));
     $postpasswd = @trim($_POST[ 'samba_modify_password_' . $postgroup ]);
 
     // sanity check
-    if (strlen($postuser) < 1 ) {
+    if ($postuser === '') {
         friendlyerror('invalid user submitted; please enable Javascript', $redir);
     }
 
@@ -227,7 +227,7 @@ function submit_access_samba_users_modify()
     }
     // modify user Samba password
     elseif (@isset($_POST[ 'samba_modify_user' ]) ) {
-        if (strlen($postpasswd) < 1 ) {
+        if ($postpasswd === '') {
             friendlyerror('please enter a new password for this user', $redir);
         }
         $result = samba_setpassword($postuser, $postpasswd);
@@ -255,11 +255,11 @@ function submit_access_samba_users_addgroup()
     $redir = 'access.php?samba&users';
 
     // POST variables
-    $postgroup = @trim(strtolower($_POST[ 'samba_addgroup' ]));
+    $postgroup = @strtolower(trim($_POST['samba_addgroup']));
 
     // sanity on groupname
     sanitize($postgroup, 'a-z0-9\_\-\.', $newgroup);
-    if (strlen($newgroup) < 1 ) {
+    if ($newgroup == '') {
         redirect_url($redir);
     }
     if ($newgroup != $postgroup ) {
@@ -270,7 +270,7 @@ function submit_access_samba_users_addgroup()
     }
     // check whether chosen reserved name
     $reservedgrouplist = array( 'share', 'standard', 'everyone' );
-    if (in_array($newgroup, $reservedgrouplist) ) {
+    if (in_array($newgroup, $reservedgrouplist, true)) {
         friendlyerror(
             'you have chosen a reserved name, please choose a different'
             . ' name!', $redir 
@@ -306,13 +306,13 @@ function submit_access_samba_users_deletegroup()
 
     // scan each POST variable for deletegroup name with group suffix
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('samba_deletegroup_')) == 'samba_deletegroup_' ) {
+        if (strpos($name, 'samba_deletegroup_') === 0) {
             $groupname = substr($name, strlen('samba_deletegroup_'));
-            if (substr($name, -2) == '_x' ) {
+            if (substr($name, -2) === '_x' ) {
                 $groupname = substr($groupname, 0, -2);
             }
             // remove users in group
-            $deleteusers = ( @$_POST[ 'samba_deleteusersingroup_' . $groupname ] == 'on' );
+            $deleteusers = ( @$_POST[ 'samba_deleteusersingroup_' . $groupname ] === 'on' );
             if ($deleteusers ) {
                 $sysgroups = system_groups();
                 foreach ( $sysgroups as $group ) {
@@ -321,7 +321,7 @@ function submit_access_samba_users_deletegroup()
                         break;
                     }
                 }
-                if (strlen(@$usersingroup) > 0 ) {
+                if (@$usersingroup != '') {
                     $usersingroup = @explode(' ', $usersingroup);
                     if (is_array($usersingroup) ) {
                         foreach ( $usersingroup as $useringroup ) {

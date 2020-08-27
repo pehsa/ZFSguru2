@@ -11,7 +11,7 @@ function background_register( $tag, $data )
     $query = background_query($tag);
 
     // sanity checks
-    if (!is_string($tag)OR( strlen($tag) < 1 ) ) {
+    if (!is_string($tag)OR($tag === '') ) {
         error('cannot register background job: invalid tag provided');
     }
     if ($query[ 'exists' ] ) {
@@ -25,7 +25,7 @@ function background_register( $tag, $data )
     }
 
     // option: execution type [serial/parallel] (default: serial execution)
-    $execution = ( ( @$data[ 'execution' ] == 'unprotected' )OR( @$data[ 'execution' ] == 'parallel' ) ) ? $data[ 'execution' ] : 'protected';
+    $execution = ( ( @$data[ 'execution' ] === 'unprotected' )OR( @$data[ 'execution' ] === 'parallel' ) ) ? $data[ 'execution' ] : 'protected';
 
     // option: execute with super privileges [true/false] (false = php user)
     $super = ( @$data[ 'super' ] ) ? true : false;
@@ -70,7 +70,7 @@ function background_register( $tag, $data )
         $file_rv = $dir . '/rv-' . $suffix;
         $redirect = ( $combinedoutput ) ?
         '>' . $file_output . ' 2>&1': '>' . $file_stdout . ' 2>' . $file_stderr;
-        if ($execution == 'parallel' ) {
+        if ($execution === 'parallel' ) {
             $redirect .= ' &';
         }
 
@@ -89,7 +89,7 @@ function background_register( $tag, $data )
         . 'RV=${?}; echo -n "${RV}" > ' . $file_rv . '; exit ${RV}' . chr(10)
         . 'EOFBGCMD' . chr(10)
         . '/bin/sh ' . $file_cmd . ' ' . $redirect . chr(10);
-        if ($execution == 'protected' ) {
+        if ($execution === 'protected' ) {
             $master .= 'RV=${?}; if [ "${RV}" -ne "0" ]; then exit ${RV}; fi' . chr(10);
         }
         $master .= chr(10) . chr(10);
@@ -136,7 +136,7 @@ function background_query( $tag )
     global $guru;
 
     // sanity
-    if (strlen($tag) < 1 ) {
+    if ($tag == '') {
         error('no tag provided');
     }
 
@@ -208,7 +208,7 @@ function background_query( $tag )
             }
         }
     }
-    if ($query[ 'error' ]AND( $storage[ 'options' ][ 'execution' ] == 'protected' ) ) {
+    if ($query[ 'error' ]AND( $storage[ 'options' ][ 'execution' ] === 'protected' ) ) {
         $query[ 'running' ] = false;
     }
 
@@ -228,12 +228,14 @@ function background_remove( $tag )
 
     // query background job and perform sanity checks
     $query = background_query($tag);
-    if (!$query[ 'exists' ] ) {
+    if (!$query[ 'exists' ]) {
         return false;
-    } elseif ($query[ 'running' ] ) {
+    }
+
+    if ($query[ 'running' ]) {
         page_feedback(
             'can not remove a background job which is still running',
-            'a_warning' 
+            'a_warning'
         );
         return false;
     }

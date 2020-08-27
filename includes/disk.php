@@ -13,9 +13,9 @@ function disk_info( $disk_name )
         $diskinfo[ 'mediasize' ] = $arr[ 2 ];
         $diskinfo[ 'sectorcount' ] = $arr[ 3 ];
         return $diskinfo;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function disk_smartinfo( $disk_name = false )
@@ -34,7 +34,7 @@ function disk_smartinfo( $disk_name = false )
     'sect_active' => 1
     );
     $_SESSION[ 'smart' ][ 'threshold' ] = $threshold;
-    if (strlen($disk_name) < 1 ) {
+    if ($disk_name == '') {
         return;
     }
 
@@ -115,7 +115,7 @@ function disk_smartinfo( $disk_name = false )
             if ($data[ 'failed' ] == '' ) {
                 $class_status = 'smart_status_smartincapable';
                 $status = 'SMART incapable';
-            } elseif (strtolower($data[ 'failed' ]) == 'in_the_past' ) {
+            } elseif (strtolower($data[ 'failed' ]) === 'in_the_past' ) {
                 $class_status = 'blue smart_status_inthepast';
                 $status = $data[ 'failed' ];
             }
@@ -262,18 +262,18 @@ function disk_detect_dmesg( $physdisks = false )
     // now scan the dmesg file per physical disk we know
     $dmesg_arr = array();
     foreach ( $physdisks as $diskname => $diskdata ) {
-        if (substr($diskname, 0, 2) == 'md' ) {
+        if (strpos($diskname, 'md') === 0) {
             // memory disk
             $backing = ( @$memdisks[ ( int )substr($diskname, 2) ][ 'backing' ] ) ?
             $memdisks[ ( int )substr($diskname, 2) ][ 'backing' ] : 'unknown';
             // hide memory disks with preload backing
-            if ($backing == 'preload' ) {
+            if ($backing === 'preload' ) {
                 continue;
             }
             $dmesg_arr[ $diskname ] = 'Memory disk with <b>' . $backing . '</b> backing';
         } else {
             // normal disk
-            preg_match('/^(' . $diskname . ')\: (.*)$/m', $dmesg, $matches);
+            preg_match('/^(' . $diskname . '): (.*)$/m', $dmesg, $matches);
             $dmesg_arr[ $diskname ] = ( @$matches[ 2 ] ) ? htmlentities($matches[ 2 ]) : '';
         }
     }
@@ -316,7 +316,7 @@ function disk_detect_physical( $diskname = false )
         }
     }
     // are we working on livecd?
-    $livecd = ( common_distribution_type() == 'livecd' ) ? true : false;
+    $livecd = common_distribution_type() == 'livecd';
 
     // now check if it's a real disk by determining its sector size
     // it should be 512 bytes or a multiple of that
@@ -327,8 +327,8 @@ function disk_detect_physical( $diskname = false )
         }
         $diskinfo = disk_info($disk);
         if (@( int )$diskinfo[ 'sectorsize' ] >= 512 ) {
-            if (!$livecd OR( $disk != 'md0'
-                AND $disk != 'md1' ) 
+            if (!$livecd OR( $disk !== 'md0'
+                AND $disk !== 'md1' )
             ) {
                 $validdisks[ $disk ] = $diskinfo;
             }
@@ -388,12 +388,12 @@ function disk_detect_label()
 function disk_detect_type( $diskname )
 {
     // memory disk
-    if (substr($diskname, 0, 2) == 'md' ) {
+    if (strpos($diskname, 'md') === 0) {
         return 'memdisk';
     }
 
     // SSD (non-rotating media)
-    $camcontrol_cmd = `/sbin/camcontrol identify $diskname`;
+    $camcontrol_cmd = shell_exec("/sbin/camcontrol identify \$diskname");
     if (strpos($camcontrol_cmd, 'non-rotating') !== false ) {
         return 'ssd';
     }
@@ -410,9 +410,11 @@ function disk_detect_type( $diskname )
 
 function sort_providers( $a, $b )
 {
-    if (@$a[ 'start' ] < @$b[ 'start' ] ) {
+    if (@$a[ 'start' ] < @$b[ 'start' ]) {
         return -1;
-    } elseif (@$a[ 'start' ] > @$b[ 'start' ] ) {
+    }
+
+    if (@$a[ 'start' ] > @$b[ 'start' ]) {
         return 1;
     } else {
         return 0;
@@ -431,7 +433,7 @@ function disk_detect_gpart( $device = false )
     }
     // split the information in chunks to deal with
     $raw_str = implode("\n", $raw_output);
-    $split = preg_split('/^Geom name\: (.*)/Um', $raw_str);
+    $split = preg_split('/^Geom name: (.*)/Um', $raw_str);
     // split array should be at least 2 rows (= 1 real disk)
     if (count($split) < 2 ) {
         return false;
@@ -440,7 +442,7 @@ function disk_detect_gpart( $device = false )
     for ( $i = 1; $i <= ( count($split) - 1 ); $i++ ) {
         $disk = @trim(substr($split[ $i ], 0, strpos($split[ $i ], "\n")));
         // skip if disk does not exist
-        if (( !file_exists('/dev/' . @$disk) )OR( strlen($disk) < 1 ) ) {
+        if (( !file_exists('/dev/' . @$disk) )OR($disk === '') ) {
             continue;
         }
         // split data with simple string search
@@ -453,7 +455,7 @@ function disk_detect_gpart( $device = false )
         $providers = substr($providers, 0, strpos($providers, 'Consumers:' . chr(10)));
         $consumers = substr($split[ $i ], strpos($split[ $i ], 'Consumers:' . chr(10)));
         // general
-        preg_match_all('/^(.*)\: (.*)$/m', $general, $general_matches);
+        preg_match_all('/^(.*): (.*)$/m', $general, $general_matches);
         if (@is_array($general_matches[ 1 ]) ) {
             foreach ( $general_matches[ 1 ] as $id => $gname ) {
                 $gpart[ $disk ][ 'general' ][ @trim($gname) ] =
@@ -463,7 +465,7 @@ function disk_detect_gpart( $device = false )
         // providers
         // changed so that geom name can be included as well
         //  $partsplit = preg_split('/^[0-9]{1,3}\. Name\: (.*)$/m', $providers);
-        $partsplit = preg_split('/^[0-9]{1,3}\. Name\: /m', $providers);
+        $partsplit = preg_split('/^[0-9]{1,3}\. Name: /m', $providers);
         for ( $y = 1; $y <= ( count($partsplit) - 1 ); $y++ ) {
             $geomname = trim(substr($partsplit[ $y ], 0, strpos($partsplit[ $y ], chr(10))));
             if (!$geomname ) {
@@ -471,7 +473,7 @@ function disk_detect_gpart( $device = false )
             }
             $gpart[ $disk ][ 'providers_id' ][ $y ][ 'geom' ] = $geomname;
             $gpart[ $disk ][ 'providers' ][ $geomname ][ 'geom' ] = $geomname;
-            preg_match_all('/^(.*)\: (.*)$/m', $partsplit[ $y ], $partitiondata);
+            preg_match_all('/^(.*): (.*)$/m', $partsplit[ $y ], $partitiondata);
             if (@is_array($partitiondata[ 1 ]) ) {
                 foreach ( $partitiondata[ 1 ] as $id => $data_name ) {
                     $gpart[ $disk ][ 'providers_id' ][ $y ][ trim($data_name) ] =
@@ -485,7 +487,7 @@ function disk_detect_gpart( $device = false )
         @uasort($gpart[ $disk ][ 'providers' ], 'sort_providers');
         @usort($gpart[ $disk ][ 'providers_id' ], 'sort_providers');
         // consumers
-        preg_match_all('/^(.*)\: (.*)$/m', $consumers, $consumer_matches);
+        preg_match_all('/^(.*): (.*)$/m', $consumers, $consumer_matches);
         if (@is_array($consumer_matches[ 1 ]) ) {
             foreach ( $consumer_matches[ 1 ] as $id => $cname ) {
                 $gpart[ $disk ][ 'consumers' ][ @trim($cname) ] =
@@ -498,7 +500,7 @@ function disk_detect_gpart( $device = false )
                 $geomname = @$pdata[ 'geom' ];
                 // TODO: bugfix/workaround: threat '1' label as no label!
                 // NOTE: FreeBSD PR# 202089
-                if (( @$pdata[ 'label' ] == '(null)' )OR( @$pdata[ 'label' ] == '1' ) ) {
+                if (( @$pdata[ 'label' ] === '(null)' )OR( @$pdata[ 'label' ] == '1' ) ) {
                     $gpart[ $disk ][ 'providers_id' ][ $id ][ 'label' ] = false;
                     $gpart[ $disk ][ 'providers' ][ $geomname ][ 'label' ] = false;
                 } elseif (@strlen($pdata[ 'label' ]) > 0 ) {
@@ -600,7 +602,7 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
     $last = @$part[ 'general' ][ 'last' ];
 
     // sanity
-    if (( int )$sectorsize < 1 ) {
+    if ($sectorsize < 1 ) {
         return false;
     }
 
@@ -749,20 +751,17 @@ function disk_spindown( $disk )
     // increased privileges
     activate_library('super');
     // use different command for ATA/AHCI disks than for SCSI/SAS disks
-    if (substr($disk, 0, 2) == 'ad' ) {
+    if (strpos($disk, 'ad') === 0) {
         $camcommand = 'standby';
-    } elseif (substr($disk, 0, 2) == 'da' ) {
+    } elseif (strpos($disk, 'da') === 0) {
         $camcommand = 'stop';
     } else {
         return false;
     }
     // execute camcontrol spindown command
     $result = super_execute('/sbin/camcontrol ' . $camcommand . ' ' . $disk);
-    if ($result[ 'rv' ] == 0 ) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return $result['rv'] == 0;
 }
 
 function disk_spinup( $disk )
@@ -771,11 +770,8 @@ function disk_spinup( $disk )
     activate_library('super');
     // read one sector from disk to make it spin up again
     $result = super_execute('/bin/dd if=/dev/' . $disk . ' of=/dev/null count=1');
-    if ($result[ 'rv' ] == 0 ) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return $result['rv'] == 0;
 }
 
 function disk_isspinning( $disk )
@@ -784,7 +780,7 @@ function disk_isspinning( $disk )
     // increased privileges
     activate_library('super');
     // device path
-    if (strlen($disk) > 0 ) {
+    if ($disk != '') {
         $dev = '/dev/' . $disk;
     } else {
         error('invalid disk name passed to disk_isspinning()');
@@ -792,9 +788,11 @@ function disk_isspinning( $disk )
     // execute command
     $r = super_execute('/usr/local/sbin/smartctl -A -n standby ' . $dev);
     // check result
-    if ($r[ 'rv' ] != 2 ) {
+    if ($r[ 'rv' ] != 2) {
         return true;
-    } elseif (strpos($r[ 'output_str' ], 'Device is in STANDBY mode, exit') === false ) {
+    }
+
+    if (strpos($r[ 'output_str' ], 'Device is in STANDBY mode, exit') === false) {
         return true;
     } else {
         return false;
@@ -818,9 +816,5 @@ function disk_set_apm( $disk, $apm_level )
     // execute camcontrol command to set APM level
     $result = super_execute('/sbin/camcontrol cmd ' . $disk . ' -a "' . $rawcmd . '"');
     // check result
-    if ($result[ 'rv' ] == 0 ) {
-        return true;
-    } else {
-        return false;
-    }
+    return $result['rv'] == 0;
 }

@@ -14,11 +14,10 @@ div.widget_itemlist a.widget_itemlist_item {
 	font-weight: bold;
 	text-decoration: none;
 	text-align: center;
-	margin: 0 auto;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
-	margin-right: 4px;
+	margin: 0 4px 0 auto;
 }
 div.widget_itemlist a.widget_itemlist_item:hover {
 	background: #eee;
@@ -29,8 +28,7 @@ div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images {
 	position: relative;
 	width: 64px;
 	height: 64px;
-	margin: 0 auto;
-	margin-bottom: 7px;
+	margin: 0 auto 7px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img {
 	position: absolute;
@@ -59,37 +57,37 @@ div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_public {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_protected {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_private {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_custom {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_noaccess {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_problem {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon16 {
 	width: 16px;
 	height: 16px;
-	padding: 49px 24px 0px 24px;
+	padding: 49px 24px 0 24px;
 }
 div.widget_itemlist a.widget_itemlist_item div.widget_itemlist_images img.widget_itemlist_icon22 {
 	width: 22px;

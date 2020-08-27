@@ -55,7 +55,7 @@ function zfsguru_mountusb()
     if (is_array($gptnames) ) {
         foreach ( $gptnames as $gptname ) {
             // sanity
-            if (strlen(trim($gptname)) < 1 ) {
+            if (trim($gptname) === '') {
                 continue;
             }
 
@@ -121,7 +121,7 @@ function zfsguru_init_dirs()
     $dist = common_distribution_type();
 
     // treat anything except rootonzfs as legacy behavior with fixed /services dir
-    if ($dist != 'RoZ' ) {
+    if ($dist !== 'RoZ' ) {
         // assume tmpfs filesystem or unknown -- default to just creating directories
         clearstatcache();
         if (!is_dir('/tmp') ) {
@@ -180,7 +180,7 @@ function zfsguru_init_dirs()
     } else {
         error('could not determine boot filesystem for Root-on-ZFS dist!');
     }
-    if (!in_array($bootpool . '/zfsguru', $zfsguru_fs) ) {
+    if (!in_array($bootpool.'/zfsguru', $zfsguru_fs, true)) {
         error('boot filesystem not properly detected in ZFS list output!');
     }
     // set filesystems which should exist on bootpool
@@ -250,12 +250,10 @@ function zfsguru_init_dirs()
     } else {
         // check whether link points to $fs_services_sys
         $linkloc = readlink('/services');
-        if ($linkloc != '/' . $fs_services_sys ) {
-            if ($linkloc != '/' . $fs_services_sys . '/' ) {
-                // create symbolic link again
-                $r[] = super_execute('/bin/rm -f /services');
-                $r[] = super_execute('/bin/ln -s /' . $fs_services_sys . ' /services');
-            }
+        if (($linkloc != '/'.$fs_services_sys) && $linkloc != '/'.$fs_services_sys.'/') {
+            // create symbolic link again
+            $r[] = super_execute('/bin/rm -f /services');
+            $r[] = super_execute('/bin/ln -s /' . $fs_services_sys . ' /services');
         }
     }
 
@@ -343,7 +341,7 @@ function zfsguru_locatesystem()
                         break;
                     }
                 }
-                if ($source != 'usb' ) {
+                if ($source !== 'usb' ) {
                     continue;
                 }
             }
@@ -367,38 +365,32 @@ function zfsguru_locatesystem()
 
     // look for unknown system version on LiveCD
     $sha512_livecd = @trim(file_get_contents($livecd . '.sha512'));
-    if (strlen($sha512_livecd) == 128 ) {
-        if (!in_array($locate[ 'checksum' ], $sha512) ) {
-            if (@is_readable($livecd) ) {
-                $name = 'LiveCD-unknown';
-                $locate[ 'checksum' ][ $sha512_livecd ] = $name;
-                $locate[ 'name' ][ $name ] = array(
-                'avail' => true,
-                'path' => $livecd,
-                'source' => 'livecd',
-                'size' => ( int )@filesize($livecd),
-                'sha512' => $sha512_livecd,
-                );
-            }
-        }
+    if ((strlen($sha512_livecd) == 128) && !in_array($locate['checksum'], $sha512) && @is_readable($livecd)) {
+        $name = 'LiveCD-unknown';
+        $locate[ 'checksum' ][ $sha512_livecd ] = $name;
+        $locate[ 'name' ][ $name ] = array(
+        'avail' => true,
+        'path' => $livecd,
+        'source' => 'livecd',
+        'size' => ( int )@filesize($livecd),
+        'sha512' => $sha512_livecd,
+        );
     }
 
     // look for unknown system versions on USB media
     foreach ( $usb as $number => $path ) {
         if (@is_readable($path) ) {
             $sha512_usb = @trim(file_get_contents($path . '.sha512'));
-            if (strlen($sha512_livecd) == 128 ) {
-                if (!in_array($sha512_usb, $sha512) ) {
-                    $name = 'USB-unknown-' . ( int )$number;
-                    $locate[ 'checksum' ][ $sha512_usb ] = $name;
-                    $locate[ 'name' ][ $name ] = array(
-                    'avail' => true,
-                    'path' => $path,
-                    'source' => 'usb',
-                    'size' => ( int )@filesize($path),
-                    'sha512' => $sha512_usb,
-                    );
-                }
+            if ((strlen($sha512_livecd) == 128) && !in_array($sha512_usb, $sha512)) {
+                $name = 'USB-unknown-' . ( int )$number;
+                $locate[ 'checksum' ][ $sha512_usb ] = $name;
+                $locate[ 'name' ][ $name ] = array(
+                'avail' => true,
+                'path' => $path,
+                'source' => 'usb',
+                'size' => ( int )@filesize($path),
+                'sha512' => $sha512_usb,
+                );
             }
         }
     }
@@ -484,10 +476,10 @@ function zfsguru_system_sha512( $version, $source, $locate = false )
 
     // calculate the checksum ourselves
     // NOTE: mount media (LiveCD/USB) to be able to access the checksum file
-    if ($source == 'livecd' ) {
+    if ($source === 'livecd' ) {
         zfsguru_mountlivecd();
     }
-    if ($source == 'usb' ) {
+    if ($source === 'usb' ) {
         zfsguru_mountusb();
     }
     if (@function_exists('hash_file') ) {
@@ -495,14 +487,14 @@ function zfsguru_system_sha512( $version, $source, $locate = false )
     } else {
         $sha512 = trim(shell_exec('/sbin/sha512 -q ' . escapeshellarg($sysloc)));
     }
-    if (( $source == 'livecd' )OR( $source == 'usb' ) ) {
+    if (( $source === 'livecd' )OR( $source === 'usb' ) ) {
         zfsguru_unmountmedia();
     }
     if ($sha512 ) {
         return $sha512;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function zfsguru_install( $postdata )
@@ -543,11 +535,11 @@ function zfsguru_install( $postdata )
     // TODO: move $sysloc to this function ?!
 
     // determine distribution and hand-off to library function
-    if ($dist == 'RoZ' ) {
+    if ($dist === 'RoZ' ) {
         $commands = zfsguru_install_roz($postdata, $version, $source, $target);
-    } elseif ($dist == 'RoR' ) {
+    } elseif ($dist === 'RoR' ) {
         $commands = zfsguru_install_ror($postdata, $version, $source, $target);
-    } elseif ($dist == 'RoM' ) {
+    } elseif ($dist === 'RoM' ) {
         $commands = zfsguru_install_rom($postdata, $version, $source, $target);
     } else {
         error('invalid distribution: "' . htmlentities($dist) . '"');
@@ -587,9 +579,9 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     $postdata[ 'compression' ] : 'lzjb';
     $swapsize = @$postdata[ 'configureswap_size' ];
     $layout = @$postdata[ 'filesystem_layout' ];
-    $cam_boot_delay = ( @$postdata[ 'cam_boot_delay' ] == 'on' ) ?
+    $cam_boot_delay = ( @$postdata[ 'cam_boot_delay' ] === 'on' ) ?
     ( int )@$postdata[ 'cam_boot_delay_sec' ] * 1000 : false;
-    $copysysimg = ( @$postdata[ 'copysysimg' ] == 'on' );
+    $copysysimg = ( @$postdata[ 'copysysimg' ] === 'on' );
     $distfile = $mp_root . '/zfsguru.dist';
     $sha512file = $mp_root . '/zfsguru.sha512';
     $dist_type = 'RoZ';
@@ -600,10 +592,8 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     $otherpools = array();
     $zpools = zfs_pool_list();
     foreach ( $zpools as $zpoolname => $zpool ) {
-        if ($zpoolname != $poolname ) {
-            if (in_array($zpool[ 'status' ], array( 'ONLINE', 'DEGRADED' )) ) {
-                $otherpools[] = $zpoolname;
-            }
+        if (($zpoolname != $poolname) && in_array($zpool['status'], ['ONLINE', 'DEGRADED'])) {
+        $otherpools[] = $zpoolname;
         }
     }
 
@@ -626,10 +616,10 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     $sha512 = zfsguru_system_sha512($version, $source, $locate);
 
     // mount media again (zfsguru_locatesystem mounts but also unmounts)
-    if ($source == 'livecd' ) {
+    if ($source === 'livecd' ) {
         zfsguru_mountlivecd();
     }
-    if ($source == 'usb' ) {
+    if ($source === 'usb' ) {
         zfsguru_mountusb();
     }
 
@@ -687,7 +677,7 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
 
     // ditto blocks (copies=n)
     $commands[ 'CREATEFS-' . $i++ ] = '/sbin/zfs set copies=' . ( int )$copies . ' ' . escapeshellarg($fs_root);
-    if (in_array('var/log', $zfs_extra_filesystems) ) {
+    if (in_array('var/log', $zfs_extra_filesystems, true)) {
         $commands[ 'CREATEFS-' . $i++ ] = '/sbin/zfs set copies=1 ' . escapeshellarg($fs_root . '/var/log');
     }
 
@@ -745,7 +735,7 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     if (is_int($cam_boot_delay) ) {
         $commands[ 'CONFIGURE-' . $i++ ] = '/usr/sbin/sysrc -f ' . escapeshellarg(
             $mp_root . '/boot/loader.conf' 
-        ) . ' kern.cam.boot_delay=' . ( int )$cam_boot_delay;
+        ) . ' kern.cam.boot_delay=' .$cam_boot_delay;
     }
 
     // write system distribution file
@@ -792,7 +782,7 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     }
 
     // finish
-    if (( $source == 'livecd' )OR( $source == 'usb' ) ) {
+    if (( $source === 'livecd' )OR( $source === 'usb' ) ) {
         $commands[ 'FINISH-1' ] = '/bin/sync; /sbin/umount -f ' . escapeshellarg(dirname($sysloc));
     } else {
         $commands[ 'FINISH-1' ] = '/usr/bin/true';
@@ -856,19 +846,20 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
     }
 
     $activetask = false;
-    if (!@$query[ 'exists' ] ) {
+    if (!@$query[ 'exists' ]) {
         // non-existent
         return null;
-    } elseif (!$query[ 'running' ] ) {
+    }
+
+    if (!$query[ 'running' ]) {
         // completed, return true when successful, or false when failed
         background_remove('ZFSguru-install');
         if ($query[ 'error' ] ) {
             return false;
-        } else {
-            return true;
         }
-    }
-    else {
+
+        return true;
+    } else {
         // running
         $activetask = $desc[ 'INIT' ];
         foreach ( $query[ 'storage' ][ 'commands' ] as $tag => $data ) {

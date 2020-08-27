@@ -20,7 +20,7 @@ function content_pools_spare()
     $hotspares = array();
     foreach ( $poolstatus as $poolname => $vdevs ) {
         foreach ( $vdevs as $vdev ) {
-            if (@$vdev[ 'type' ] == 'hot spares' ) {
+            if (@$vdev[ 'type' ] === 'hot spares' ) {
                 $hotspares[ $poolname ] = @$vdev[ 'name' ];
             }
         }
@@ -46,8 +46,8 @@ function content_pools_spare()
     // table pool checkbox
     $table_poolcheckbox = array();
     foreach ( $poollist as $poolname => $data ) {
-        if ($data[ 'status' ] == 'ONLINE'
-            OR $data[ 'status' ] == 'DEGRADED' 
+        if ($data[ 'status' ] === 'ONLINE'
+            OR $data[ 'status' ] === 'DEGRADED'
         ) {
             $table_poolcheckbox[] = array(
                 'PCB_POOLNAME' => htmlentities($poolname),
@@ -86,13 +86,13 @@ function submit_pools_spare()
         // determine which pools have been submitted
         $pools = array();
         foreach ( $_POST as $name => $value ) {
-            if (substr($name, 0, strlen('spare_pool_')) == 'spare_pool_' ) {
+            if (strpos($name, 'spare_pool_') === 0) {
                 $pools[] = substr($name, strlen('spare_pool_'));
             }
         }
 
         // sanity
-        if (strlen($device) < 1 ) {
+        if ($device == '') {
             friendlyerror('you must select a device to serve as Hot Spare', $url);
         }
         if (count($pools) < 1 ) {

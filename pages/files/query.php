@@ -53,7 +53,7 @@ function content_files_query()
         }
 
         // filesystem mountpoint
-        if ($fsdata[ 'mountpoint' ] == 'legacy' ) {
+        if ($fsdata[ 'mountpoint' ] === 'legacy' ) {
             $fsmountpoint = '<i>legacy</i>';
         } elseif ($fsdata[ 'mountpoint' ] == '-' ) {
             $fsmountpoint = '<i>volume</i>';
@@ -96,7 +96,7 @@ function content_files_query()
         if ($basepos = strpos($fsbase, '/') ) {
             $fsbase = @substr($fsbase, 0, $basepos);
         }
-        if (( $fsbase == 'zfsguru' )OR( substr($fsbase, 0, strlen('zfsguru-system')) == 'zfsguru-system' )OR( $fsbase == 'SWAP001' ) ) {
+        if (( $fsbase === 'zfsguru' )OR(strpos($fsbase, 'zfsguru-system') === 0)OR( $fsbase === 'SWAP001' ) ) {
             $querygurufs = true;
         } else {
             $querygurufs = false;
@@ -147,7 +147,7 @@ function content_files_query()
         }
         // filesystem properties
         $createpreg = preg_match_all(
-            '/([^\ ]+)(\ |$)/',
+            '/([^ ]+)( |$)/',
             $zfsinfo[ 'creation' ][ 'value' ], $cmatch 
         );
         $created = $cmatch[ 1 ][ 2 ] . ' ' . $cmatch[ 1 ][ 1 ] . ' ' . $cmatch[ 1 ][ 4 ] . ' @ '
@@ -179,9 +179,9 @@ function content_files_query()
         // checkboxes
         $atime = @trim($zfsinfo[ 'atime' ][ 'value' ]);
         $readonly = @trim($zfsinfo[ 'readonly' ][ 'value' ]);
-        $cb_atime = ( $atime == 'on' ) ?
+        $cb_atime = ( $atime === 'on' ) ?
         'checked="checked"' : '';
-        $cb_readonly = ( $readonly == 'on' ) ?
+        $cb_readonly = ( $readonly === 'on' ) ?
         'checked="checked"' : '';
         // select boxes
         $compressiontypes = array(
@@ -216,15 +216,15 @@ function content_files_query()
         );
 
         $compression = @trim($zfsinfo[ 'compression' ][ 'value' ]);
-        if ($compression == 'on' ) {
+        if ($compression === 'on' ) {
             $compression = 'lzjb';
-        } elseif ($compression == 'gzip-6' ) {
+        } elseif ($compression === 'gzip-6' ) {
             $compression = 'gzip';
         }
         $dedup = @trim($zfsinfo[ 'dedup' ][ 'value' ]);
         $copies = @trim($zfsinfo[ 'copies' ][ 'value' ]);
         $checksum = @trim($zfsinfo[ 'checksum' ][ 'value' ]);
-        $checksum = ( $checksum == 'fletcher2' ) ? 'on' : $checksum;
+        $checksum = ( $checksum === 'fletcher2' ) ? 'on' : $checksum;
         $sync = @trim($zfsinfo[ 'sync' ][ 'value' ]);
         $primarycache = @trim($zfsinfo[ 'primarycache' ][ 'value' ]);
         $secondarycache = @trim($zfsinfo[ 'secondarycache' ][ 'value' ]);
@@ -283,20 +283,20 @@ function content_files_query()
         }
 
         // filesystem sync
-        $opt_sync_always = ( $sync == 'always' ) ? 'selected="selected"' : '';
-        $opt_sync_disabled = ( $sync == 'disabled' ) ? 'selected="selected"' : '';
+        $opt_sync_always = ( $sync === 'always' ) ? 'selected="selected"' : '';
+        $opt_sync_disabled = ( $sync === 'disabled' ) ? 'selected="selected"' : '';
 
         // cache strategy
-        $opt_pricache_2 = ( $primarycache == 'metadata' ) ? 'selected="selected"' : '';
-        $opt_pricache_3 = ( $primarycache == 'none' ) ? 'selected="selected"' : '';
-        $opt_seccache_2 = ( $secondarycache == 'metadata' ) ? 'selected="selected"' : '';
-        $opt_seccache_3 = ( $secondarycache == 'none' ) ? 'selected="selected"' : '';
+        $opt_pricache_2 = ( $primarycache === 'metadata' ) ? 'selected="selected"' : '';
+        $opt_pricache_3 = ( $primarycache === 'none' ) ? 'selected="selected"' : '';
+        $opt_seccache_2 = ( $secondarycache === 'metadata' ) ? 'selected="selected"' : '';
+        $opt_seccache_3 = ( $secondarycache === 'none' ) ? 'selected="selected"' : '';
 
         // filesystem quota
         $quotaraw = @trim($zfsinfo[ 'quota' ][ 'value' ]);
         $quota = substr($quotaraw, 0, -1);
         $quotacurrentunit = strtoupper(substr($quotaraw, -1));
-        if ($quota == 'non' ) {
+        if ($quota === 'non' ) {
             $quota = '';
             $quotacurrentunit = 'disabled';
         }
@@ -337,7 +337,7 @@ function content_files_query()
         $class_primaryfs = ( strpos($queryfs, '/') === false ) ? 'normal' : 'hidden';
 
         // Samba/NFS share status
-        if (@$zfsinfo[ 'mountpoint' ][ 'value' ] == 'legacy' ) {
+        if (@$zfsinfo[ 'mountpoint' ][ 'value' ] === 'legacy' ) {
             // legacy mountpoint; skip sharing
             $mountpoint = 'legacy';
             $mountpoint_string = '<i>legacy</i>';
@@ -355,7 +355,7 @@ function content_files_query()
             $sambashareaction = 'legacy';
             $sambashareactionname = 'legacy';
             $sambasharesubmit = 'disabled="disabled"';
-        } elseif (@$zfsinfo[ 'type' ][ 'value' ] == 'volume' ) {
+        } elseif (@$zfsinfo[ 'type' ][ 'value' ] === 'volume' ) {
             // ZVOL; skip sharing
             $mountpoint = 'volume';
             $mountpoint_string = '<i>volume</i>';
@@ -415,7 +415,7 @@ function content_files_query()
             } else {
                 $nfsprofile = 'Notshared';
             }
-            if ($nfsprofile == 'Notshared' ) {
+            if ($nfsprofile === 'Notshared' ) {
                 $class_nfsshared = 'hidden';
                 $class_nfsnotshared = 'normal';
                 $nfssharestatus = 'Not shared';
@@ -425,7 +425,7 @@ function content_files_query()
             } else {
                 $class_nfslocal = 'normal';
                 $class_nfsinherited = 'hidden';
-                if (@$zfsinfo[ 'sharenfs' ][ 'source' ] != 'local' ) {
+                if (@$zfsinfo[ 'sharenfs' ][ 'source' ] !== 'local' ) {
                     $class_nfsinherited = 'normal';
                     $class_nfslocal = 'hidden';
                 }
@@ -449,7 +449,7 @@ function content_files_query()
     }
 
     // class of filesystem buttonbox (green = shared; red = not shared)
-    $class_fsbuttonbox = ( ( $class_nfsshared == 'normal' )OR( $class_sambashared == 'normal' ) ) ?
+    $class_fsbuttonbox = ( ( $class_nfsshared === 'normal' )OR( $class_sambashared === 'normal' ) ) ?
     'fsbuttonbox-shared' : 'normal';
 
     // pool supported filesystem versions
@@ -606,10 +606,8 @@ function submit_filesystem_modify()
         $swapctl = @implode(chr(10), $swapctl_raw);
         $fsdetails = zfs_filesystem_properties($fs, 'org.freebsd:swap');
         // disable swap
-        if (@$fsdetails[ $fs ][ 'org.freebsd:swap' ][ 'value' ] == 'on' ) {
-            if (@strpos($swapctl, '/dev/zvol/' . $fs) !== false ) {
-                $command[] = '/sbin/swapoff /dev/zvol/' . $fs;
-            }
+        if ((@$fsdetails[$fs]['org.freebsd:swap']['value'] == 'on') && @strpos($swapctl, '/dev/zvol/'.$fs) !== false) {
+            $command[] = '/sbin/swapoff /dev/zvol/' . $fs;
         }
         // display message if swap volumes detected
         if (count($command) > 0 ) {
@@ -625,7 +623,7 @@ function submit_filesystem_modify()
     }
     elseif (@isset($_POST[ 'submit_createsnapshot' ]) ) {
         sanitize(@$_POST[ 'snapshot_name' ], null, $snapname, 32);
-        if (strlen($snapname) > 0 ) {
+        if ($snapname != '') {
             dangerouscommand('/sbin/zfs snapshot ' . $fs . '@' . $snapname, $url);
         } else {
             friendlyerror('invalid snapshot name', $url);
@@ -645,7 +643,7 @@ function submit_filesystem_modify()
         $sambaconf = samba_readconfig();
         // search for mountpoint ('path') in samba share configuration
         $path = @$_POST[ 'fs_mountpoint' ];
-        if (( strlen($path) > 0 )AND is_array($sambaconf[ 'shares' ]) ) {
+        if (($path != '')AND is_array($sambaconf[ 'shares' ]) ) {
             foreach ( $sambaconf[ 'shares' ] as $sharename => $sharedata ) {
                 if ($sharedata[ 'path' ] == $path ) {
                     unset($sambaconf[ 'shares' ][ $sharename ]);
@@ -664,14 +662,14 @@ function submit_filesystem_modify()
     }
     elseif (@isset($_POST[ 'submit_afp_newshare' ]) ) {
         sanitize($_POST[ 'afp_name' ], 'a-zA-Z0-9 -_', $afpname, 20);
-        if (( strlen(@$_POST[ 'fs_mountpoint' ]) < 1 )OR( @$_POST[ 'fs_mountpoint' ] {        0        } != '/' ) 
+        if ((@$_POST['fs_mountpoint'] == '')OR( @$_POST[ 'fs_mountpoint' ] {        0        } !== '/' )
         ) {
             friendly_error('invalid filesystem mountpoint!', $url);
         }
         // create new AFP share
         if (@file_exists('/services/appleshare/panel/appleshare.php') ) {
             include_once '/services/appleshare/panel/appleshare.php';
-            if (@$_POST[ 'afp_timemachine' ] == 'on' ) {
+            if (@$_POST[ 'afp_timemachine' ] === 'on' ) {
                 $result = appleshare_addshare($_POST[ 'fs_mountpoint' ], $afpname, 'tm');
             } else {
                 $result = appleshare_addshare($_POST[ 'fs_mountpoint' ], $afpname);
@@ -681,7 +679,7 @@ function submit_filesystem_modify()
         }
     }
     elseif (@isset($_POST[ 'submit_afp_removeshare' ]) ) {
-        if (( strlen(@$_POST[ 'fs_mountpoint' ]) < 1 )OR( @$_POST[ 'fs_mountpoint' ] {        0        } != '/' ) 
+        if ((@$_POST['fs_mountpoint'] == '')OR( @$_POST[ 'fs_mountpoint' ] {        0        } !== '/' )
         ) {
             friendly_error('invalid filesystem mountpoint!', $url);
         }
@@ -698,7 +696,7 @@ function submit_filesystem_modify()
         $stringvars = array( 'mountpoint', 'compression', 'dedup', 'copies',
         'checksum', 'sync', 'primarycache', 'secondarycache' );
         // skip mountpoint for zvol or legacy filesystem
-        if (( $_POST[ 'fs_mountpoint' ] == 'legacy' )OR( $_POST[ 'fs_mountpoint' ] == 'volume' ) ) {
+        if (( $_POST[ 'fs_mountpoint' ] === 'legacy' )OR( $_POST[ 'fs_mountpoint' ] === 'volume' ) ) {
             unset($stringvars[ 0 ]);
         }
         // boolean variables (checkbox)
@@ -707,7 +705,7 @@ function submit_filesystem_modify()
         foreach ( $stringvars as $var ) {
             if (( @strlen($_POST[ 'fs_' . $var ]) > 0 )AND( @$_POST[ $var ] != $_POST[ 'fs_' . $var ] ) ) {
                 $fspool = @substr($fs, 0, strpos($fs, '/'));
-                if (( $var == 'compression' )AND( $_POST[ $var ] == 'lz4' ) ) {
+                if (( $var === 'compression' )AND( $_POST[ $var ] === 'lz4' ) ) {
                     dangerouscommand(
                         array(
                         '/sbin/zpool upgrade ' . $fspool,
@@ -720,15 +718,15 @@ function submit_filesystem_modify()
             }
         }
         foreach ( $boolvars as $var ) {
-            if (( @$_POST[ $var ] == 'on' )AND( $_POST[ 'fs_' . $var ] == 'off' ) ) {
+            if (( @$_POST[ $var ] === 'on' )AND( $_POST[ 'fs_' . $var ] === 'off' ) ) {
                 dangerouscommand('/sbin/zfs set ' . $var . '=on ' . $fs, $url);
-            } elseif (( @$_POST[ $var ] != 'on' )AND( $_POST[ 'fs_' . $var ] == 'on' ) ) {
+            } elseif (( @$_POST[ $var ] !== 'on' )AND( $_POST[ 'fs_' . $var ] === 'on' ) ) {
                 dangerouscommand('/sbin/zfs set ' . $var . '=off ' . $fs, $url);
             }
         }
         // filesystem quota
         $newquota = @$_POST[ 'quota' ] . @$_POST[ 'quota_unit' ];
-        if (@$_POST[ 'quota_unit' ] == 'disabled' ) {
+        if (@$_POST[ 'quota_unit' ] === 'disabled' ) {
             $newquota = '';
         }
         $oldquota = @$_POST[ 'fs_quota' ];

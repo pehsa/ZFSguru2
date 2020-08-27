@@ -19,7 +19,7 @@ td.pool_degraded {
 /* disk image and name */
 
 td.pool_name {
-	padding: 8px 0px !important;
+	padding: 8px 0 !important;
 	vertical-align: middle;
 }
 td.pool_name img {

@@ -176,7 +176,7 @@ background-image: -ms-linear-gradient(#fee, #edd);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeee', endColorstr='#eedddd');
 background-image: linear-gradient(#fee, #edd);
 text-align:center;
-padding:4px 0px;
+padding:4px 0;
 }
 
 
@@ -743,7 +743,7 @@ pre.command_box
 background:#eef;
 padding:10px;
 border:1px solid #ccc;
-margin:0px 0 10px 0;
+margin:0 0 10px 0;
 overflow:scroll;
 }
 

@@ -68,11 +68,9 @@ function internal_sendimage( $imagepath )
     header('Last-Modified: ' . $mdate, true);
     header('Pragma: ', true);
     // check user-supplied If-Modified-Since header
-    if (@strlen($_SERVER[ 'HTTP_IF_MODIFIED_SINCE' ]) > 0 ) {
-        if (@$_SERVER[ 'HTTP_IF_MODIFIED_SINCE' ] == $mdate ) {
-            header('Status: 304 Not Modified: ' . $mdate, true, 304);
-            die();
-        }
+    if ((@strlen($_SERVER['HTTP_IF_MODIFIED_SINCE']) > 0) && @$_SERVER['HTTP_IF_MODIFIED_SINCE'] == $mdate) {
+        header('Status: 304 Not Modified: ' . $mdate, true, 304);
+        die();
     }
     // flush headers to client
     ob_clean();

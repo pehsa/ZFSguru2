@@ -20,7 +20,7 @@ function content_services_system()
         $activerow = ( $query == $iservice ) ? 'activerow' : 'normal';
 
         // determine running status
-        if (( strlen(@$data[ 'func_isrunning' ]) > 0 )AND( function_exists('internalservice_' . @$data[ 'func_isrunning' ]) ) ) {
+        if ((@$data['func_isrunning'] != '')AND( function_exists('internalservice_' . @$data[ 'func_isrunning' ]) ) ) {
             $running = call_user_func('internalservice_' . $data[ 'func_isrunning' ]);
             if ($running ) {
                 $status = 'RUNNING';
@@ -29,11 +29,11 @@ function content_services_system()
                 $status = 'STOPPED';
                 $class_status = 'red';
             }
-        } elseif (strlen($data[ 'process' ]) < 1 ) {
+        } elseif ($data['process'] == '') {
             $status = 'PASSIVE';
             $class_status = 'grey';
         }
-        elseif (@$data[ 'isrunning' ] == 'unknown' ) {
+        elseif (@$data[ 'isrunning' ] === 'unknown' ) {
             $status = 'Unknown';
             $class_status = 'grey';
         }
@@ -47,9 +47,9 @@ function content_services_system()
         }
 
         // classes
-        $class_startbutton = @( ( $status == 'STOPPED' )AND( !$data[ 'only_restart' ] ) ) ?
+        $class_startbutton = @( ( $status === 'STOPPED' )AND( !$data[ 'only_restart' ] ) ) ?
         'normal' : 'hidden';
-        $class_stopbutton = @( ( $status == 'RUNNING' )AND( !$data[ 'only_restart' ] ) ) ?
+        $class_stopbutton = @( ( $status === 'RUNNING' )AND( !$data[ 'only_restart' ] ) ) ?
         'normal' : 'hidden';
         $class_restartbutton = @( $data[ 'only_restart' ] == true ) ? 'normal' : 'hidden';
 
@@ -92,9 +92,9 @@ function content_services_system()
     }
 
     // hide noservices div when services are present
-    $class_services = ( @empty($iservices)OR strlen($query) > 0 ) ? 'hidden' : 'normal';
+    $class_services = ( @empty($iservices)OR $query != '') ? 'hidden' : 'normal';
     $class_noservices = ( @empty($iservices) ) ? 'normal' : 'hidden';
-    $class_qservice = ( strlen($query) > 0 ) ? 'normal' : 'hidden';
+    $class_qservice = ($query != '') ? 'normal' : 'hidden';
 
     // export new tags
     return array(
@@ -126,7 +126,7 @@ function submit_services_system()
     // scan each POST variable
     foreach ( $_POST as $name => $value ) {
 
-        if (substr($name, 0, strlen('svc_start_')) == 'svc_start_' ) {
+        if (strpos($name, 'svc_start_') === 0) {
             // start service
             $svc = trim(substr($name, strlen('svc_start_')));
             $svc = substr($svc, 0, -2);
@@ -149,7 +149,7 @@ function submit_services_system()
             }
         }
 
-        if (substr($name, 0, strlen('svc_stop_')) == 'svc_stop_' ) {
+        if (strpos($name, 'svc_stop_') === 0) {
             // stop service
             $svc = trim(substr($name, strlen('svc_stop_')));
             $svc = substr($svc, 0, -2);
@@ -168,7 +168,7 @@ function submit_services_system()
             }
         }
 
-        if (substr($name, 0, strlen('svc_restart_')) == 'svc_restart_' ) {
+        if (strpos($name, 'svc_restart_') === 0) {
             // restart service
             $svc = trim(substr($name, strlen('svc_restart_')));
             $svc = substr($svc, 0, -2);
@@ -197,7 +197,7 @@ function submit_services_system()
             }
         }
 
-        if (substr($name, 0, strlen('svc_autostart_y_')) == 'svc_autostart_y_' ) {
+        if (strpos($name, 'svc_autostart_y_') === 0) {
             // automatically start service upon (re)boot
             $svc = trim(substr($name, strlen('svc_autostart_y_')));
             $svc = substr($svc, 0, -2);
@@ -210,7 +210,7 @@ function submit_services_system()
             }
         }
 
-        if (substr($name, 0, strlen('svc_autostart_n_')) == 'svc_autostart_n_' ) {
+        if (strpos($name, 'svc_autostart_n_') === 0) {
             // do NOT automatically start service upon (re)boot
             $svc = trim(substr($name, strlen('svc_autostart_n_')));
             $svc = substr($svc, 0, -2);

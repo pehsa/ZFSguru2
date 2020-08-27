@@ -43,7 +43,7 @@ function content_pools_create()
     }
 
     // radio button (zfs version)
-    $specifyversion = ( @$_GET[ 'spa' ]OR @$_GET[ 'zpl' ] ) ? true : false;
+    $specifyversion = ( @$_GET[ 'spa' ]OR @$_GET[ 'zpl' ] );
     $radio_modernzfs = ( !$specifyversion ) ? 'checked="checked"' : '';
     $radio_specify = ( $specifyversion ) ? 'checked="checked"' : '';
 
@@ -74,7 +74,7 @@ function submit_pools_createpool()
     $sectorsize = ( @$_POST[ 'new_zpool_sectorsize' ] ) ?
     ( int )$_POST[ 'new_zpool_sectorsize' ] : 512;
     $recordsize = @$_POST[ 'new_zpool_recordsize' ];
-    $force = ( @$_POST[ 'new_zpool_force' ] == 'on' ) ? true : false;
+    $force = @$_POST[ 'new_zpool_force' ] == 'on';
     $url = 'pools.php?create';
     $url2 = 'pools.php?query=' . $new_zpool;
 
@@ -85,7 +85,7 @@ function submit_pools_createpool()
             $url 
         );
     }
-    if (strlen($new_zpool) < 1 ) {
+    if ($new_zpool == '') {
         friendlyerror('please enter a name for your new pool', $url);
     }
     if (zfs_pool_isreservedname($new_zpool) ) {
@@ -176,15 +176,15 @@ function submit_pools_createpool()
     }
 
     // process 2-way or 3-way or 4-way mirrors
-    if ($redundancy == 'mirror2'
-        OR $redundancy == 'mirror3'
-        OR $redundancy == 'mirror4' 
+    if ($redundancy === 'mirror2'
+        OR $redundancy === 'mirror3'
+        OR $redundancy === 'mirror4'
     ) {
         $member_arr = array();
         $member_str = '';
         for ( $i = 2; $i <= 10; $i++ ) {
             if ($redundancy == 'mirror' . $i ) {
-                for ( $y = 0; $y <= 255; $y = $y + $i ) {
+                for ($y = 0; $y <= 255; $y += $i) {
                     if (@isset($vdev[ 'member_disks' ][ $y ]) ) {
                         for ( $z = 0; $z <= ( $i - 1 ); $z++ ) {
                             $member_arr[ $y ][] = $vdev[ 'member_disks' ][ $y + $z ];
@@ -207,7 +207,7 @@ function submit_pools_createpool()
     $old_ashift_max = @trim(shell_exec('/sbin/sysctl -n vfs.zfs.max_auto_ashift'));
     $new_ashift = 9;
     for ( $new_ashift = 9; $new_ashift <= 17; $new_ashift++ ) {
-        if (pow(2, $new_ashift) == $sectorsize ) {
+        if ((2 ** $new_ashift) == $sectorsize ) {
             break;
         }
     }
@@ -220,8 +220,8 @@ function submit_pools_createpool()
 
     // force specific ashift setting to be used during pool creation
     if (is_numeric($sectorsize) ) {
-        $commands[] = '/sbin/sysctl vfs.zfs.min_auto_ashift=' . ( int )$new_ashift;
-        $commands[] = '/sbin/sysctl vfs.zfs.max_auto_ashift=' . ( int )$new_ashift;
+        $commands[] = '/sbin/sysctl vfs.zfs.min_auto_ashift=' .$new_ashift;
+        $commands[] = '/sbin/sysctl vfs.zfs.max_auto_ashift=' .$new_ashift;
     }
 
     // create pool

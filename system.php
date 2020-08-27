@@ -16,9 +16,7 @@ $tabs = array(
 
 // hide certain tabs when not enabled
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {
-    unset($tabs[ 'Tuning' ]);
-    unset($tabs[ 'Command line' ]);
-    unset($tabs[ 'Migration' ]);
+    unset($tabs['Tuning'], $tabs['Command line'], $tabs['Migration']);
 }
 
 // select page

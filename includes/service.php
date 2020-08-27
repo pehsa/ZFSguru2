@@ -36,15 +36,14 @@ function service_list()
 
         // name
         $name = trim($line);
-        $longname = ( @$servicedb[ $name ][ 'longname' ] ) ?
-        @$servicedb[ $name ][ 'longname' ] : htmlentities($name);
+        $longname = ( @$servicedb[ $name ][ 'longname' ] ) ?: htmlentities($name);
 
         // description
         $desc = @$servicedb[ $name ][ 'desc' ];
 
         // derive CAT from service database
         $cat = @$servicedb[ $name ][ 'cat' ];
-        if (strlen($cat) < 1 ) {
+        if ($cat == '') {
             $cat = '???';
         }
 
@@ -80,11 +79,10 @@ function service_list()
         // KMOD
 
         // JAILED
-        $jailed = ( @trim(file_get_contents($spath . '/JAILED')) == '1' ) ? true : false;
+        $jailed = @trim(file_get_contents($spath . '/JAILED')) == '1';
 
         // CHROOTED
-        $chrooted = ( @trim(file_get_contents($spath . '/CHROOTED')) == '1' ) ?
-        true : false;
+        $chrooted = @trim(file_get_contents($spath . '/CHROOTED')) == '1';
 
         // security model
         if ($jailed ) {
@@ -96,13 +94,13 @@ function service_list()
         }
 
         // can be started
-        $canstart = ( @fileowner($spath . '/service_start.sh') === 0 ) ? true : false;
+        $canstart = @fileowner($spath . '/service_start.sh') === 0;
 
         // can be stopped
-        $canstop = ( @fileowner($spath . '/service_stop.sh') === 0 ) ? true : false;
+        $canstop = @fileowner($spath . '/service_stop.sh') === 0;
 
         // check if passive
-        $passive = ( @file_exists($spath . '/PASSIVE') ) ? true : false;
+        $passive = @file_exists($spath . '/PASSIVE');
 
         // run status
         $status = service_runstatus($name);
@@ -164,18 +162,18 @@ function service_runstatus( $svc )
     // retrieve runstatus by looking at process name in ps auxw output
     $status = 'unknown';
     $processnames = @trim(file_get_contents($spath . '/PROCESSNAMES'));
-    if (strlen($processnames) > 0 ) {
+    if ($processnames !== '') {
         $procarr = explode(chr(10), $processnames);
         if (is_array($procarr) ) {
             foreach ( $procarr as $process ) {
-                if (strlen($process) > 0 ) {
-                    if (service_isprocessrunning($process)AND( $status != 'partial' ) ) {
+                if ($process != '') {
+                    if (service_isprocessrunning($process)AND( $status !== 'partial' ) ) {
                         $status = 'running';
-                    } elseif ($status == 'running' ) {
+                    } elseif ($status === 'running' ) {
                         $status = 'partial';
                         break;
                     }
-                    elseif ($status != 'partial' ) {
+                    elseif ($status !== 'partial' ) {
                         $status = 'stopped';
                     }
                 }
@@ -185,24 +183,24 @@ function service_runstatus( $svc )
 
     // KMOD
     $kmod = @trim(file_get_contents($spath . '/KMOD'));
-    if (strlen($kmod) > 0 ) {
+    if ($kmod !== '') {
         $kmod_arr = array();
         $procarr = explode(chr(10), $kmod);
         if (is_array($procarr) ) {
             foreach ( $procarr as $kernelmodule ) {
-                if (strlen($kernelmodule) > 0 ) {
+                if ($kernelmodule != '') {
                     exec('/sbin/kldstat -n ' . $kernelmodule . '.ko', $output, $rv);
-                    $kmodloaded = ( $rv == 0 ) ? true : false;
-                    if ($kmodloaded AND $status == 'stopped' ) {
+                    $kmodloaded = $rv == 0;
+                    if ($kmodloaded AND $status === 'stopped' ) {
                         $status = 'partial';
-                    } elseif ($kmodloaded AND $status == 'unknown' ) {
+                    } elseif ($kmodloaded AND $status === 'unknown' ) {
                         $status = 'running';
-                    } elseif (!$kmodloaded AND $status == 'unknown' ) {
+                    } elseif (!$kmodloaded AND $status === 'unknown' ) {
                         $status = 'stopped';
-                    } elseif (!$kmodloaded AND $status == 'running' ) {
+                    } elseif (!$kmodloaded AND $status === 'running' ) {
                         $status = 'partial';
                     }
-                    $kmod_arr[ $kernelmodule ] = ( $rv == 0 ) ? true : false;
+                    $kmod_arr[ $kernelmodule ] = $rv == 0;
                 }
             }
         }
@@ -214,13 +212,14 @@ function service_start( $svc, $silent = false )
 {
     // check if already running
     $status = service_runstatus($svc);
-    if (( $status == 'running' )OR( $status == 'partial' ) ) {
+    if (( $status === 'running' )OR( $status === 'partial' ) ) {
         if ($silent ) {
             return true;
-        } else {
-            page_feedback('service <b>' . $svc . '</b> is already started!', 'a_warning');
-            return true;
         }
+
+        page_feedback('service <b>' . $svc . '</b> is already started!', 'a_warning');
+
+        return true;
     }
     // start service by script
     $result = service_script($svc, 'start');
@@ -229,9 +228,9 @@ function service_start( $svc, $silent = false )
     // return result
     if ($result ) {
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function service_start_blocking( $svc, $timeout_sec = 15, $runagain_sec = 10 )
@@ -244,11 +243,13 @@ function service_start_blocking( $svc, $timeout_sec = 15, $runagain_sec = 10 )
 
     // start service if required, wait until the service is started
     $status = '';
-    while ( $status != 'running' ) {
+    while ( $status !== 'running' ) {
         $status = service_runstatus($svc);
-        if ($count > $maxcount ) {
+        if ($count > $maxcount) {
             return false;
-        } elseif ($status == 'running' ) {
+        }
+
+        if ($status == 'running') {
             return true;
         }
         if ($count++ % $runagaincycles == 0 ) {
@@ -262,13 +263,14 @@ function service_stop( $svc, $silent = false )
 {
     // check if already stopped
     $status = service_runstatus($svc);
-    if ($status == 'stopped' ) {
+    if ($status === 'stopped' ) {
         if ($silent ) {
             return true;
-        } else {
-            page_feedback('service <b>' . $svc . '</b> is already stopped!', 'a_warning');
-            return true;
         }
+
+        page_feedback('service <b>' . $svc . '</b> is already stopped!', 'a_warning');
+
+        return true;
     }
     // stop service by script
     $result = service_script($svc, 'stop');
@@ -277,9 +279,9 @@ function service_stop( $svc, $silent = false )
     // return result
     if ($result ) {
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function service_stop_blocking( $svc, $timeout_sec = 15, $runagain_sec = 6 )
@@ -292,11 +294,13 @@ function service_stop_blocking( $svc, $timeout_sec = 15, $runagain_sec = 6 )
 
     // start service if required, wait until the service is started
     $status = '';
-    while ( $status != 'stopped' ) {
+    while ( $status !== 'stopped' ) {
         $status = service_runstatus($svc);
-        if ($count > $maxcount ) {
+        if ($count > $maxcount) {
             return false;
-        } elseif ($status == 'stopped' ) {
+        }
+
+        if ($status == 'stopped') {
             return true;
         }
         if ($count++ % $runagaincycles == 0 ) {
@@ -321,20 +325,21 @@ function service_queryautostart( $svc )
     }
     // elseif (@is_executable('/services/'.$svc.'/service_register.sh'))
     //  exec('/services/'.$svc.'/service_register.sh QUERY', $output, $rv);
-    else {
-        $result = service_script($svc, 'register', 'QUERY', $rv);
-    }
+
+    $result = service_script($svc, 'register', 'QUERY', $rv);
     // we expect return value 10 when the service is registered, rv 5 if not
-    if ($rv == 10 ) {
+    if ($rv == 10) {
         return true;
-    } elseif ($rv == 5 ) {
+    }
+
+    if ($rv == 5) {
         return false;
     } elseif ($rv == 6 OR $rv === null ) {
         return null;
     } else {
         page_feedback(
             'the service_register.sh script returned a strange '
-            . 'return value: ' . $rv, 'a_warning' 
+            . 'return value: ' . $rv, 'a_warning'
         );
         return null;
     }
@@ -495,9 +500,11 @@ function service_install_progress( $svc )
     $query = background_query($btag);
 
     // return string value
-    if (@$query[ 'exists' ] !== true ) {
+    if (@$query[ 'exists' ] !== true) {
         return 'notrunning';
-    } elseif (@$query[ 'running' ] === true ) {
+    }
+
+    if (@$query[ 'running' ] === true) {
         return 'running';
     } else {
         return 'finished';
@@ -528,30 +535,36 @@ function service_install_postprocess( $svc )
     // 4 = success, requires reboot of webserver
     // 5 = failed, requires internet access
     foreach ( $query[ 'ctag' ] as $name => $data ) {
-        if (( $name != 'install' )AND( $data[ 'rv' ] != 0 ) ) {
+        if (( $name != 'install' )AND( $data[ 'rv' ] != 0 )) {
             page_feedback(
                 'service ' . htmlentities($svc) . ' could not be installed - '
-                . htmlentities($name) . '-phase failed with code ' . $data[ 'rv' ], 'a_error' 
+                . htmlentities($name) . '-phase failed with code ' . $data[ 'rv' ], 'a_error'
             );
             page_feedback('output: ' . htmlentities($data[ 'output' ]), 'c_notice');
             return false;
-        } elseif ($name == 'install' ) {
-            if ($data[ 'rv' ] == 1 ) {
+        }
+
+        if ($name == 'install') {
+            if ($data['rv'] == 1) {
                 page_feedback(
-                    'service ' . htmlentities($svc) . ' could not be installed - '
-                    . htmlentities($name) . '-phase failed with code ' . $data[ 'rv' ], 'a_error' 
+                    'service '.htmlentities($svc).' could not be installed - '
+                    .htmlentities($name).'-phase failed with code '.$data['rv'],
+                    'a_error'
                 );
-                page_feedback('output: ' . htmlentities($data[ 'output' ]), 'c_notice');
+                page_feedback('output: '.htmlentities($data['output']), 'c_notice');
+
                 return false;
-            } elseif ($data[ 'rv' ] == 2 ) {
+            }
+
+            if ($data[ 'rv' ] == 2) {
                 page_feedback(
                     'service <b>' . $svc . '</b> installed and ready for use!',
-                    'b_success' 
+                    'b_success'
                 );
             } elseif ($data[ 'rv' ] == 3 ) {
                 page_feedback(
                     'service <b>' . $svc . '</b> installed - '
-                    . 'requires a <b>reboot</b> before operation!', 'b_success' 
+                    . 'requires a <b>reboot</b> before operation!', 'b_success'
                 );
             } elseif ($data[ 'rv' ] == 4 ) {
                 // restart webserver on background
@@ -559,20 +572,20 @@ function service_install_postprocess( $svc )
                 // give feedback of this happening
                 page_feedback(
                     'service <b>' . $svc . '</b> installed - requires a <b>restart</b> '
-                    . 'of the webserver; restarting now!', 'b_success' 
+                    . 'of the webserver; restarting now!', 'b_success'
                 );
             }
             elseif ($data[ 'rv' ] == 5 ) {
                 page_feedback(
                     'service <b>' . $svc . '</b> failed to install - '
-                    . 'requires internet access during installation!', 'a_failure' 
+                    . 'requires internet access during installation!', 'a_failure'
                 );
                 return false;
             }
             else {
                 page_feedback(
                     'service <b>' . $svc . '</b> failed to install - '
-                    . 'installation script returned invalid rv; aborting!', 'a_error' 
+                    . 'installation script returned invalid rv; aborting!', 'a_error'
                 );
                 page_feedback('output: ' . htmlentities($data[ 'output' ]), 'c_notice');
                 return false;
@@ -618,11 +631,8 @@ function service_uninstall( $svc )
 
     // remove VERSION file from directory
     $result2 = super_execute('/bin/rm ' . $spath . '/VERSION');
-    if ($result AND( $result2[ 'rv' ] == 0 ) ) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return $result and ($result2['rv'] == 0);
 }
 
 function service_upgrade( $svc )
@@ -771,11 +781,8 @@ function service_script( $svc, $script, $arg = '', & $rv = false )
         $result = super_execute('/bin/sh -c "' . $script . '"');
     }
     $rv = $result[ 'rv' ];
-    if ($rv == 0 ) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return $rv == 0;
 }
 
 /* service panels */
@@ -805,11 +812,11 @@ function service_panel_handle( $svc )
     $panelpath = @$services[ $svc ][ 'path_panel' ];
     // determine longname
     $longname = @$services[ $svc ][ 'longname' ];
-    if (strlen($longname) < 1 ) {
+    if ($longname == '') {
         $longname = htmlentities($svc);
     }
     // process panel path
-    if (@is_file($panelpath . '.php') ) {
+    if (@is_file($panelpath . '.php')) {
         // create new tab for panel
         $tabs[ $longname ] = 'services.php?panel=' . $svc;
         // activate the new tab
@@ -820,7 +827,9 @@ function service_panel_handle( $svc )
         // page handle
         page_handle($content);
         die();
-    } elseif ($panelpath == false ) {
+    }
+
+    if ($panelpath == false) {
         error('Service ' . $svc . ' does not have a panel file!');
     } else {
         error('Panel file does not exist at: ' . $panelpath);
@@ -847,9 +856,9 @@ function service_checkupgrade( $service, & $versions = false )
                     page_feedback('service does not exist; cannot check for upgrade!');
                 }
                 return false;
-            } else {
-                $service = @$servicelist[ $service ];
             }
+
+            $service = @$servicelist[ $service ];
         }
     }
 
@@ -874,12 +883,9 @@ function service_isprocessrunning( $process_name )
     }
     $cmd = '/bin/ps auxwww | /usr/bin/grep "' . $process_name
     . '" | /usr/bin/grep -v grep';
-    $process = trim(`$cmd`);
-    if (@strlen($process) > 0 ) {
-        return true;
-    } else {
-        return false;
-    }
+    $process = trim(shell_exec("\$cmd"));
+
+    return @strlen($process) > 0;
 }
 
 
@@ -921,8 +927,7 @@ function service_start_rc( $service )
 
 function service_restart_rc( $service )
 {
-    $result = service_manage($service, 'restart');
-    return $result;
+    return service_manage($service, 'restart');
 }
 
 function service_restartwebserver()
@@ -935,7 +940,7 @@ function service_restartwebserver()
     $iservices = internalservice_fetch();
     // special script execution on background
     $script = @$iservices[ 'webserver' ][ 'bg_script' ];
-    if (( strlen($script) < 1 )OR( !@file_exists($script) ) ) {
+    if (($script == '')OR( !@file_exists($script) ) ) {
         page_feedback(
             'could not restart webserver - please do this manually on '
             . 'the <a href="services.php?internal">Services->Internal</a> page',
@@ -972,9 +977,11 @@ function service_runcontrol_isenabled( $rc, $rcfile = false )
 
     // look for non-commented out $rc line
     if (preg_match($preg, $rcconf, $matches) ) {
-        if (@strtoupper($matches[ 1 ]) == 'YES' ) {
+        if (@strtoupper($matches[ 1 ]) == 'YES') {
             return true;
-        } elseif (@strtoupper($matches[ 1 ]) == 'NO' ) {
+        }
+
+        if (@strtoupper($matches[ 1 ]) == 'NO') {
             return false;
         } else {
             return ( string )@$matches[ 1 ];
@@ -983,9 +990,11 @@ function service_runcontrol_isenabled( $rc, $rcfile = false )
         $rcdefaults = file_get_contents('/etc/defaults/rc.conf');
         unset($matches);
         if (preg_match($preg, $rcdefaults, $matches) ) {
-            if (@strtoupper($matches[ 1 ]) == 'YES' ) {
+            if (@strtoupper($matches[ 1 ]) == 'YES') {
                 return true;
-            } elseif (@strtoupper($matches[ 1 ]) == 'NO' ) {
+            }
+
+            if (@strtoupper($matches[ 1 ]) == 'NO') {
                 return false;
             } else {
                 return ( string )@$matches[ 1 ];
@@ -1015,9 +1024,11 @@ function service_runcontrol_enable( $rc )
     // look for non-commented out $rc line (already enabled)
     $enabled = service_runcontrol_isenabled($rc);
     // determine what should be done
-    if ($enabled === true ) {
+    if ($enabled === true) {
         return true;
-    } elseif (preg_match($preg1, $rcconf) ) {
+    }
+
+    if (preg_match($preg1, $rcconf)) {
         // appears the rc variable exists but has other value than YES/NO
         $rcconf = preg_replace($preg1, $rc . '_enable="YES"$2$3', $rcconf);
     } elseif (preg_match($preg2, $rcconf) ) {

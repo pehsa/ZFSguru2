@@ -37,15 +37,15 @@ function content_files_zvol()
     }
 
     // volume type depends on SWAP attribute being set
-    $isswap = ( @$prop2[ $queryzvol ][ 'org.freebsd:swap' ][ 'value' ] == 'on' ) ?
+    $isswap = ( @$prop2[ $queryzvol ][ 'org.freebsd:swap' ][ 'value' ] === 'on' ) ?
     'normal' : 'hidden';
-    $isnotswap = ( @$prop2[ $queryzvol ][ 'org.freebsd:swap' ][ 'value' ] != 'on' ) ?
+    $isnotswap = ( @$prop2[ $queryzvol ][ 'org.freebsd:swap' ][ 'value' ] !== 'on' ) ?
     'normal' : 'hidden';
 
     // swap non-active
     $isswap_nonactive = 'hidden';
-    if ($isswap == 'normal' ) {
-        $swapctl = `/sbin/swapctl -l`;
+    if ($isswap === 'normal' ) {
+        $swapctl = shell_exec("/sbin/swapctl -l");
         if (strpos($swapctl, $queryzvol) === false ) {
             $isswap_nonactive = 'normal';
         }
@@ -55,7 +55,7 @@ function content_files_zvol()
     $class_sync = 'hidden';
     $class_nosync = 'hidden';
     if ($zfsver[ 'spa' ] >= 28 ) {
-        if (@$prop3[ $queryzvol ][ 'sync' ][ 'value' ] == 'disabled' ) {
+        if (@$prop3[ $queryzvol ][ 'sync' ][ 'value' ] === 'disabled' ) {
             $class_nosync = 'normal';
         } else {
             $class_sync = 'normal';
@@ -65,7 +65,7 @@ function content_files_zvol()
     // craft zvol table
     $volumes = array();
     foreach ( $zvols as $zvolname => $zvol ) {
-        $prov = ( @$prop[ $zvolname ][ 'refreservation' ][ 'value' ] == 'none' ) ?
+        $prov = ( @$prop[ $zvolname ][ 'refreservation' ][ 'value' ] === 'none' ) ?
         '<b>thin</b>' : 'full';
         $activerow = ( $zvolname == $queryzvol AND $zvolname ) ?
         'class="activerow"' : '';
@@ -120,12 +120,12 @@ function submit_zvol_create()
     $blocksize = @$_POST[ 'zvol_blocksize' ];
     $sync = '';
     // sync only supported by FreeBSD ZFS v28+
-    if (( strlen(@$_POST[ 'zvol_sync' ]) > 0 )AND( $zfsver[ 'spa' ] >= 28 ) ) {
+    if ((@$_POST['zvol_sync'] != '')AND( $zfsver[ 'spa' ] >= 28 ) ) {
         $sync = '-o sync=' . $_POST[ 'zvol_sync' ] . ' ';
     }
-    $swap = ( @$_POST[ 'zvol_swap' ] == 'on' ) ?
+    $swap = ( @$_POST[ 'zvol_swap' ] === 'on' ) ?
     '-o org.freebsd:swap=on ' : '';
-    $sparse = ( @$_POST[ 'zvol_sparse' ] == 'on' ) ? '-s ' : '';
+    $sparse = ( @$_POST[ 'zvol_sparse' ] === 'on' ) ? '-s ' : '';
 
     // sanity checks
     if (!$s ) {
@@ -147,7 +147,7 @@ function submit_zvol_create()
     . $sync . $swap . '-V ' . $size_gib . 'g ' . $path;
 
     // activate as swap when applicable
-    if (strlen($swap) > 0 ) {
+    if ($swap !== '') {
         $commands[] = '/sbin/swapon /dev/zvol/' . $path;
     }
 
@@ -162,7 +162,7 @@ function submit_zvol_operations()
     $volsize_gib = @$_POST[ 'zvol_resize' ];
 
     // sanity on volume name
-    if (strlen($volname) < 1 ) {
+    if ($volname == '') {
         error('no volume name submitted!');
     }
 

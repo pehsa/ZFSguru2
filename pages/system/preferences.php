@@ -66,7 +66,7 @@ function content_system_preferences()
             . htmlentities($timezone) . '</option>' . chr(10);
         }
     }
-    $system_time = `date`;
+    $system_time = shell_exec("date");
     $php_time = date('D M j H:i:s e Y');
     // master servers (note that we hide the trailing forward slash)
     $master = '';
@@ -120,15 +120,13 @@ function content_system_preferences()
     exec('/bin/ls -1 ' . $guru[ 'docroot' ] . '/theme/', $output);
     if (is_array($output) ) {
         foreach ( $output as $dir ) {
-            if ($dir != 'default' ) {
-                if (is_dir($guru[ 'docroot' ] . '/theme/' . $dir) ) {
-                    $themelist[] = array(
-                    'THEME_ACTIVE' => ( $dir == $guru[ 'preferences' ][ 'theme' ] ) ?
-                    'selected="selected"' : '',
-                    'THEME_DIR' => htmlentities($dir),
-                    'THEME_NAME' => htmlentities(ucfirst($dir))
-                    );
-                }
+            if (($dir != 'default') && is_dir($guru['docroot'].'/theme/'.$dir)) {
+                $themelist[] = array(
+                'THEME_ACTIVE' => ( $dir == $guru[ 'preferences' ][ 'theme' ] ) ?
+                'selected="selected"' : '',
+                'THEME_DIR' => htmlentities($dir),
+                'THEME_NAME' => htmlentities(ucfirst($dir))
+                );
             }
         }
     }
@@ -230,23 +228,19 @@ function fetch_timezones()
     $predir_length = strlen('/usr/share/zoneinfo/');
     if (@is_array($rawoutput) ) {
         foreach ( $rawoutput as $directory ) {
-            if (substr($directory, 0, $predir_length) == '/usr/share/zoneinfo/' ) {
-                if (strlen($directory) > $predir_length ) {
+            if ((substr($directory, 0, $predir_length) == '/usr/share/zoneinfo/') && strlen(
+                    $directory
+                ) > $predir_length) {
                     $tz_system[] = substr($directory, $predir_length);
                 }
-            }
         }
     }
 
                 // combine
     $tz_combine = ( array )extra_timezone_list();
     foreach ( $tz_php as $city ) {
-        if (!in_array($city, $tz_combine) ) {
-            if (strlen($city) > 0 ) {
-                if (file_exists('/usr/share/zoneinfo/' . $city) ) {
-                    $tz_combine[] = $city;
-                }
-            }
+        if (!in_array($city, $tz_combine, true) && (strlen($city) > 0) && file_exists('/usr/share/zoneinfo/'.$city)) {
+            $tz_combine[] = $city;
         }
     }
     asort($tz_combine);
@@ -263,7 +257,7 @@ function fetch_timezones()
 
     // add other timezones
     foreach ( $tz_combine as $tz ) {
-        if (!in_array($tz, $timezones) ) {
+        if (!in_array($tz, $timezones, true)) {
             $timezones[] = $tz;
         }
     }
@@ -355,10 +349,8 @@ function submit_system_preferences()
         }
 
         // connection timeout
-        if (@is_numeric($_POST[ 'pref_connect_timeout' ]) ) {
-            if (( int )$_POST[ 'pref_connect_timeout' ] > 0 ) {
-                $pref[ 'connect_timeout' ] = ( int )$_POST[ 'pref_connect_timeout' ];
-            }
+        if (@is_numeric($_POST['pref_connect_timeout']) && ( int )$_POST['pref_connect_timeout'] > 0) {
+            $pref[ 'connect_timeout' ] = ( int )$_POST[ 'pref_connect_timeout' ];
         }
 
         // timezone
@@ -366,16 +358,14 @@ function submit_system_preferences()
             $pref[ 'timezone' ] = $_POST[ 'pref_timezone' ];
             // activate timezone for FreeBSD system as well if applicable
             $tz_map = procedure_timezone_map($pref[ 'timezone' ]);
-            if (strlen($tz_map[ 'tz_system' ]) > 0 ) {
-                if (file_exists('/usr/share/zoneinfo/' . $tz_map[ 'tz_system' ]) ) {
-                    // increased privileges
-                    activate_library('super');
-                    $cmd = '/bin/cp /usr/share/zoneinfo/' . $tz_map[ 'tz_system' ]
-                    . ' /etc/localtime';
-                    $result = super_execute($cmd);
-                    if ($result[ 'rv' ] !== 0 ) {
-                        page_feedback('could not activate timezone', 'a_failure');
-                    }
+            if ((strlen($tz_map['tz_system']) > 0) && file_exists('/usr/share/zoneinfo/'.$tz_map['tz_system'])) {
+                // increased privileges
+                activate_library('super');
+                $cmd = '/bin/cp /usr/share/zoneinfo/' . $tz_map[ 'tz_system' ]
+                . ' /etc/localtime';
+                $result = super_execute($cmd);
+                if ($result[ 'rv' ] !== 0 ) {
+                    page_feedback('could not activate timezone', 'a_failure');
                 }
             }
         }
@@ -407,7 +397,7 @@ function submit_system_preferences()
                 );
             }
         }
-        if (@$_POST[ 'pref_reset_authentication' ] == 'on' ) {
+        if (@$_POST[ 'pref_reset_authentication' ] === 'on' ) {
             $pref[ 'authentication' ] = '';
         }
 

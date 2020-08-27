@@ -92,7 +92,7 @@ function submit_install_disablebootfs()
     $poolname = false;
     // scan POST vars for poolname
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('disablebootfs_')) == 'disablebootfs_' ) {
+        if (strpos($name, 'disablebootfs_') === 0) {
             $poolname = trim(substr($name, strlen('disablebootfs_')));
         }
     }

@@ -27,17 +27,13 @@ function content_files_permissions()
     $hidesystem = ( @isset($_GET[ 'displaysystem' ]) ) ? false : true;
     if ($hidesystem ) {
         foreach ( $sysusers as $name => $data ) {
-            if ($data[ 'userid' ] < 1000 ) {
-                if ($name != 'root' ) {
-                    unset($sysusers[ $name ]);
-                }
+            if (($data['userid'] < 1000) && $name != 'root') {
+                unset($sysusers[ $name ]);
             }
         }
         foreach ( $sysgroups as $name => $data ) {
-            if ($data[ 'groupid' ] < 1000 ) {
-                if ($name != 'wheel' ) {
-                    unset($sysgroups[ $name ]);
-                }
+            if (($data['groupid'] < 1000) && $name != 'wheel') {
+                unset($sysgroups[ $name ]);
             }
         }
     }
@@ -54,9 +50,9 @@ function content_files_permissions()
     // hide system filesystems
     foreach ( $fslist as $fsname => $fsdata ) {
         if (( $pos = strpos($fsname, '/') ) !== false ) {
-            if (substr($fsname, $pos + 1, strlen('zfsguru')) == 'zfsguru' ) {
+            if (substr($fsname, $pos + 1, strlen('zfsguru')) === 'zfsguru' ) {
                 unset($fslist[ $fsname ]);
-            } elseif (substr($fsname, $pos + 1) == 'SWAP001' ) {
+            } elseif (substr($fsname, $pos + 1) === 'SWAP001' ) {
                 unset($fslist[ $fsname ]);
             }
         }
@@ -71,7 +67,7 @@ function content_files_permissions()
         if (!is_dir($mountpoint) ) {
             continue;
         }
-        if ($mountpoint {        0        } != '/' 
+        if ($mountpoint {        0        } !== '/'
         ) {
             continue;
         }
@@ -101,8 +97,8 @@ function content_files_permissions()
     }
 
     // classes
-    $class_ownership = ( $tabbar_tab == 'ownership' ) ? 'normal' : 'hidden';
-    $class_chmod = ( $tabbar_tab == 'chmod' ) ? 'normal' : 'hidden';
+    $class_ownership = ( $tabbar_tab === 'ownership' ) ? 'normal' : 'hidden';
+    $class_chmod = ( $tabbar_tab === 'chmod' ) ? 'normal' : 'hidden';
     $class_displaysystem = ( $hidesystem ) ? 'normal' : 'hidden';
     $class_hidesystem = ( !$hidesystem ) ? 'normal' : 'hidden';
 
@@ -138,22 +134,22 @@ function submit_permissions_ownership()
                 $user = @$_POST[ $tag . '_user_' . $fsname ];
                 $group = @$_POST[ $tag . '_group_' . $fsname ];
                 $action = @$_POST[ $tag . '_action' ];
-                if (strlen($user) < 1 ) {
+                if ($user == '') {
                     continue;
                 }
-                if (strlen($group) > 0 ) {
+                if ($group != '') {
                     $perm = $user . ':' . $group;
                 } else {
                     $perm = $user;
                 }
                 // add command to commands array
-                if ($action == 'everything' ) {
+                if ($action === 'everything' ) {
                     $commands[] = '/usr/sbin/chown -R ' . $perm . ' ' . $fsmountpoint;
-                } elseif ($action == 'directory' ) {
+                } elseif ($action === 'directory' ) {
                     $commands[] = '/usr/sbin/chown ' . $perm . ' ' . $fsmountpoint . '/*';
                     $commands[] = '/usr/sbin/chown ' . $perm . ' ' . $fsmountpoint;
                 }
-                elseif ($action == 'filesystem' ) {
+                elseif ($action === 'filesystem' ) {
                     $commands[] = '/usr/sbin/chown ' . $perm . ' ' . $fsmountpoint;
                 }
             }
@@ -196,11 +192,11 @@ function submit_permissions_advanced()
                 if (!is_numeric($dirperms)OR!is_numeric($fileperms) ) {
                     continue;
                 }
-                if ($action == 'everything' ) {
+                if ($action === 'everything' ) {
                     $maxdepth = '';
-                } elseif ($action == 'directory' ) {
+                } elseif ($action === 'directory' ) {
                     $maxdepth = ' -maxdepth 1';
-                } elseif ($action == 'filesystem' ) {
+                } elseif ($action === 'filesystem' ) {
                     $maxdepth = ' -maxdepth 0';
                 } else {
                     error('unknown action type');
@@ -239,16 +235,14 @@ function processfilesystemsubmit( $tag )
     // reset filesystem array
     $resetfs = array();
     foreach ( $_POST as $name => $value ) {
-        if (strlen($value) > 0 ) {
-            if (substr($name, 0, strlen($tag . '_change_')) == $tag . '_change_' ) {
-                $resetfs[ substr($name, strlen($tag . '_change_')) ] =
-                @$prop[ substr($name, strlen($tag . '_change_')) ][ 'mountpoint' ][ 'value' ];
-            }
+        if ((strlen($value) > 0) && substr($name, 0, strlen($tag.'_change_')) == $tag.'_change_') {
+            $resetfs[ substr($name, strlen($tag . '_change_')) ] =
+            @$prop[ substr($name, strlen($tag . '_change_')) ][ 'mountpoint' ][ 'value' ];
         }
     }
     // sanity check on mountpoint
     foreach ( $resetfs as $fsname => $fsmountpoint ) {
-        if ($fsmountpoint {        0        } != '/' 
+        if ($fsmountpoint {        0        } !== '/'
         ) {
             unset($resetfs[ $fsname ]);
         }

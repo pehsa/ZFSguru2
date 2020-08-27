@@ -9,7 +9,7 @@ function content_disks_advanced()
     $disks = disk_detect_physical();
 
     // queried disk
-    $query = ( strlen(@$_GET[ 'query' ]) > 0 ) ? $_GET[ 'query' ] : false;
+    $query = (@$_GET['query'] != '') ? $_GET[ 'query' ] : false;
 
     // detailed information when querying disk
     if ($query ) {
@@ -17,10 +17,10 @@ function content_disks_advanced()
         $cap = disk_identify($query);
 
         // apply some fixes to the data format
-        if ($cap[ 'detail' ][ 'overlap' ][ 'support' ] == 'no' ) {
+        if ($cap[ 'detail' ][ 'overlap' ][ 'support' ] === 'no' ) {
             $cap[ 'detail' ][ 'overlap' ][ 'enabled' ] = 'no';
         }
-        if ($cap[ 'detail' ][ 'Native Command Queuing (NCQ)' ][ 'support' ] == 'no' ) {
+        if ($cap[ 'detail' ][ 'Native Command Queuing (NCQ)' ][ 'support' ] === 'no' ) {
             $cap[ 'detail' ][ 'Native Command Queuing (NCQ)' ][ 'enabled' ] = 'no';
         }
         if (@is_numeric(
@@ -31,19 +31,19 @@ function content_disks_advanced()
         ) {
             $cap[ 'detail' ][ 'Native Command Queuing (NCQ)' ][ 'enabled' ] = 'yes';
         }
-        if (@$cap[ 'detail' ][ 'data set management (TRIM)' ][ 'support' ] == 'yes' ) {
+        if (@$cap[ 'detail' ][ 'data set management (TRIM)' ][ 'support' ] === 'yes' ) {
             $cap[ 'detail' ][ 'data set management (TRIM)' ][ 'enabled' ] = 'yes';
         }
-        if (@$cap[ 'detail' ][ 'data set management (TRIM)' ][ 'support' ] == 'no' ) {
+        if (@$cap[ 'detail' ][ 'data set management (TRIM)' ][ 'support' ] === 'no' ) {
             $cap[ 'detail' ][ 'data set management (TRIM)' ][ 'enabled' ] = 'no';
         }
 
         // APM - Advanced Power Management
-        if ($cap[ 'detail' ][ 'advanced power management' ][ 'support' ] == 'yes' ) {
+        if ($cap[ 'detail' ][ 'advanced power management' ][ 'support' ] === 'yes' ) {
             $class_apm = 'normal';
             $rawapm = trim($cap[ 'detail' ][ 'advanced power management' ][ 'value' ]);
             $apm_dec = decode_raw_apmsetting($rawapm);
-            $apm_current = ( $apm_dec ) ? $apm_dec :
+            $apm_current = ( $apm_dec ) ?:
             '<span class="minortext">unknown</span>';
             // cache APM enabled status
             $_SESSION[ 'disk_advanced' ][ $query ][ 'apm_enabled' ] =
@@ -51,9 +51,9 @@ function content_disks_advanced()
             // cache the decoded value of APM in SESSION array for the disk table
             $_SESSION[ 'disk_advanced' ][ $query ][ 'apm' ] = $apm_dec;
             // display APM settings only when supported by disk
-            $class_apm_enabled = ( $cap[ 'detail' ][ 'advanced power management' ][ 'enabled' ] ==
+            $class_apm_enabled = ( $cap[ 'detail' ][ 'advanced power management' ][ 'enabled' ] ===
             'yes' ) ? 'normal' : 'hidden';
-            $class_apm_disabled = ( $cap[ 'detail' ][ 'advanced power management' ][ 'enabled' ] !=
+            $class_apm_disabled = ( $cap[ 'detail' ][ 'advanced power management' ][ 'enabled' ] !==
             'yes' ) ? 'normal' : 'hidden';
             // table apm_settinglist
             $table_apm_settinglist = array();
@@ -91,8 +91,8 @@ function content_disks_advanced()
         if (is_array(@$cap[ 'main' ]) ) {
             foreach ( @$cap[ 'main' ] as $property => $value ) {
                 // add 'rpm' suffix to the "media RPM" property value
-                if (( $property == 'media RPM' )AND( is_numeric($value) ) ) {
-                    $value = $value . 'rpm';
+                if (( $property === 'media RPM' )AND( is_numeric($value) ) ) {
+                    $value .= 'rpm';
                 }
                 // add new row
                 $infolist[] = array(
@@ -107,11 +107,11 @@ function content_disks_advanced()
         if (is_array(@$cap[ 'detail' ]) ) {
             foreach ( @$cap[ 'detail' ] as $feature => $data ) {
                 // support
-                if ($data[ 'support' ] == 'yes' ) {
+                if ($data[ 'support' ] === 'yes' ) {
                     $support = '';
                     $support_yes = 'normal';
                     $support_no = 'hidden';
-                } elseif ($data[ 'support' ] == 'no' ) {
+                } elseif ($data[ 'support' ] === 'no' ) {
                     $support = '';
                     $support_yes = 'hidden';
                     $support_no = 'normal';
@@ -122,11 +122,11 @@ function content_disks_advanced()
                     $support_no = 'hidden';
                 }
                 // enabled
-                if ($data[ 'enabled' ] == 'yes' ) {
+                if ($data[ 'enabled' ] === 'yes' ) {
                     $enabled = '';
                     $enabled_yes = 'normal';
                     $enabled_no = 'hidden';
-                } elseif ($data[ 'enabled' ] == 'no' ) {
+                } elseif ($data[ 'enabled' ] === 'no' ) {
                     $enabled = '';
                     $enabled_yes = 'hidden';
                     $enabled_no = 'normal';
@@ -160,12 +160,12 @@ function content_disks_advanced()
 
         // classes
         $class_activerow = ( $diskname == $query ) ? 'activerow' : 'normal';
-        $class_hdd = ( $disktype == 'hdd' ) ? 'normal' : 'hidden';
-        $class_ssd = ( $disktype == 'ssd' ) ? 'normal' : 'hidden';
-        $class_flash = ( $disktype == 'flash' ) ? 'normal' : 'hidden';
-        $class_memdisk = ( $disktype == 'memdisk' ) ? 'normal' : 'hidden';
-        $class_usbstick = ( $disktype == 'usbstick' ) ? 'normal' : 'hidden';
-        $class_network = ( $disktype == 'network' ) ? 'normal' : 'hidden';
+        $class_hdd = ( $disktype === 'hdd' ) ? 'normal' : 'hidden';
+        $class_ssd = ( $disktype === 'ssd' ) ? 'normal' : 'hidden';
+        $class_flash = ( $disktype === 'flash' ) ? 'normal' : 'hidden';
+        $class_memdisk = ( $disktype === 'memdisk' ) ? 'normal' : 'hidden';
+        $class_usbstick = ( $disktype === 'usbstick' ) ? 'normal' : 'hidden';
+        $class_network = ( $disktype === 'network' ) ? 'normal' : 'hidden';
 
         // spinning status
         $spinning = disk_isspinning($diskname);
@@ -176,7 +176,7 @@ function content_disks_advanced()
         // APM status
         $apm_enabled = @$_SESSION[ 'disk_advanced' ][ $diskname ][ 'apm_enabled' ];
         $apm_setting = @$_SESSION[ 'disk_advanced' ][ $diskname ][ 'apm' ];
-        if (strlen($apm_setting) < 1 ) {
+        if ($apm_setting == '') {
             if (@isset($_SESSION[ 'disk_advanced' ][ $diskname ]) ) {
                 $apm_setting = '<span class="minortext">unsupported</span>';
             } else {
@@ -185,8 +185,8 @@ function content_disks_advanced()
         } else {
             $apm_setting = '(' . $apm_setting . ')';
         }
-        $class_apm_yes = ( $apm_enabled == 'yes' ) ? 'normal' : 'hidden';
-        $class_apm_no = ( $apm_enabled == 'no' ) ? 'normal' : 'hidden';
+        $class_apm_yes = ( $apm_enabled === 'yes' ) ? 'normal' : 'hidden';
+        $class_apm_no = ( $apm_enabled === 'no' ) ? 'normal' : 'hidden';
 
         // TODO: AAM status
         $aam_setting = '<span class="minortext">unknown</span>';
@@ -240,10 +240,10 @@ function content_disks_advanced()
 
 function decode_raw_apmsetting( $rawapm ) 
 {
-    if (strlen($rawapm) < 1 ) {
+    if ($rawapm == '') {
         return false;
     }
-    if (substr($rawapm, 0, 2) == '0x' ) {
+    if (strpos($rawapm, '0x') === 0) {
         return @hexdec($rawapm);
     }
     if (( ( $p = strpos($rawapm, '/0x80') ) != false )AND( is_numeric(
@@ -276,7 +276,7 @@ function submit_disks_advanced()
 
     // scan each POST variable
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('spindown_')) == 'spindown_' ) {
+        if (strpos($name, 'spindown_') === 0) {
             // fetch and sanitize disk
             $disk = substr($name, strlen('spindown_'));
             // TODO - SECURITY - sanitize disk
@@ -288,7 +288,7 @@ function submit_disks_advanced()
             } else {
                 friendlywarning('failed spinning down disk ' . $disk, $redir);
             }
-        } elseif (substr($name, 0, strlen('spinup_')) == 'spinup_' ) {
+        } elseif (strpos($name, 'spinup_') === 0) {
             // fetch and sanitize disk
             $disk = substr($name, strlen('spinup_'));
             // TODO - SECURITY - sanitize disk
@@ -305,7 +305,7 @@ function submit_disks_advanced()
 
     // APM setting change
     if (@isset($_POST[ 'apm_submit' ])AND( is_numeric($_POST[ 'apm_newsetting' ]) ) ) {
-        if (strlen($_POST[ 'apm_setting_disk' ]) > 0 ) {
+        if ($_POST['apm_setting_disk'] != '') {
             $redir .= '&query=' . $_POST[ 'apm_setting_disk' ];
         } else {
             error('invalid disk specification for APM setting change!');

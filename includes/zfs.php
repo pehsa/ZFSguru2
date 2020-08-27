@@ -20,16 +20,16 @@ function zfs_featureflags()
     if (common_sysctl('vfs.zfs.version.spa') < 5000 ) {
         return array();
     }
-    $upgradetxt = `/sbin/zpool upgrade -v`;
+    $upgradetxt = shell_exec("/sbin/zpool upgrade -v");
     preg_match(
-        '/FEAT DESCRIPTION\n\-+[\s]*(.*)\n\n'
+        '/FEAT DESCRIPTION\n-+[\s]*(.*)\n\n'
         . 'The following legacy versions are also supported/sm', $upgradetxt, $match 
     );
     if (@strlen($match[ 1 ]) < 1 ) {
         return array();
     }
     preg_match_all(
-        '/^([a-zA-Z0-9\_]+)[\s]*(\((.*)\))?[\s]*\n[\s]*(.*\.?)$/m',
+        '/^([a-zA-Z0-9_]+)[\s]*(\((.*)\))?[\s]*\n[\s]*(.*\.?)$/m',
         $match[ 1 ], $matches 
     );
     $featureflags = array();
@@ -166,29 +166,29 @@ function zfs_pool_list( $poolname = false )
     }
     if (( $poolname != false )AND( count($zpools) == 1 ) ) {
         return current($zpools);
-    } else {
-        return $zpools;
     }
+
+    return $zpools;
 }
 
 function zfs_pool_status( $poolname, $parameters = '' )
 {
     // execute zpool status command (does not need root)
-    if (strlen($parameters) > 0 ) {
+    if ($parameters != '') {
         activate_library('super');
         $result = super_execute('/sbin/zpool status ' . $parameters . ' ' . $poolname);
         $zpool_status = $result[ 'output_str' ];
     } else {
-        $zpool_status = `/sbin/zpool status $poolname`;
+        $zpool_status = shell_exec("/sbin/zpool status \$poolname");
     }
 
     // pool data
-    preg_match('/^[\s]*state\: (.*)$/m', $zpool_status, $state);
-    preg_match('/^[\s]*status\: (.*)^action\: /sm', $zpool_status, $status);
-    preg_match('/^[\s]*action\: (.*)$/m', $zpool_status, $action);
-    preg_match('/^[\s]*see\: (.*)$/m', $zpool_status, $see);
-    preg_match('/^[\s]*scrub\: (.*)$/m', $zpool_status, $scrub);
-    preg_match('/^[\s]*config\: (.*)$/m', $zpool_status, $config);
+    preg_match('/^[\s]*state: (.*)$/m', $zpool_status, $state);
+    preg_match('/^[\s]*status: (.*)^action: /sm', $zpool_status, $status);
+    preg_match('/^[\s]*action: (.*)$/m', $zpool_status, $action);
+    preg_match('/^[\s]*see: (.*)$/m', $zpool_status, $see);
+    preg_match('/^[\s]*scrub: (.*)$/m', $zpool_status, $scrub);
+    preg_match('/^[\s]*config: (.*)$/m', $zpool_status, $config);
 
     // split data
     $split_regexp = '/^[\s]+NAME[\s]+STATE[\s]+READ[\s]+WRITE[\s]+CKSUM[\s]*$/m';
@@ -203,7 +203,7 @@ function zfs_pool_status( $poolname, $parameters = '' )
     // retrieve pool details
     $details = array();
     $dsplit = preg_split(
-        '/^[\s]*([a-zA-Z]+)\:/m', @$split[ 0 ], null,
+        '/^[\s]*([a-zA-Z]+):/m', @$split[ 0 ], null,
         PREG_SPLIT_DELIM_CAPTURE 
     );
     for ( $i = 1; $i < 99; $i++ ) {
@@ -239,11 +239,11 @@ function zfs_pool_status( $poolname, $parameters = '' )
                 'state' => $memberdata[ 2 ], 'read' => $memberdata[ 5 ],
                 'write' => $memberdata[ 6 ], 'cksum' => $memberdata[ 7 ],
                 'extra' => $memberdata[ 8 ] . $memberdata[ 9 ], 'depth' => $depth );
-            } elseif (substr(trim($line), 0, strlen('cache')) == 'cache' ) {
+            } elseif (strpos(trim($line), 'cache') === 0) {
                 $poolmembers[] = array( 'name' => 'cache', 'depth' => $depth );
-            } elseif (substr(trim($line), 0, strlen('log')) == 'log' ) {
+            } elseif (strpos(trim($line), 'log') === 0) {
                 $poolmembers[] = array( 'name' => 'log', 'depth' => $depth );
-            } elseif (substr(trim($line), 0, strlen('spares')) == 'spares' ) {
+            } elseif (strpos(trim($line), 'spares') === 0) {
                 $poolmembers[] = array( 'name' => 'hot spares', 'depth' => $depth );
             }
         }
@@ -252,9 +252,9 @@ function zfs_pool_status( $poolname, $parameters = '' )
     // construct list of (potential) corrupted files on pool
     $corrupted = array();
     preg_match_all('/^[\s]*(\/.*)[\s]*$/m', $errors, $matches);
-    for ( $i = 0; $i <= count($matches[ 1 ]); $i++ ) {
-        if (@strlen($matches[ 1 ][ $i ]) > 0 ) {
-            $corrupted[] = trim($matches[ 1 ][ $i ]);
+    foreach ($matches[1] as $iValue) {
+        if (@strlen($iValue) > 0 ) {
+            $corrupted[] = trim($iValue);
         }
     }
 
@@ -301,7 +301,7 @@ function zfs_pool_features( $poolname )
         return array();
     }
     foreach ( $poolprop[ $poolname ] as $property ) {
-        if (substr($property[ 'property' ], 0, strlen('feature@')) == 'feature@' ) {
+        if (strpos($property['property'], 'feature@') === 0) {
             $feature = substr($property[ 'property' ], strlen('feature@'));
             $features[ $poolname ][ $feature ] = array(
             'name' => $feature,
@@ -326,7 +326,7 @@ function zfs_pool_history( $poolname )
     $result = super_execute('/sbin/zpool history ' . $poolname);
     if (count(@$result[ 'output_arr' ]) > 1 ) {
         preg_match_all(
-            '/^([0-9\-]*)\.([0-9\-\:]*)[\s]*(.*)$/m',
+            '/^([0-9\-]*)\.([0-9\-:]*)[\s]*(.*)$/m',
             @$result[ 'output_str' ], $matches 
         );
         if (@count($matches[ 3 ]) > 0 ) {
@@ -366,11 +366,8 @@ function zfs_pool_isbeingscrubbed( $pool )
     foreach ( $status_output as $line ) {
         $status_str .= $line;
     }
-    if (strpos($status_str, 'scrub in progress') === false ) {
-        return false;
-    } else {
-        return true;
-    }
+
+    return !(strpos($status_str, 'scrub in progress') === false);
 }
 
 function zfs_pool_ismember( $disk, $strict_comparison = true )
@@ -379,9 +376,11 @@ function zfs_pool_ismember( $disk, $strict_comparison = true )
     $status_all = zfs_pool_status_all();
     foreach ( $status_all as $poolname => $poolstatus ) {
         foreach ( $poolstatus[ 'members' ] as $data ) {
-            if ($data[ 'name' ] == $disk ) {
+            if ($data[ 'name' ] == $disk) {
                 return $poolname;
-            } elseif (!$strict_comparison ) {
+            }
+
+            if (!$strict_comparison) {
                 if (substr($data[ 'name' ], 0, strlen($disk)) == $disk ) {
                     return $poolname;
                 }
@@ -392,9 +391,11 @@ function zfs_pool_ismember( $disk, $strict_comparison = true )
 
     if (is_array($poolstatus[ 'members' ]) ) {
         foreach ( $poolstatus[ 'members' ] as $data ) {
-            if ($data[ 'name' ] == $disk ) {
+            if ($data[ 'name' ] == $disk) {
                 return true;
-            } elseif (!$strict_comparison ) {
+            }
+
+            if (!$strict_comparison) {
                 if (substr($data[ 'name' ], 0, strlen($disk)) == $disk ) {
                     return true;
                 }
@@ -422,13 +423,13 @@ function zfs_pool_memberdetails( $poolstatus, $poolname )
                 $special = true;
             } else {
                 foreach ( $vdevtypes as $vtype ) {
-                    if (substr($member[ 'name' ], 0, strlen($vtype)) == $vtype ) {
+                    if (strpos($member['name'], $vtype) === 0) {
                         $vdevtype = $vtype;
                         $special = true;
                     }
                 }
             }
-            if (!$special and $vdevtype == 'pool' ) {
+            if (!$special and $vdevtype === 'pool' ) {
                 $vdevtype = 'stripe';
             }
             if (!@$special AND @$member[ 'depth' ] < $lastdepth ) {
@@ -462,14 +463,15 @@ function zfs_pool_ashift( $poolname )
     );
     if (preg_match(
         '/^[\s]*ashift\=([0-9]+)/m', $result[ 'output_str' ],
-        $matches 
-    ) 
-    ) {
+        $matches
+    )) {
         return $matches[ 1 ];
-    } elseif (preg_match(
+    }
+
+    if (preg_match(
         '/^[\s]*ashift\:[\s]*([0-9]+)/m', $result[ 'output_str' ],
-        $matches 
-    ) 
+        $matches
+    )
     ) {
         return $matches[ 1 ];
     } else {
@@ -495,7 +497,7 @@ function zfs_pool_properties( $poolname, $property = false )
     }
     $prop = array();
     if (@is_array($output) ) {
-        for ( $i = 1; $i < count($output); $i++ ) {
+        for ($i = 1, $iMax = count($output); $i < $iMax; $i++ ) {
             $split = preg_split('/[\s]+/m', $output[ $i ]);
             $name = trim($split[ 0 ]);
             $property = trim($split[ 1 ]);
@@ -531,9 +533,9 @@ function zfs_filesystem_list( $fs = '', $arguments = '' )
             $fsarr[ $newarr[ 'name' ] ] = $newarr;
         }
         return $fsarr;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function zfs_filesystem_list_one( $fs = '', $arguments = '' )
@@ -562,8 +564,8 @@ function zfs_filesystem_properties( $fs, $property = false, $fstype = false,
     }
     $prop = array();
     if (@is_array($output) ) {
-        for ( $i = 0; $i < count($output); $i++ ) {
-            $split = preg_split('/[\t]+/m', $output[ $i ]);
+        foreach ($output as $iValue) {
+            $split = preg_split('/[\t]+/m', $iValue);
             $name = trim($split[ 0 ]);
             $property = trim($split[ 1 ]);
             $prop[ $name ][ $property ][ 'name' ] = trim($split[ 0 ]);
@@ -582,7 +584,7 @@ function zfs_filesystem_volumes()
     if ($rv != 0 ) {
         return $rv;
     }
-    for ( $i = 1; $i < count($output); $i++ ) {
+    for ($i = 1, $iMax = count($output); $i < $iMax; $i++ ) {
         $split = preg_split('/[\s]/m', $output[ $i ], null, PREG_SPLIT_NO_EMPTY);
         $zvolname = @$split[ 0 ];
         if (@strlen($zvolname) > 0 ) {
@@ -604,11 +606,12 @@ function zfs_filesystem_issystemfs( $fsname )
     if ($basepos = strpos($fsbase, '/') ) {
         $fsbase = @substr($fsbase, 0, $basepos);
     }
-    if (( $fsbase == 'zfsguru' )OR( substr($fsbase, 0, strlen('zfsguru-system')) == 'zfsguru-system' )OR( $fsbase == 'SWAP001' ) ) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return ($fsbase == 'zfsguru') or (substr(
+                $fsbase,
+                0,
+                strlen('zfsguru-system')
+            ) == 'zfsguru-system') or ($fsbase == 'SWAP001');
 }
 
 
@@ -669,24 +672,23 @@ function zfs_pool_import_list( $deleted = false )
     $importables = array();
     foreach ( $results as $searchpath => $result ) {
         if ($result[ 'rv' ] == 0 ) {
-            $split = preg_split('/^[\s]*pool\: /m', $result[ 'output_str' ]);
+            $split = preg_split('/^[\s]*pool: /m', $result[ 'output_str' ]);
             if (is_array($split) ) {
                 foreach ( $split as $splitid => $poolchunk ) {
                     if (@( int )$splitid > 0 ) {
                         // preg_match('/^[\s]*pool\: (.*)$/m', $poolchunk, $preg_pool);
-                        preg_match('/^[\s]*id\: ([0-9]*)$/m', $poolchunk, $preg_id);
-                        preg_match('/^[\s]*state\: (.*)$/m', $poolchunk, $preg_state);
+                        preg_match('/^[\s]*id: ([0-9]*)$/m', $poolchunk, $preg_id);
+                        preg_match('/^[\s]*state: (.*)$/m', $poolchunk, $preg_state);
                         // $pool = (@$preg_pool[1]) ? $preg_pool[1] : false;
                         $pool = trim(substr($poolchunk, 0, strpos($poolchunk, chr(10))));
                         $id = ( @$preg_id[ 1 ] ) ? $preg_id[ 1 ] : false;
                         $status = ( @$preg_state[ 1 ] ) ? $preg_state[ 1 ] : 'UNKNOWN';
-                        $canbeimported = ( $status == 'ONLINE'
-                        OR $status == 'ONLINE (DESTROYED)' ) ?
-                        true : false;
+                        $canbeimported = ( $status === 'ONLINE'
+                        OR $status === 'ONLINE (DESTROYED)' );
                         preg_match('/^[\s]*/', $result[ 'output_str' ], $whitespace);
                         $rawoutput = @$whitespace[ 0 ] . 'pool: ' . $poolchunk;
-                        if (( strlen($pool) > 0 )AND( strlen($id) > 0 ) ) {
-                            if (( !isset($importables[ $id ]) )OR( @$importables[ $id ][ 'status' ] != 'ONLINE' ) ) {
+                        if (($pool !== '')AND($id != '') ) {
+                            if (( !isset($importables[ $id ]) )OR( @$importables[ $id ][ 'status' ] !== 'ONLINE' ) ) {
                                 $importables[ $id ] = array(
                                 'pool' => $pool,
                                 'id' => $id,
@@ -728,11 +730,8 @@ function zfs_pool_import( $poolid, $import_deleted = false )
 
     // TODO: shouldn't we invoke dangerouscommand function for this?
     $result = super_execute($command);
-    if ($result[ 'rv' ] == 0 ) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return $result['rv'] == 0;
 }
 
 function zfs_pool_scrub( $poolname, $stop_scrub = false )
@@ -755,12 +754,8 @@ function zfs_extractsubmittedvdevs( $url )
 {
     $member_disks = array();
     foreach ( $_POST as $id => $val ) {
-        if ($val == 'on' ) {
-            if (preg_match('/^addmember_(.*)$/', $id, $addmember) ) {
-                if (@strlen($addmember[ 1 ]) > 0 ) {
-                    $member_disks[] = $addmember[ 1 ];
-                }
-            }
+        if (($val == 'on') && preg_match('/^addmember_(.*)$/', $id, $addmember) && @strlen($addmember[1]) > 0) {
+            $member_disks[] = $addmember[ 1 ];
         }
     }
     if (empty($member_disks) ) {
@@ -777,7 +772,7 @@ function zfs_extractsubmittedvdevs( $url )
     $member_arr = array();
     $member_arr[ 'member_str' ] = trim($member_str);
     $member_arr[ 'member_disks' ] = $member_disks;
-    $member_arr[ 'member_count' ] = ( int )@count($member_disks);
+    $member_arr[ 'member_count' ] = @count($member_disks);
     return $member_arr;
 }
 

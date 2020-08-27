@@ -49,9 +49,9 @@ function sort_webinterfaces( $a, $b )
 {
     if ($a[ 'date' ] > $b[ 'date' ] ) {
         return -1;
-    } else {
-        return 1;
     }
+
+    return 1;
 }
 
 function table_webiversions( $interfaces, $currentversion, $dateformat ) 
@@ -62,7 +62,7 @@ function table_webiversions( $interfaces, $currentversion, $dateformat )
     foreach ( $interfaces as $ifversion => $interface ) {
         $table[] = array(
         'CLASS_WEBI' => ( $ifversion == $currentversion ) ? 'activerow' : 'normal',
-        'CLASS_BRANCH' => ( $interface[ 'branch' ] == 'stable' ) ? 'green' : 'red',
+        'CLASS_BRANCH' => ( $interface[ 'branch' ] === 'stable' ) ? 'green' : 'red',
         'WEBI_VERSION' => htmlentities($ifversion),
         'WEBI_B64' => htmlentities(base64_encode($ifversion)),
         'WEBI_BRANCH' => htmlentities($interface[ 'branch' ]),
@@ -84,17 +84,15 @@ function easyupdateversion( $interfaces, $currentversion )
     if (!$branch ) {
         return false;
     }
-    if ($branch == 'obsolete' ) {
+    if ($branch === 'obsolete' ) {
         $branch = 'stable';
     }
     // now return latest version from the selected branch
     $latestdate = 0;
     foreach ( $interfaces as $ifversion => $interface ) {
-        if ($interface[ 'branch' ] == $branch ) {
-            if ($interface[ 'date' ] > $latestdate ) {
-                $latestdate = $interface[ 'date' ];
-                $euversion = $ifversion;
-            }
+        if (($interface['branch'] == $branch) && $interface['date'] > $latestdate) {
+            $latestdate = $interface[ 'date' ];
+            $euversion = $ifversion;
         }
     }
     return $euversion;
@@ -115,7 +113,7 @@ function submit_system_update()
 
     // update webGUI by server download
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('updatewebi_')) == 'updatewebi_' ) {
+        if (strpos($name, 'updatewebi_') === 0) {
             // search for update version (button the user clicked)
             $version = @base64_decode(substr($name, strlen('updatewebi_')));
             if (!@isset($interfaces[ $version ][ 'filename' ]) ) {
@@ -143,23 +141,21 @@ function submit_system_update()
 
     // update webGUI by HTTP file upload
     $expectedmime = 'application/x-7z-compressed';
-    if (@isset($_POST[ 'submit_import_webgui' ]) ) {
-        if (@isset($_FILES[ 'import_webgui' ]) ) {
-            if ($_FILES[ 'import_webgui' ][ 'error' ] != 0 ) {
-                error(
-                    'HTTP upload of web-interface resulted in error code '
-                    . $_FILES[ 'import_webgui' ][ 'error' ] 
-                );
-            }
-            if ($_FILES[ 'import_webgui' ][ 'type' ] != $expectedmime ) {
-                error(
-                    'HTTP uploaded file has wrong MIME type "'
-                    . htmlentities($_FILES[ 'import_webgui' ][ 'type' ])
-                    . '" instead of expected "' . $expectedmime . '"' 
-                );
-            }
-            zfsguru_update_webinterface($_FILES[ 'tmp_name' ]);
+    if (@isset($_POST['submit_import_webgui']) && @isset($_FILES['import_webgui'])) {
+        if ($_FILES[ 'import_webgui' ][ 'error' ] != 0 ) {
+            error(
+                'HTTP upload of web-interface resulted in error code '
+                . $_FILES[ 'import_webgui' ][ 'error' ]
+            );
         }
+        if ($_FILES[ 'import_webgui' ][ 'type' ] != $expectedmime ) {
+            error(
+                'HTTP uploaded file has wrong MIME type "'
+                . htmlentities($_FILES[ 'import_webgui' ][ 'type' ])
+                . '" instead of expected "' . $expectedmime . '"'
+            );
+        }
+        zfsguru_update_webinterface($_FILES[ 'tmp_name' ]);
     }
 
     // redirect

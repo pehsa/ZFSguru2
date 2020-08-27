@@ -7,7 +7,7 @@ function content_files_destroy()
 
     // query filesystem
     $fs = @$_GET[ 'destroy' ];
-    if (strlen($fs) < 1 ) {
+    if ($fs == '') {
         redirect_url('files.php');
     }
 
@@ -41,7 +41,7 @@ function content_files_destroy()
     $class_swap = 'hidden';
     foreach ( $fs_vol as $fsvol => $fsdata ) {
         $prop = zfs_filesystem_properties($fsvol, 'org.freebsd:swap');
-        if (@$prop[ $fsvol ][ 'org.freebsd:swap' ][ 'value' ] == 'on' ) {
+        if (@$prop[ $fsvol ][ 'org.freebsd:swap' ][ 'value' ] === 'on' ) {
             $class_swap = 'normal';
         }
     }
@@ -85,7 +85,7 @@ function submit_recursive_destroy_fs()
     // display message if applicable
     if ($sharesremoved > 1 ) {
         page_feedback(
-            'removed <b>' . ( int )$sharesremoved . ' Samba shares</b> that were'
+            'removed <b>' .$sharesremoved. ' Samba shares</b> that were'
             . ' attached to the filesystems you are about to destroy', 'c_notice' 
         );
     } elseif ($sharesremoved == 1 ) {
@@ -106,11 +106,12 @@ function submit_recursive_destroy_fs()
         foreach ( $vollist as $volname => $voldata ) {
             $prop = zfs_filesystem_properties($volname, 'org.freebsd:swap');
             // check if volume is in use as a SWAP device
-            if (@$prop[ $volname ][ 'org.freebsd:swap' ][ 'value' ] == 'on' ) {
-                if (@strpos($swapctl, '/dev/zvol/' . $volname) !== false ) {
+            if ((@$prop[$volname]['org.freebsd:swap']['value'] == 'on') && @strpos(
+                    $swapctl,
+                    '/dev/zvol/'.$volname
+                ) !== false) {
                     $command[] = '/sbin/swapoff /dev/zvol/' . $volname;
                 }
-            }
         }
     }
     // display message if swap volumes detected

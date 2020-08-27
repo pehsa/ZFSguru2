@@ -22,11 +22,11 @@ function content_access_samba_settings()
     $class_notrunning = ( !$isrunning ) ? 'normal' : 'hidden';
     $class_corruptconfig = ( $sambaconf === false ) ? 'normal' : 'hidden';
     $class_noshares = ( @count($sambaconf[ 'shares' ]) < 1 ) ? 'normal' : 'hidden';
-    $class_deleteselectedshares = ( $class_noshares == 'hidden' ) ?
+    $class_deleteselectedshares = ( $class_noshares === 'hidden' ) ?
     '' : 'disabled="disabled"';
 
     // global settings
-    $smbdv_output = `/usr/local/sbin/smbd -V`;
+    $smbdv_output = shell_exec("/usr/local/sbin/smbd -V");
     $sambaversion = htmlentities(trim(substr($smbdv_output, strlen('Version'))));
     $workgroup = htmlentities($sambaconf[ 'global' ][ 'workgroup' ]);
     $netbiosname = htmlentities($sambaconf[ 'global' ][ 'netbios name' ]);
@@ -34,25 +34,25 @@ function content_access_samba_settings()
     // performance settings
     $async_read = htmlentities($sambaconf[ 'global' ][ 'aio read size' ]);
     $async_write = htmlentities($sambaconf[ 'global' ][ 'aio write size' ]);
-    $asyncwb_on = ( @$sambaconf[ 'global' ][ 'aio write behind' ] == 'yes' ) ?
+    $asyncwb_on = ( @$sambaconf[ 'global' ][ 'aio write behind' ] === 'yes' ) ?
     'normal' : 'hidden';
-    $asyncwb_off = ( $asyncwb_on != 'normal' ) ? 'normal' : 'hidden';
-    $sendfile_on = ( @$sambaconf[ 'global' ][ 'use sendfile' ] == 'yes' ) ?
+    $asyncwb_off = ( $asyncwb_on !== 'normal' ) ? 'normal' : 'hidden';
+    $sendfile_on = ( @$sambaconf[ 'global' ][ 'use sendfile' ] === 'yes' ) ?
     'normal' : 'hidden';
-    $sendfile_off = ( $sendfile_on != 'normal' ) ? 'normal' : 'hidden';
+    $sendfile_off = ( $sendfile_on !== 'normal' ) ? 'normal' : 'hidden';
     // security model
-    $sm_share = ( $sambaconf[ 'global' ][ 'security' ] == 'share' ) ?
+    $sm_share = ( $sambaconf[ 'global' ][ 'security' ] === 'share' ) ?
     'selected="selected"' : '';
-    $sm_domain = ( $sambaconf[ 'global' ][ 'security' ] == 'domain' ) ?
+    $sm_domain = ( $sambaconf[ 'global' ][ 'security' ] === 'domain' ) ?
     'selected="selected"' : '';
-    $sm_ads = ( $sambaconf[ 'global' ][ 'security' ] == 'ads' ) ?
+    $sm_ads = ( $sambaconf[ 'global' ][ 'security' ] === 'ads' ) ?
     'selected="selected"' : '';
-    $sm_server = ( $sambaconf[ 'global' ][ 'security' ] == 'server' ) ?
+    $sm_server = ( $sambaconf[ 'global' ][ 'security' ] === 'server' ) ?
     'selected="selected"' : '';
     // authentication backend
-    $ab_ldapsam = ( @$sambaconf[ 'global' ][ 'passdb backend' ] == 'ldapsam' ) ?
+    $ab_ldapsam = ( @$sambaconf[ 'global' ][ 'passdb backend' ] === 'ldapsam' ) ?
     'selected="selected"' : '';
-    $ab_smbpasswd = ( @$sambaconf[ 'global' ][ 'passwd backend' ] == 'smbpasswd' ) ?
+    $ab_smbpasswd = ( @$sambaconf[ 'global' ][ 'passwd backend' ] === 'smbpasswd' ) ?
     'selected="selected"' : '';
     // file permissions
     $create_mask = @$sambaconf[ 'global' ][ 'create mask' ];
@@ -67,21 +67,21 @@ function content_access_samba_settings()
     $opt_permissions_0660 = '';
     $opt_permissions_0600 = '';
     $opt_permissions_custom = '';
-    if ($special_permissions == '0660/0770' ) {
+    if ($special_permissions === '0660/0770' ) {
         $opt_permissions_0660 = 'selected';
-    } elseif ($special_permissions == '0600/0700' ) {
+    } elseif ($special_permissions === '0600/0700' ) {
         $opt_permissions_0600 = 'selected';
-    } elseif ($special_permissions != '0666/0777' ) {
+    } elseif ($special_permissions !== '0666/0777' ) {
         $opt_permissions_custom = 'selected';
     }
     // dfree command
-    $dfree = ( @$sambaconf[ 'global' ][ 'dfree command' ] ==
+    $dfree = ( @$sambaconf[ 'global' ][ 'dfree command' ] ===
     '/usr/local/www/zfsguru/scripts/dfree "%P"' );
     $cb_special_dfree = ( $dfree ) ? 'checked' : '';
     // other classes
     $class_corruptconfig = ( $sambaconf === false ) ? 'normal' : 'hidden';
     $class_noshares = ( @count($sambaconf[ 'shares' ]) < 1 ) ? 'normal' : 'hidden';
-    $class_deleteselectedshares = ( $class_noshares == 'hidden' ) ?
+    $class_deleteselectedshares = ( $class_noshares === 'hidden' ) ?
     '' : 'disabled="disabled"';
     // table: global variables
     $table_samba_globalvars = table_samba_globalvariables();
@@ -96,16 +96,16 @@ function content_access_samba_settings()
         $globalvars[] = 'dfree command';
     }
     foreach ( $sambaconf[ 'global' ] as $property => $value ) {
-        if (!in_array($property, $globalvars) ) {
+        if (!in_array($property, $globalvars, true)) {
             $table_samba_extraglobals[] = array(
                 'EXTRAGLOB_PROPERTY' => htmlentities($property),
                 'EXTRAGLOB_VALUE' => htmlentities($value),
-                'EXTRAGLOB_TYPE_BOOLEAN' => ( ( $value == 'yes' )OR( $value == 'no' ) ) ?
+                'EXTRAGLOB_TYPE_BOOLEAN' => ( ( $value === 'yes' )OR( $value === 'no' ) ) ?
                 'normal' : 'hidden',
-                'EXTRAGLOB_TYPE_STRING' => ( ( $value != 'yes' )AND( $value != 'no' ) ) ?
+                'EXTRAGLOB_TYPE_STRING' => ( ( $value !== 'yes' )AND( $value !== 'no' ) ) ?
                 'normal' : 'hidden',
-                'EXTRAGLOB_ENABLED' => ( $value == 'yes' ) ? 'normal' : 'hidden',
-                'EXTRAGLOB_DISABLED' => ( $value == 'no' ) ? 'normal' : 'hidden'
+                'EXTRAGLOB_ENABLED' => ( $value === 'yes' ) ? 'normal' : 'hidden',
+                'EXTRAGLOB_DISABLED' => ( $value === 'no' ) ? 'normal' : 'hidden'
             );
         }
     }
@@ -118,8 +118,7 @@ function content_access_samba_settings()
         if (!is_array($scandir) ) {
             $scandir = array();
         }
-        unset($scandir[ 0 ]);
-        unset($scandir[ 1 ]);
+        unset($scandir[0], $scandir[1]);
         foreach ( $scandir as $id => $logname ) {
             if (!is_file($logdir . $logname) ) {
                 unset($scandir[ $id ]);
@@ -138,10 +137,8 @@ function content_access_samba_settings()
 
         if (!empty($scandir) ) {
             reset($scandir);
-            if (@isset($_GET[ 'select' ]) ) {
-                if (in_array($_GET[ 'select' ], $scandir) ) {
-                    $samba_log_path = $logdir . $_GET[ 'select' ];
-                }
+            if (@isset($_GET['select']) && in_array($_GET['select'], $scandir)) {
+                $samba_log_path = $logdir . $_GET[ 'select' ];
             }
             if (!@isset($samba_log_path) ) {
                 $samba_log_path = $logdir . current($scandir);
@@ -181,7 +178,6 @@ function content_access_samba_settings()
     'OPT_PERMISSIONS_CUSTOM' => $opt_permissions_custom,
     'CLASS_SAMBA_NOSHARES' => $class_noshares,
     'CLASS_DELETESELECTEDSHARES' => $class_deleteselectedshares,
-    'SAMBA_WORKGROUP' => $workgroup,
 
     // Samba settings
     'TABLE_SAMBA_GLOBALVARS' => $table_samba_globalvars,
@@ -273,10 +269,10 @@ function submit_access_samba_settings()
 
         // process global variables
         foreach ( $_POST as $name => $value ) {
-            if (substr($name, 0, strlen('global-')) == 'global-' ) {
+            if (strpos($name, 'global-') === 0) {
                 $globalattr = trim(str_replace('_', ' ', substr($name, strlen('global-'))));
                 $newconf[ 'global' ][ $globalattr ] = trim($value);
-            } elseif (substr($name, 0, strlen('extraglob-')) == 'extraglob-' ) {
+            } elseif (strpos($name, 'extraglob-') === 0) {
                 $globalattr = trim(
                     str_replace(
                         '_', ' ',
@@ -285,7 +281,7 @@ function submit_access_samba_settings()
                 );
                 $newconf[ 'global' ][ $globalattr ] = trim($value);
             }
-            elseif (substr($name, 0, strlen('cbglobal0-')) == 'cbglobal0-' ) {
+            elseif (strpos($name, 'cbglobal0-') === 0) {
                 $globalattr = trim(
                     str_replace(
                         '_', ' ',
@@ -294,7 +290,7 @@ function submit_access_samba_settings()
                 );
                 $newconf[ 'global' ][ $globalattr ] = 'no';
             }
-            elseif (substr($name, 0, strlen('cbglobal1-')) == 'cbglobal1-' ) {
+            elseif (strpos($name, 'cbglobal1-') === 0) {
                 $globalattr = trim(
                     str_replace(
                         '_', ' ',
@@ -308,16 +304,14 @@ function submit_access_samba_settings()
         // remove extra globals
         $removeglobals = array();
         foreach ( $_POST as $name => $value ) {
-            if (substr($name, 0, strlen('cb_removeglob_')) == 'cb_removeglob_' ) {
-                if ($value == 'on' ) {
-                    $removeglob = trim(
-                        str_replace(
-                            '_', ' ',
-                            substr($name, strlen('cb_removeglob_')) 
-                        ) 
-                    );
-                    $removeglobals[ $removeglob ] = $removeglob;
-                }
+            if ((substr($name, 0, strlen('cb_removeglob_')) == 'cb_removeglob_') && $value == 'on') {
+                $removeglob = trim(
+                    str_replace(
+                        '_', ' ',
+                        substr($name, strlen('cb_removeglob_'))
+                    )
+                );
+                $removeglobals[ $removeglob ] = $removeglob;
             }
         }
 
@@ -334,7 +328,7 @@ function submit_access_samba_settings()
         }
 
         // dfree command
-        if (@$_POST[ 'cbspecial_dfree' ] == 'on' ) {
+        if (@$_POST[ 'cbspecial_dfree' ] === 'on' ) {
             $dfree_script = '/usr/local/www/zfsguru/scripts/dfree "%P"';
             $newconf[ 'global' ][ 'dfree command' ] = $dfree_script;
         } elseif (( @strlen($_POST[ 'extraglobal-dfree command' ]) < 2 )OR( @$_POST[ 'extraglobal-dfree command' ] == $dfree_script ) ) {
@@ -344,7 +338,7 @@ function submit_access_samba_settings()
         }
 
         // add new variable to samba share configuration
-        if (( strlen(@$_POST[ 'newvariable_varname' ]) > 0 )AND( strlen(@$_POST[ 'newvariable_value' ]) > 0 ) ) {
+        if ((@$_POST['newvariable_varname'] != '')AND(@$_POST['newvariable_value'] != '') ) {
             $newconf[ 'global' ][ $_POST[ 'newvariable_varname' ] ] =
             $_POST[ 'newvariable_value' ];
         }

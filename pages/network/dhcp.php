@@ -37,7 +37,7 @@ function content_network_dhcp()
     $netif = network_interfaces();
     $table_dhcp_if = array();
     foreach ( $netif as $ifname => $ifdata ) {
-        if (substr($ifname, 0, 2) != 'lo' ) {
+        if (strpos($ifname, 'lo') !== 0) {
             $maskhex = @$ifdata[ 'inet' ][ 0 ][ 'netmask' ];
             $mask = '';
             if ($maskhex ) {

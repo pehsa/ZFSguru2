@@ -45,16 +45,12 @@ function table_bulletins( $bulletins )
     ksort($bulletins);
     foreach ( array_reverse($bulletins, true) as $id => $data ) {
         // skip bulletin messages which do not conform to specified type
-        if (@$_GET[ 'type' ] ) {
-            if ($data[ 'type' ] != $_GET[ 'type' ] ) {
-                continue;
-            }
+        if (@$_GET['type'] && $data['type'] != $_GET['type']) {
+            continue;
         }
         // view only unread messages if applicable
-        if (@$_GET[ 'view' ] == 'unread' ) {
-            if (bulletin_isread($data) ) {
-                continue;
-            }
+        if ((@$_GET['view'] == 'unread') && bulletin_isread($data)) {
+            continue;
         }
 
         // determine type/colour/name
@@ -95,7 +91,7 @@ function submit_bulletin()
 
     // type
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('submit_bulletin_type')) == 'submit_bulletin_type' ) {
+        if (strpos($name, 'submit_bulletin_type') === 0) {
             redirect_url($url . '&type=' . substr($name, strlen('submit_bulletin_type')));
         }
     }

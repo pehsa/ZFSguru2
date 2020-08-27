@@ -69,11 +69,11 @@ function table_progress( $installtasks )
             }
         }
         $table[] = array(
-        'CLASS_DONE' => ( $status == 'done' ) ? 'normal' : 'hidden',
-        'CLASS_ACTIVE' => ( $status == 'active' ) ? 'normal' : 'hidden',
-        'CLASS_FAILED' => ( $status == 'failed' ) ? 'normal' : 'hidden',
-        'CLASS_QUEUED' => ( $status == 'queued' ) ? 'normal' : 'hidden',
-        'CLASS_DEBUG' => ( $status == 'failed' ) ? 'normal' : 'hidden',
+        'CLASS_DONE' => ( $status === 'done' ) ? 'normal' : 'hidden',
+        'CLASS_ACTIVE' => ( $status === 'active' ) ? 'normal' : 'hidden',
+        'CLASS_FAILED' => ( $status === 'failed' ) ? 'normal' : 'hidden',
+        'CLASS_QUEUED' => ( $status === 'queued' ) ? 'normal' : 'hidden',
+        'CLASS_DEBUG' => ( $status === 'failed' ) ? 'normal' : 'hidden',
         'PROG_NAME' => htmlentities($firsttask[ 'name' ]),
         'PROG_TASKS' => $tasks,
         'PROG_RV' => htmlentities($task[ 'rv' ]),

@@ -107,9 +107,9 @@ div.sambaspacer {
 }
 div.sambabox {
 	float: left;
-	padding: 0px;
+	padding: 0;
 	background: #ddd;
-	margin: 11px 0px 11px 0px;
+	margin: 11px 0 11px 0;
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-o-user-select: none;

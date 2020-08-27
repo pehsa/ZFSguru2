@@ -65,12 +65,12 @@ function content_disks_query()
 
             // classes
             $class_activerow = ( $querydisk == $diskname ) ? 'activerow' : 'normal';
-            $class_hdd = ( $disktype == 'hdd' ) ? 'normal' : 'hidden';
-            $class_ssd = ( $disktype == 'ssd' ) ? 'normal' : 'hidden';
-            $class_flash = ( $disktype == 'flash' ) ? 'normal' : 'hidden';
-            $class_memdisk = ( $disktype == 'memdisk' ) ? 'normal' : 'hidden';
-            $class_usbstick = ( $disktype == 'usbstick' ) ? 'normal' : 'hidden';
-            $class_network = ( $disktype == 'network' ) ? 'normal' : 'hidden';
+            $class_hdd = ( $disktype === 'hdd' ) ? 'normal' : 'hidden';
+            $class_ssd = ( $disktype === 'ssd' ) ? 'normal' : 'hidden';
+            $class_flash = ( $disktype === 'flash' ) ? 'normal' : 'hidden';
+            $class_memdisk = ( $disktype === 'memdisk' ) ? 'normal' : 'hidden';
+            $class_usbstick = ( $disktype === 'usbstick' ) ? 'normal' : 'hidden';
+            $class_network = ( $disktype === 'network' ) ? 'normal' : 'hidden';
 
             // acquire GNOP sector size (for sectorsize override)
             $gnop_sect = ( int )@$gnop[ 'label/' . $labels[ $diskname ] ][ 'sectorsize' ];
@@ -98,7 +98,7 @@ function content_disks_query()
                 $labelstr .= 'GEOM: ' . @htmlentities($labels[ $diskname ]);
             }
             if (@strlen($gpart[ $diskname ][ 'label' ]) > 0 ) {
-                if (strlen($labelstr) > 0 ) {
+                if ($labelstr !== '') {
                     $labelstr .= '<br />';
                 }
                 $labelstr .= 'GPT: ' . @htmlentities($gpart[ $diskname ][ 'label' ]);
@@ -147,7 +147,7 @@ function content_disks_query()
     $seg = ( @isset($_GET[ 'seg' ]) ) ? ( int )$_GET[ 'seg' ] : false;
 
     // select first section when disk is unpartitioned
-    if (@$pmap[ 0 ][ 'type' ] == 'unpartitioned' ) {
+    if (@$pmap[ 0 ][ 'type' ] === 'unpartitioned' ) {
         $seg = 0;
     }
 
@@ -196,43 +196,43 @@ function content_disks_query()
     $segopt[ 'unknown' ] = 'hidden';
 
     if (is_int($seg) ) {
-        $segopt[ 'unpartitioned' ] = ( @$pmap[ $seg ][ 'type' ] == 'unpartitioned' ) ?
+        $segopt[ 'unpartitioned' ] = ( @$pmap[ $seg ][ 'type' ] === 'unpartitioned' ) ?
         'normal' : 'hidden';
-        $segopt[ 'geom' ] = ( @$pmap[ $seg ][ 'type' ] == 'geom' ) ?
+        $segopt[ 'geom' ] = ( @$pmap[ $seg ][ 'type' ] === 'geom' ) ?
         'normal' : 'hidden';
-        $segopt[ 'gptfree' ] = ( $scheme == 'GPT'
-        AND @$pmap[ $seg ][ 'type' ] == 'free' ) ?
+        $segopt[ 'gptfree' ] = ( $scheme === 'GPT'
+        AND @$pmap[ $seg ][ 'type' ] === 'free' ) ?
         'normal' : 'hidden';
-        $segopt[ 'gptboot' ] = ( $scheme == 'GPT'
-        AND @$pmap[ $seg ][ 'type' ] == 'freebsd-boot' ) ? 'normal' : 'hidden';
-        $segopt[ 'gptdata' ] = ( $scheme == 'GPT'
-        AND @$pmap[ $seg ][ 'type' ] != 'free'
-        AND @$pmap[ $seg ][ 'type' ] != 'freebsd-boot' ) ? 'normal' : 'hidden';
-        $segopt[ 'mbrfree' ] = ( $scheme == 'MBR'
-        AND @$pmap[ $seg ][ 'type' ] == 'free' ) ?
+        $segopt[ 'gptboot' ] = ( $scheme === 'GPT'
+        AND @$pmap[ $seg ][ 'type' ] === 'freebsd-boot' ) ? 'normal' : 'hidden';
+        $segopt[ 'gptdata' ] = ( $scheme === 'GPT'
+        AND @$pmap[ $seg ][ 'type' ] !== 'free'
+        AND @$pmap[ $seg ][ 'type' ] !== 'freebsd-boot' ) ? 'normal' : 'hidden';
+        $segopt[ 'mbrfree' ] = ( $scheme === 'MBR'
+        AND @$pmap[ $seg ][ 'type' ] === 'free' ) ?
         'normal' : 'hidden';
-        $segopt[ 'mbrdata' ] = ( $scheme == 'MBR'
-        AND @$pmap[ $seg ][ 'type' ] != 'free' ) ?
+        $segopt[ 'mbrdata' ] = ( $scheme === 'MBR'
+        AND @$pmap[ $seg ][ 'type' ] !== 'free' ) ?
         'normal' : 'hidden';
         $segopt[ 'destroyscheme' ] = ( count($pmap) == 1 ) ? 'normal' : 'hidden';
         // default unknown segment option
         $segopt[ 'unknown' ] = 'normal';
         foreach ( $segopt as $segmentid => $displaystatus ) {
-            if ($displaystatus == 'normal'
-                AND $segmentid != 'unknown' 
+            if ($displaystatus === 'normal'
+                AND $segmentid !== 'unknown'
             ) {
                 $segopt[ 'unknown' ] = 'hidden';
             }
         }
         // check whether partition segment is in use by ZFS
-        if (strlen(@$pmap[ $seg ][ 'dev' ]) > 0 ) {
+        if (@$pmap[$seg]['dev'] != '') {
             activate_library('system');
             activate_library('zfs');
             // check in use by ZFS
             $inuse = false;
             if (( $poolname = zfs_pool_ismember(substr($pmap[ $seg ][ 'dev' ], strlen('/dev/'))) ) ) {
                 $inuse = true;
-            } elseif (strlen(@$pmap[ $seg ][ 'label' ]) > 0 ) {
+            } elseif (@$pmap[$seg]['label'] != '') {
                 if (( $poolname = zfs_pool_ismember('gpt/' . @$pmap[ $seg ][ 'label' ]) ) ) {
                     $inuse = true;
                 }
@@ -249,7 +249,7 @@ function content_disks_query()
             $mounted = false;
             if (system_ismounted($pmap[ $seg ][ 'dev' ], $mp) ) {
                 $mounted = true;
-            } elseif (strlen(@$pmap[ $seg ][ 'label' ]) > 0 ) {
+            } elseif (@$pmap[$seg]['label'] != '') {
                 if (system_ismounted('gpt/' . $pmap[ $seg ][ 'label' ], $mp) ) {
                     $mounted = true;
                 }
@@ -275,7 +275,7 @@ function content_disks_query()
     }
 
     // general segment options
-    if ($class_segoptions == 'normal' ) {
+    if ($class_segoptions === 'normal' ) {
         // register javascript head element for slider widget
         page_register_headelement('<script src="files/slider.js"></script>');
         // segment data
@@ -286,7 +286,7 @@ function content_disks_query()
         // determine maximum segment size for resize feature
         if (!@isset($pmap[ $seg + 1 ]) ) {
             $seg_size_sect_max = ( int )$pmap[ $seg ][ 'size_sect' ];
-        } elseif (@$pmap[ $seg + 1 ][ 'type' ] != 'free' ) {
+        } elseif (@$pmap[ $seg + 1 ][ 'type' ] !== 'free' ) {
             $seg_size_sect_max = $pmap[ $seg + 1 ][ 'start' ] - $pmap[ $seg ][ 'start' ];
         } elseif (@isset($pmap[ $seg + 2 ]) ) {
             $seg_size_sect_max = $pmap[ $seg + 2 ][ 'start' ] - $pmap[ $seg ][ 'start' ];
@@ -318,7 +318,7 @@ function content_disks_query()
     }
 
     // freebsd-boot partition
-    if ($segopt[ 'gptboot' ] == 'normal' ) {
+    if ($segopt[ 'gptboot' ] === 'normal' ) {
         // pmbr byte offset
         // TODO: detect sectorsize and use count parameter correctly on dd commands
         $pmbr_bytecap = 440;
@@ -377,7 +377,7 @@ function content_disks_query()
                 }
                 // compare expected signatures to system signatures
                 if ($sig[ 'expected_mbr' ] != $sig[ 'system_mbr' ]OR $sig[ 'expected_bootcode' ] != $sig[ 'system_bootcode' ] ) {
-                    if (( strlen($sig[ 'system_mbr' ]) > 0 )AND( strlen($sig[ 'system_bootcode' ]) > 0 ) ) {
+                    if (($sig['system_mbr'] !== '')AND($sig['system_bootcode'] !== '') ) {
                         $class_gptboot_sysboot = 'normal';
                     }
                 }
@@ -394,18 +394,18 @@ function content_disks_query()
     $newseg_enable_g = ( $newseg_gib > 0 ) ? '' : 'disabled="disabled"';
 
     // geom label name
-    if ($segopt[ 'geom' ] == 'normal' ) {
+    if ($segopt[ 'geom' ] === 'normal' ) {
         $labels = disk_detect_label();
         $seg_geomlabel = htmlentities($labels[ $querydisk ]);
     }
 
     // for the gpt free segment we will set default partition type
-    if ($segopt[ 'gptfree' ] == 'normal' ) {
+    if ($segopt[ 'gptfree' ] === 'normal' ) {
         $table_seggpt_types[ 'freebsd-zfs' ][ 'GPTTYPE_SEL' ] = 'selected="selected"';
     }
 
     // corrupt partition scheme detection
-    if (strpos(`/sbin/gpart show $querydisk`, 'CORRUPT') === false ) {
+    if (strpos(shell_exec("/sbin/gpart show \$querydisk"), 'CORRUPT') === false ) {
         $segopt[ 'corrupt' ] = 'hidden';
     } else {
         // hide all segments dirst
@@ -503,10 +503,8 @@ function submit_disks_segmentprocess()
     // calculate number of used segments
     $segusedcount = 0;
     foreach ( $pmap as $pdata ) {
-        if (strlen(@$pdata[ 'type' ]) > 0 ) {
-            if ($pdata[ 'type' ] != 'free' ) {
-                $segusedcount++;
-            }
+        if ((strlen(@$pdata['type']) > 0) && $pdata['type'] != 'free') {
+            $segusedcount++;
         }
     }
 
@@ -528,7 +526,7 @@ function submit_disks_segmentprocess()
         $scheme = @$_POST[ 'newscheme' ];
 
         // GEOM label (we have to redirect and not execute create scheme below)
-        if ($scheme == 'geom' ) {
+        if ($scheme === 'geom' ) {
             $s = sanitize(@$_POST[ 'geomlabel' ], false, $label);
             if (!$s ) {
                 friendlyerror(
@@ -558,8 +556,8 @@ function submit_disks_segmentprocess()
         super_execute('/sbin/gpart create -s ' . $scheme . ' ' . $diskname);
 
         // create boot partition if selected
-        if (@$_POST[ 'cb_newscheme_bootpart' ] == 'on'
-            AND $scheme == 'gpt' 
+        if (@$_POST[ 'cb_newscheme_bootpart' ] === 'on'
+            AND $scheme === 'gpt'
         ) {
             // bootcode (use from webinterface files directory unless not present)
             $fd = $guru[ 'docroot' ] . '/files/bootcode/';
@@ -624,11 +622,11 @@ function submit_disks_segmentprocess()
             friendlyerror('geom label not found on disk ' . $diskname, $url);
         }
         // action to perform (radio buttons)
-        if ($action == 'destroy' ) {
+        if ($action === 'destroy' ) {
             // remove geom label
             $commands = '/sbin/glabel stop ' . $oldlabel;
             $r = super_execute($commands);
-        } elseif ($action == 'rename' ) {
+        } elseif ($action === 'rename' ) {
             // sanitize new geom label name
             $s = sanitize(@$_POST[ 'geom_labelname' ], false, $sanitizedlabel);
             if (!$s ) {
@@ -664,15 +662,15 @@ function submit_disks_segmentprocess()
         if (!is_numeric(@$diskinfo[ 'sectorsize' ]) ) {
             error('unable to determine sectorsize of ' . $diskname);
         }
-        if (@$pmap[ $seg ][ 'type' ] != 'free' ) {
+        if (@$pmap[ $seg ][ 'type' ] !== 'free' ) {
             error('segment is not free space!');
         }
 
         // fetch POST data
         if (@isset($_POST[ 'gpt_seg_submit_free' ]) ) {
-            if (@$_POST[ 'newseg_unit' ] == '1M' ) {
+            if (@$_POST[ 'newseg_unit' ] === '1M' ) {
                 $rawsize = ( int )@$_POST[ 'gpt_newseg_size_M' ];
-            } elseif (@$_POST[ 'newseg_unit' ] == '1G' ) {
+            } elseif (@$_POST[ 'newseg_unit' ] === '1G' ) {
                 $rawsize = ( int )@$_POST[ 'gpt_newseg_size_G' ];
             } else {
                 $rawsize = ( int )@$_POST[ 'gpt_newseg_size' ];
@@ -682,9 +680,9 @@ function submit_disks_segmentprocess()
             $location = @$_POST[ 'gpt_newseg_location' ];
             $trim = @$_POST[ 'gpt_newseg_trim' ];
         } elseif (@isset($_POST[ 'mbr_seg_submit_free' ]) ) {
-            if (@$_POST[ 'newseg_unit' ] == '1M' ) {
+            if (@$_POST[ 'newseg_unit' ] === '1M' ) {
                 $rawsize = ( int )@$_POST[ 'mbr_newseg_size_M' ];
-            } elseif (@$_POST[ 'newseg_unit' ] == '1G' ) {
+            } elseif (@$_POST[ 'newseg_unit' ] === '1G' ) {
                 $rawsize = ( int )@$_POST[ 'mbr_newseg_size_G' ];
             } else {
                 $rawsize = ( int )@$_POST[ 'mbr_newseg_size' ];
@@ -696,11 +694,11 @@ function submit_disks_segmentprocess()
         }
 
         // new partition size
-        if ($sizeunit == 'SECT' ) {
+        if ($sizeunit === 'SECT' ) {
             $unit = @$diskinfo[ 'sectorsize' ];
-        } elseif ($sizeunit == '1M' ) {
+        } elseif ($sizeunit === '1M' ) {
             $unit = 1024 * 1024;
-        } elseif ($sizeunit == '1G' ) {
+        } elseif ($sizeunit === '1G' ) {
             $unit = 1024 * 1024 * 1024;
         } else {
             error('invalid unit for partition size!');
@@ -709,11 +707,11 @@ function submit_disks_segmentprocess()
         $size_sect = $size / @$diskinfo[ 'sectorsize' ];
 
         // alignment
-        if ($alignment == 'SECT' ) {
+        if ($alignment === 'SECT' ) {
             $align = @$diskinfo[ 'sectorsize' ];
-        } elseif ($alignment == '4K' ) {
+        } elseif ($alignment === '4K' ) {
             $align = max(@$diskinfo[ 'sectorsize' ], 4096);
-        } elseif ($alignment == '1M' ) {
+        } elseif ($alignment === '1M' ) {
             $align = max(@$diskinfo[ 'sectorsize' ], 1024 * 1024);
         } else {
             error('invalid alignment chosen!');
@@ -741,9 +739,9 @@ function submit_disks_segmentprocess()
         }
 
         // determine startoffset by partition location choice
-        if ($location == 'begin' ) {
+        if ($location === 'begin' ) {
             $startoffset = $minoffset;
-        } elseif ($location == 'end' ) {
+        } elseif ($location === 'end' ) {
             $startoffset = ( $maxoffset + 1 ) - $size_sectaligned;
         } else {
             error('invalid location for new partition!');
@@ -751,7 +749,7 @@ function submit_disks_segmentprocess()
 
         // partition type (only used for GPT segments currently)
         $ptype = @$_POST[ 'gpt_newseg_type' ];
-        if (strlen($ptype) > 0 ) {
+        if ($ptype != '') {
             $ptype = '"' . $ptype . '"';
         } else {
             $ptype = 'freebsd-zfs';
@@ -759,8 +757,8 @@ function submit_disks_segmentprocess()
 
         // partition label (for GPT schemes only)
         $labelname = @$_POST[ 'gpt_newseg_label' ];
-        if ($scheme == 'GPT'
-            AND strlen($labelname) > 0 
+        if ($scheme === 'GPT'
+            AND $labelname != ''
         ) {
             $s = sanitize($labelname);
             if (!$s ) {
@@ -781,12 +779,12 @@ function submit_disks_segmentprocess()
         }
 
         // create partition depending on partition scheme (GPT/MBR)
-        if ($scheme == 'GPT' ) {
+        if ($scheme === 'GPT' ) {
             $result = super_execute(
                 '/sbin/gpart add -t ' . $ptype . ' -b ' . $startoffset
                 . ' -s ' . $size_sectaligned . ' ' . $gptlabelsuffix . $diskname 
             );
-        } elseif ($scheme == 'MBR' ) {
+        } elseif ($scheme === 'MBR' ) {
             $result = super_execute(
                 '/sbin/gpart add -t freebsd -b ' . $startoffset
                 . ' -s ' . $size_sectaligned . ' ' . $diskname 
@@ -800,7 +798,7 @@ function submit_disks_segmentprocess()
         }
 
         // TRIM erase after creating partition
-        if ($trim == 'on' ) {
+        if ($trim === 'on' ) {
             // we need to find the device node of the newly created partition
             $pmap = disk_partitionmap($diskname);
             $devnode = false;
@@ -819,7 +817,7 @@ function submit_disks_segmentprocess()
             }
             // we should not have found our device node; now strip the /dev/ prefix
             $devnodesuffix = substr($devnode, strlen('/dev/'));
-            if (strlen($devnodesuffix) > 0 ) {
+            if ($devnodesuffix != '') {
                 $result = super_script('secure_erase', $devnodesuffix);
                 if ($result[ 'rv' ] != 0 AND $result[ 'rv' ] != 1 ) {
                     page_feedback(
@@ -990,30 +988,28 @@ function submit_disks_segmentprocess()
         $result = array();
 
         // update/rename GPT partition label (not available for MBR)
-        if (@isset($_POST[ 'gpt_seg_label' ]) ) {
-            if (@$_POST[ 'gpt_seg_label' ] != @$pmap[ $seg ][ 'label' ] ) {
-                $s = sanitize(@$_POST[ 'gpt_seg_label' ], false, $newlabel);
-                if (strlen(@$_POST[ 'gpt_seg_label' ]) < 1 ) {
-                    $newlabel = '';
-                } elseif (!$s ) {
-                    friendlyerror(
-                        'if you chose to assign a label to this disk, it must '
-                        . 'consist only of alphanumerical characters, underscore (_) or dash (-)',
-                        $url2 
-                    );
-                } elseif (file_exists('/dev/gpt/' . $newlabel) ) {
-                    friendlyerror(
-                        'this label is already in use, please choose another one',
-                        $url2 
-                    );
-                }
-                $result[] = super_execute(
-                    '/sbin/gpart modify -i ' . $index
-                    . ' -l "' . $newlabel . '" ' . $diskname 
+        if (@isset($_POST['gpt_seg_label']) && @$_POST['gpt_seg_label'] != @$pmap[$seg]['label']) {
+            $s = sanitize(@$_POST[ 'gpt_seg_label' ], false, $newlabel);
+            if (strlen(@$_POST[ 'gpt_seg_label' ]) < 1 ) {
+                $newlabel = '';
+            } elseif (!$s ) {
+                friendlyerror(
+                    'if you chose to assign a label to this disk, it must '
+                    . 'consist only of alphanumerical characters, underscore (_) or dash (-)',
+                    $url2
                 );
-                // workaround for FreeBSD bug where device changes are not always propagated
-                $result[] = super_script('device_activate_changes', $diskname);
+            } elseif (file_exists('/dev/gpt/' . $newlabel) ) {
+                friendlyerror(
+                    'this label is already in use, please choose another one',
+                    $url2
+                );
             }
+            $result[] = super_execute(
+                '/sbin/gpart modify -i ' . $index
+                . ' -l "' . $newlabel . '" ' . $diskname
+            );
+            // workaround for FreeBSD bug where device changes are not always propagated
+            $result[] = super_script('device_activate_changes', $diskname);
         }
 
         // update partition type
@@ -1028,7 +1024,7 @@ function submit_disks_segmentprocess()
         }
 
         // dangerous operations
-        if ($operation == 'resize' ) {
+        if ($operation === 'resize' ) {
             // query diskinfo for sectorsize
             $diskinfo = disk_info($diskname);
             // sanity
@@ -1054,7 +1050,7 @@ function submit_disks_segmentprocess()
             // sanity checks when enlarging segment
             if ($newsize > $pmap[ $seg ][ 'size_sect' ] ) {
                 // sanity check; seg+1 must exist (free space segment) when enlarging
-                if ($pmap[ $seg + 1 ][ 'type' ] != 'free' ) {
+                if ($pmap[ $seg + 1 ][ 'type' ] !== 'free' ) {
                     friendlyerror(
                         'cannot resize because no free space segment is available!',
                         $url2 
@@ -1088,7 +1084,7 @@ function submit_disks_segmentprocess()
                     . ' on ' . $diskname, 'a_failure' 
                 );
             }
-        } elseif ($operation == 'destroy' ) {
+        } elseif ($operation === 'destroy' ) {
             // destroy partition
             $result = super_execute('/sbin/gpart delete -i ' . $index . ' ' . $diskname);
             if ($result[ 'rv' ] == 0 ) {
@@ -1103,7 +1099,7 @@ function submit_disks_segmentprocess()
                 );
             }
         }
-        elseif ($operation == 'zerowrite' ) {
+        elseif ($operation === 'zerowrite' ) {
             // zero-write
             $disksegdevsuf = substr(@$pmap[ $seg ][ 'dev' ], strlen('/dev/'));
             $result = super_script('zero_write', $disksegdevsuf);
@@ -1115,7 +1111,7 @@ function submit_disks_segmentprocess()
                 );
             }
         }
-        elseif ($operation == 'randomwrite' ) {
+        elseif ($operation === 'randomwrite' ) {
             // random write
             $disksegdevsuf = substr(@$pmap[ $seg ][ 'dev' ], strlen('/dev/'));
             $result = super_script('random_write', $disksegdevsuf);
@@ -1127,7 +1123,7 @@ function submit_disks_segmentprocess()
                 );
             }
         }
-        elseif ($operation == 'trimerase' ) {
+        elseif ($operation === 'trimerase' ) {
             // TRIM erase
             $disksegdevsuf = substr(@$pmap[ $seg ][ 'dev' ], strlen('/dev/'));
             $result = super_script('secure_erase', $disksegdevsuf);

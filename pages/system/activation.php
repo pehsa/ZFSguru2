@@ -13,7 +13,7 @@ function content_system_activation()
 
     // uuid
     $uuid = @$guru[ 'preferences' ][ 'uuid' ];
-    $uuid_txt = ( strlen($uuid) > 0 ) ? $uuid : '-';
+    $uuid_txt = ($uuid != '') ? $uuid : '-';
 
     // server status
     $guru[ 'no_delayed_activation' ] = true;
@@ -35,19 +35,19 @@ function content_system_activation()
 
     // check for changed hardware
     $hwchanged = false;
-    if (strlen($uuid) > 0 ) {
+    if ($uuid != '') {
         $hwchanged = activation_hwchange();
     }
 
     // late activation data
     $delayed = persistent_read('activation_delayed');
-    $lateactdata = ( @strlen($delayed[ 'activation_type' ]) > 0 ) ? true : false;
+    $lateactdata = @strlen($delayed[ 'activation_type' ]) > 0;
 
     // classes
-    $class_activated = ( strlen($uuid) > 0 ) ? 'normal' : 'hidden';
+    $class_activated = ($uuid != '') ? 'normal' : 'hidden';
     $class_activation4 = ( @$info[ 'type' ] == 2 ) ? 'normal' : 'hidden';
     $class_activation5 = ( $hwchanged ) ? 'normal' : 'hidden';
-    $class_notactivated = ( strlen($uuid) > 0 ) ? 'hidden' : 'normal';
+    $class_notactivated = ($uuid != '') ? 'hidden' : 'normal';
     $class_online = ( $online ) ? 'normal' : 'hidden';
     $class_offline = ( $online ) ? 'hidden' : 'normal';
     $class_datasent = ( @isset($_GET[ 'datasent' ]) ) ? 'normal' : 'hidden';
@@ -68,9 +68,9 @@ function content_system_activation()
     } else {
         $feedback = array( 1 => 'checked="checked"' );
     }
-    if (strlen(@$delayed[ 'feedback_text' ]) > 0 ) {
+    if (@$delayed['feedback_text'] != '') {
         $feedback_txt = @$delayed[ 'feedback_text' ];
-    } elseif (strlen(@$info[ 'feedback_text' ]) > 0 ) {
+    } elseif (@$info['feedback_text'] != '') {
         $feedback_txt = @$info[ 'feedback_text' ];
     } else {
         $feedback_txt = '';
@@ -118,7 +118,7 @@ function submit_activate()
             4, ( int )$_POST[ 'feedback' ],
             $_POST[ 'feedback_text' ] 
         );
-        if (strlen($uuid) > 0 ) {
+        if ($uuid != '') {
             page_feedback('activation was successful!', 'b_success');
             // save uuid
             $guru[ 'preferences' ][ 'uuid' ] = $uuid;
@@ -138,7 +138,7 @@ function submit_activate()
             5, ( int )$_POST[ 'feedback' ],
             $_POST[ 'feedback_text' ] 
         );
-        if (strlen($uuid) > 0 ) {
+        if ($uuid != '') {
             page_feedback('activation was successful!', 'b_success');
             // save uuid
             $guru[ 'preferences' ][ 'uuid' ] = $uuid;
@@ -158,7 +158,7 @@ function submit_activate()
             ( int )$_POST[ 'activation' ], ( int )$_POST[ 'feedback' ],
             $_POST[ 'feedback_text' ] 
         );
-        if (strlen($uuid) > 0 ) {
+        if ($uuid != '') {
             page_feedback('activation was successful!', 'b_success');
             // save uuid
             $guru[ 'preferences' ][ 'uuid' ] = $uuid;

@@ -8,9 +8,9 @@
 timerstart('session', 'init');
 if (!function_exists('session_start') ) {
     die('ZFSguru web-interface broken: requires php5-session extension!');
-} else {
-    session_start();
 }
+
+session_start();
 timerend('session');
 
 // check for error function
@@ -58,15 +58,13 @@ if (@$guru[ 'preferences' ][ 'connect_timeout' ] > 0 ) {
 }
 
 // update database if needed
-if (!$guru[ 'preferences' ][ 'offline_mode' ] ) {
-    if (( $guru[ 'preferences' ][ 'refresh_lastcheck' ] +    $guru[ 'preferences' ][ 'refresh_rate' ] ) <= time() 
-    ) {
+if (!$guru['preferences']['offline_mode'] && ($guru['preferences']['refresh_lastcheck'] + $guru['preferences']['refresh_rate']) <= time(
+    )) {
         timerstart('updatedatabase', 'init');
         activate_library('gurudb');
         gurudb_update();
         timerend('updatedatabase');
     }
-}
 
 timerend('init');
 
@@ -118,13 +116,14 @@ function procedure_readpreferences()
             $preferences[ 'timezone' ] = $guru[ 'default_preferences' ][ 'timezone' ];
         }
         return $preferences;
-    } else {
-        page_feedback(
-            'Failed extracting configuration file '
-            . '"' . $filename . '" - corrupt? Try deleting the file.', 'a_error' 
-        );
-        return $preferences;
     }
+
+    page_feedback(
+        'Failed extracting configuration file '
+        . '"' . $filename . '" - corrupt? Try deleting the file.', 'a_error'
+    );
+
+    return $preferences;
 }
 
 function procedure_writepreferences( $preferences )
@@ -163,9 +162,9 @@ function procedure_writepreferences( $preferences )
             . 'permissions!', 'a_error' 
         );
         return false;
-    } else {
-        return true;
     }
+
+    return true;
 }
 
 function procedure_authenticate( $preferences, $ip_auth_only = false )
@@ -179,18 +178,18 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
         $result = true;
     } elseif ($preferences[ 'access_control' ] == 2 ) {
         // check if client comes from LAN
-        if (substr($client_ip, 0, strlen('10.')) == '10.' ) {
+        if (strpos($client_ip, '10.') === 0) {
             $result = true;
-        } elseif (substr($client_ip, 0, strlen('192.168.')) == '192.168.' ) {
+        } elseif (strpos($client_ip, '192.168.') === 0) {
             $result = true;
-        } elseif (substr($client_ip, 0, strlen('172.')) == '172.' ) {
+        } elseif (strpos($client_ip, '172.') === 0) {
             // between 172.16.x.x and 172.31.x.x
             $secondblock = ( int )@substr($client_ip, strlen('172.'), 2);
             if (( $secondblock >= 16 )AND( $secondblock <= 31 ) ) {
                 $result = true;
             }
         }
-        elseif (substr($client_ip, 0, strlen('127.0.0.')) == '127.0.0.' ) {
+        elseif (strpos($client_ip, '127.0.0.') === 0) {
             $result = true;
         }
     }
@@ -198,7 +197,7 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
         // only allow connections from whitelisted IP addresses
         if (@isset($preferences[ 'access_whitelist' ][ $_SERVER[ 'REMOTE_ADDR' ] ]) ) {
             $result = true;
-        } elseif (substr($client_ip, 0, strlen('127.0.0.')) == '127.0.0.' ) {
+        } elseif (strpos($client_ip, '127.0.0.') === 0) {
             $result = true;
         } else {
             foreach ( @$preferences[ 'access_whitelist' ] as $cidr ) {
@@ -212,9 +211,11 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
     }
 
     // return result if false
-    if (!$result ) {
+    if (!$result) {
         return false;
-    } elseif ($ip_auth_only ) {
+    }
+
+    if ($ip_auth_only) {
         return true;
     }
 
@@ -253,17 +254,17 @@ function procedure_sanitize( $check_sudo = true )
         }
     }
     // test command execution
-    if (trim(`echo test`) != 'test' ) {
+    if (trim(shell_exec("echo test")) !== 'test' ) {
         error('Command execution test failed; aborting');
     }
     // test if we are zfsguru-web user
-    if (trim(`whoami`) != 'zfsguru-web' ) {
+    if (trim(shell_exec("whoami")) !== 'zfsguru-web' ) {
         error('PHP script is not running as the "zfsguru-web" user; aborting');
     }
     // test if we have sudo root access
     if ($check_sudo === true ) {
         $sudo_cmd = '/usr/local/bin/sudo whoami';
-        if (trim(`$sudo_cmd`) != 'root' ) {
+        if (trim(shell_exec("\$sudo_cmd")) !== 'root' ) {
             error('No SUDO access; aborting');
         }
     }

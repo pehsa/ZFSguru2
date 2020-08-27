@@ -57,22 +57,22 @@ function content_services_install()
         // system image availability
         $sysimg_str = ( @isset($slist[ $svc ][ 'sysver' ]) ) ?
         $slist[ $svc ][ 'sysver' ] : @$curver[ 'sysver' ];
-        $avail = ( strlen(@$dist[ $svc ][ 'version' ]) > 0 ) ? true : false;
+        $avail = strlen(@$dist[ $svc ][ 'version' ]) > 0;
         $infopage_downsize = sizebinary(@$dist[ $svc ][ 'filesize' ], 1);
 
         // download in progress (DIP) - boolean
         $dip_pct = service_download_progress($svc);
-        $dip = ( is_int($dip_pct) ) ? true : false;
+        $dip = is_int($dip_pct);
 
         // install in progress (IIP) - string: notrunning, running, finished
         $iip_progress = service_install_progress($svc);
-        if ($iip_progress == 'finished' ) {
+        if ($iip_progress === 'finished' ) {
             // process post installing tasks
             service_install_postprocess($svc);
             // redirect back to normal URL (without &installing suffix)
             redirect_url('services.php?install&service=' . $svc);
         }
-        $iip = ( $iip_progress == 'running' ) ? true : false;
+        $iip = $iip_progress == 'running';
 
         // page refresh
         $page_refresh = 2;
@@ -81,7 +81,7 @@ function content_services_install()
         }
 
         // current installation status
-        $installed = ( @isset($slist[ $svc ])AND!$iip ) ? true : false;
+        $installed = ( @isset($slist[ $svc ])AND!$iip );
 
         // show warning when service installed but not available
         if ($installed AND!$avail ) {
@@ -199,22 +199,20 @@ function content_services_install()
 
         // handle category table
         foreach ( @$categories as $cat ) {
-            if (strlen($cat[ 'shortname' ]) > 0 ) {
-                if ($cat[ 'shortname' ] != 'restricted' ) {
-                    // determine servicecount
-                    $servicecount = 0;
-                    foreach ( $services as $servicename => $servicedata ) {
-                        if ($servicedata[ 'cat' ] == $cat[ 'shortname' ] ) {
-                            $servicecount++;
-                        }
+            if ((strlen($cat['shortname']) > 0) && $cat['shortname'] != 'restricted') {
+                // determine servicecount
+                $servicecount = 0;
+                foreach ( $services as $servicename => $servicedata ) {
+                    if ($servicedata[ 'cat' ] == $cat[ 'shortname' ] ) {
+                        $servicecount++;
                     }
-                    $table_categories[] = @array(
-                    'CAT_SHORTNAME' => $cat[ 'shortname' ],
-                    'CAT_LONGNAME' => $cat[ 'longname' ],
-                    'CAT_SERVICECOUNT' => $servicecount,
-                    'CAT_DESCRIPTION' => $cat[ 'desc' ]
-                    );
                 }
+                $table_categories[] = @array(
+                'CAT_SHORTNAME' => $cat[ 'shortname' ],
+                'CAT_LONGNAME' => $cat[ 'longname' ],
+                'CAT_SERVICECOUNT' => $servicecount,
+                'CAT_DESCRIPTION' => $cat[ 'desc' ]
+                );
             }
         }
     }
@@ -334,15 +332,15 @@ function submit_services_infopage()
 
     // scan POST variables
     foreach ( $_POST as $name => $value ) {
-        if ($name == 'download_svc' ) {
+        if ($name === 'download_svc' ) {
             service_download($svc, $url2);
-        } elseif ($name == 'install_svc' ) {
+        } elseif ($name === 'install_svc' ) {
             service_install($svc);
             redirect_url($url2 . '&installing');
         }
-        elseif ($name == 'upgrade_svc' ) {
+        elseif ($name === 'upgrade_svc' ) {
             service_upgrade($svc);
-        } elseif ($name == 'uninstall_svc' ) {
+        } elseif ($name === 'uninstall_svc' ) {
             service_uninstall($svc);
         }
     }

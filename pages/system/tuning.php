@@ -32,7 +32,7 @@ function content_system_tuning()
     $platform = common_systemplatform();
 
     // livecd warning (warn that settings will not be preserved)
-    if (common_distribution_type() == 'livecd' ) {
+    if (common_distribution_type() === 'livecd' ) {
         page_feedback(
             'LiveCD detected, your tuning settings will not be preserved!',
             'a_warning' 
@@ -76,13 +76,13 @@ function content_system_tuning()
     );
     $enoughmemory = ( $physmem[ 'usable' ] > ( 4 * 1024 * 1024 * 1024 ) );
     $forced = ( @$loadersettings[ 'vfs.zfs.prefetch_disable' ] === 0 );
-    if ($platform == 'i386' ) {
+    if ($platform === 'i386' ) {
         if ($forced ) {
             $prefetch[ 'i386_forced' ] = 'normal';
         } else {
             $prefetch[ 'i386_normal' ] = 'normal';
         }
-    } elseif ($platform == 'amd64' ) {
+    } elseif ($platform === 'amd64' ) {
         if ($enoughmemory ) {
             $prefetch[ 'amd64_enabled' ] = 'normal';
         } elseif ($forced ) {

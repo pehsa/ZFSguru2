@@ -28,9 +28,8 @@ margin:0 auto;
 {
 margin:5px 0 0 0;
 color:#fff;
-background:#159;
-background-image:url(bluebg.png);
-border:1px solid #229;
+    background: #159 url(bluebg.png);
+    border:1px solid #229;
 text-align:left;
 padding:2px 0 2px 8px;
 }
@@ -124,8 +123,7 @@ background:#666;
 #menu ul li a.menu-active
 {
 color:#fff;
-background:#99d;
-background-image:url(bluebg.png);
+    background: #99d url(bluebg.png);
 }
 
 #navtabs

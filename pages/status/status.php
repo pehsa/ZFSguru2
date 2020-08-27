@@ -10,17 +10,17 @@ function content_status_status()
     activate_library('zfs');
 
     // gather data
-    $fbsdver = trim(`/usr/bin/uname -r`);
+    $fbsdver = trim(shell_exec("/usr/bin/uname -r"));
     $cpu = common_sysctl('hw.model');
     $cpucount = common_sysctl('hw.ncpu');
-    $arch = trim(`/usr/bin/uname -p`);
+    $arch = trim(shell_exec("/usr/bin/uname -p"));
     $currentver = common_systemversion();
     $syszfsver = zfs_version();
     $physdisks = disk_detect_physical();
     $physmem = system_detect_physmem();
     $vmsolution = system_detect_vmenvironment();
     $uptime = system_uptime();
-    $systime = trim(`date`);
+    $systime = trim(shell_exec("date"));
     $network_speed = system_detect_networkspeed();
 
     // distributions
@@ -37,24 +37,24 @@ function content_status_status()
     $dist_red = array();
 
     // top status bar
-    $unknownsys = ( $currentver[ 'sysver' ] == 'unknown' );
+    $unknownsys = ( $currentver[ 'sysver' ] === 'unknown' );
     $class_sysimg_official = ( !$unknownsys ) ? 'normal' : 'hidden';
     $class_sysimg_unknown = ( $unknownsys ) ? 'normal' : 'hidden';
     $class_dist_green = ( @isset($dist_green[ $dist_type ]) ) ? 'normal' : 'hidden';
     $class_dist_amber = ( @isset($dist_amber[ $dist_type ]) ) ? 'normal' : 'hidden';
     $class_dist_red = ( @isset($dist_red[ $dist_type ]) ) ? 'normal' : 'hidden';
-    $class_dist_livecd = ( $dist_type == 'livecd' ) ? 'normal' : 'hidden';
-    $class_dist_usb = ( $dist_type == 'usb' ) ? 'normal' : 'hidden';
-    $class_dist_unknown = ( $dist_type == 'unknown' ) ? 'normal' : 'hidden';
+    $class_dist_livecd = ( $dist_type === 'livecd' ) ? 'normal' : 'hidden';
+    $class_dist_usb = ( $dist_type === 'usb' ) ? 'normal' : 'hidden';
+    $class_dist_unknown = ( $dist_type === 'unknown' ) ? 'normal' : 'hidden';
 
     // top bar color
-    if (!$unknownsys AND( $dist_type == 'RoZ' ) ) {
+    if (!$unknownsys AND( $dist_type === 'RoZ' ) ) {
         $status_color = 'grey';
-    } elseif (!$unknownsys AND( substr($dist_type, 0, 3) == 'RoR' ) ) {
+    } elseif (!$unknownsys AND(strpos($dist_type, 'RoR') === 0) ) {
         $status_color = 'red';
-    } elseif (!$unknownsys AND( $dist_type == 'RoM' ) ) {
+    } elseif (!$unknownsys AND( $dist_type === 'RoM' ) ) {
         $status_color = 'blue';
-    } elseif (!$unknownsys AND( ( $dist_type == 'livecd' )OR( $dist_type == 'usb' ) ) ) {
+    } elseif (!$unknownsys AND( ( $dist_type === 'livecd' )OR( $dist_type === 'usb' ) ) ) {
         $status_color = 'amber';
     } elseif ($unknownsys ) {
         $status_color = 'red';
@@ -68,18 +68,18 @@ function content_status_status()
     $zfs_zpl = $syszfsver[ 'zpl' ];
 
     // detect virtualization environment
-    $class_vm_esxi = ( $vmsolution == 'esxi' ) ? 'normal' : 'hidden';
-    $class_vm_esxi_rdm = ( $vmsolution == 'esxi_rdm' ) ? 'normal' : 'hidden';
-    $class_vm_esxi_vtd = ( $vmsolution == 'esxi_vtd' ) ? 'normal' : 'hidden';
-    $class_vm_qemu = ( $vmsolution == 'qemu' ) ? 'normal' : 'hidden';
-    $class_vm_vbox = ( $vmsolution == 'vbox' ) ? 'normal' : 'hidden';
-    $class_vm_vmware = ( $vmsolution == 'vmware' ) ? 'normal' : 'hidden';
-    $class_vm_xen = ( $vmsolution == 'xen' ) ? 'normal' : 'hidden';
+    $class_vm_esxi = ( $vmsolution === 'esxi' ) ? 'normal' : 'hidden';
+    $class_vm_esxi_rdm = ( $vmsolution === 'esxi_rdm' ) ? 'normal' : 'hidden';
+    $class_vm_esxi_vtd = ( $vmsolution === 'esxi_vtd' ) ? 'normal' : 'hidden';
+    $class_vm_qemu = ( $vmsolution === 'qemu' ) ? 'normal' : 'hidden';
+    $class_vm_vbox = ( $vmsolution === 'vbox' ) ? 'normal' : 'hidden';
+    $class_vm_vmware = ( $vmsolution === 'vmware' ) ? 'normal' : 'hidden';
+    $class_vm_xen = ( $vmsolution === 'xen' ) ? 'normal' : 'hidden';
 
     // processor
-    if ($arch == 'amd64' ) {
+    if ($arch === 'amd64' ) {
         $arch = '64-bit';
-    } elseif ($arch == 'i386' ) {
+    } elseif ($arch === 'i386' ) {
         $arch = '32-bit';
     }
     if ($cpucount == 1 ) {
@@ -116,7 +116,7 @@ function content_status_status()
     }
     $cpu_freq_min = @min($freqrange);
     $cpu_freq_max = @max($freqrange);
-    $cpu_freq_scaling = ( ( strlen($cpu_freq_min) > 0 )AND( strlen($cpu_freq_min) > 0 ) ) ? 'normal' : 'hidden';
+    $cpu_freq_scaling = ( ($cpu_freq_min != '')AND($cpu_freq_min != '') ) ? 'normal' : 'hidden';
 
     // memory
     $memory_installed = sizebinary($physmem[ 'installed' ], 1);
@@ -137,12 +137,12 @@ function content_status_status()
     }
 
     // sensors
-    if (strtolower(substr($cpu, 0, strlen('AMD'))) == 'amd' ) {
+    if (stripos($cpu, 'amd') === 0) {
         exec('/sbin/kldstat -n amdtemp.ko', $output, $rv);
         if ($rv == 1 ) {
             system_loadkernelmodule('amdtemp');
         }
-    } elseif (strtolower(substr($cpu, 0, strlen('Intel'))) == 'intel' ) {
+    } elseif (stripos($cpu, 'intel') === 0) {
         exec('/sbin/kldstat -n coretemp.ko', $output, $rv);
         if ($rv == 1 ) {
             system_loadkernelmodule('coretemp');
@@ -150,7 +150,7 @@ function content_status_status()
     }
     $cputemp = array();
     for ( $i = 0; $i <= 7; $i++ ) {
-        $rawtemp = common_sysctl('dev.cpu.' . ( int )$i . '.temperature');
+        $rawtemp = common_sysctl('dev.cpu.' .$i. '.temperature');
         if (@strlen($rawtemp) > 1 ) {
             $cputemp[] = array(
             'CPUTEMP_CPUNR' => ( $i + 1 ),
@@ -174,31 +174,29 @@ function content_status_status()
     }
     $mbmon_str = implode(chr(10), $mbmon);
     $mbmon = array();
-    preg_match('/^TEMP0 \:(.*)$/m', $mbmon_str, $mbmon[ 'temp0' ]);
-    preg_match('/^TEMP1 \:(.*)$/m', $mbmon_str, $mbmon[ 'temp1' ]);
-    preg_match('/^TEMP2 \:(.*)$/m', $mbmon_str, $mbmon[ 'temp2' ]);
-    preg_match('/^FAN0  \:(.*)$/m', $mbmon_str, $mbmon[ 'fan0' ]);
-    preg_match('/^VC0   \:(.*)$/m', $mbmon_str, $mbmon[ 'vcore0' ]);
-    preg_match('/^VC1   \:(.*)$/m', $mbmon_str, $mbmon[ 'vcore1' ]);
-    preg_match('/^V33   \:(.*)$/m', $mbmon_str, $mbmon[ 'v33' ]);
-    preg_match('/^V50P  \:(.*)$/m', $mbmon_str, $mbmon[ 'v50' ]);
-    preg_match('/^V12P  \:(.*)$/m', $mbmon_str, $mbmon[ 'v120' ]);
+    preg_match('/^TEMP0 :(.*)$/m', $mbmon_str, $mbmon[ 'temp0' ]);
+    preg_match('/^TEMP1 :(.*)$/m', $mbmon_str, $mbmon[ 'temp1' ]);
+    preg_match('/^TEMP2 :(.*)$/m', $mbmon_str, $mbmon[ 'temp2' ]);
+    preg_match('/^FAN0 {2}:(.*)$/m', $mbmon_str, $mbmon[ 'fan0' ]);
+    preg_match('/^VC0 {3}:(.*)$/m', $mbmon_str, $mbmon[ 'vcore0' ]);
+    preg_match('/^VC1 {3}:(.*)$/m', $mbmon_str, $mbmon[ 'vcore1' ]);
+    preg_match('/^V33 {3}:(.*)$/m', $mbmon_str, $mbmon[ 'v33' ]);
+    preg_match('/^V50P {2}:(.*)$/m', $mbmon_str, $mbmon[ 'v50' ]);
+    preg_match('/^V12P {2}:(.*)$/m', $mbmon_str, $mbmon[ 'v120' ]);
     foreach ( $mbmon as $sensor_name => $pregdata ) {
         $value = @trim($pregdata[ 1 ]);
         $sensor[ $sensor_name ] = $value;
         $sensorclass[ $sensor_name ] = 'hidden';
-        if (strlen($value) > 1 ) {
-            if (( double )$value > 0 ) {
-                if ($sensor_name == 'fan0'
-                    OR( ( double )$value < 99 ) 
+        if ((strlen($value) > 1) && ( double )$value > 0) {
+            if ($sensor_name == 'fan0'
+                OR( ( double )$value < 99 )
+            ) {
+                if ($value {            0            } == '+'
                 ) {
-                    if ($value {            0            } == '+' 
-                    ) {
-                        $sensor[ $sensor_name ] = substr($value, 1);
-                        $sensorclass[ $sensor_name ] = 'normal';
-                    } else {
-                        $sensorclass[ $sensor_name ] = 'normal';
-                    }
+                    $sensor[ $sensor_name ] = substr($value, 1);
+                    $sensorclass[ $sensor_name ] = 'normal';
+                } else {
+                    $sensorclass[ $sensor_name ] = 'normal';
                 }
             }
         }

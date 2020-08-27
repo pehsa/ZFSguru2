@@ -7,9 +7,11 @@ function persistent_read( $section = false )
     $filename = $guru[ 'docroot' ] . 'config/persistent.dat';
     $contents = @file_get_contents($filename);
     $arr = @unserialize($contents);
-    if (!is_array($arr) ) {
+    if (!is_array($arr)) {
         return false;
-    } elseif ($section == false ) {
+    }
+
+    if ($section == false) {
         return $arr;
     } elseif (@!isset($arr[ $section ]) ) {
         return false;
@@ -25,10 +27,11 @@ function persistent_write( $arr )
     $filename = $guru[ 'docroot' ] . 'config/persistent.dat';
     if (is_array($arr)AND empty($arr) ) {
         return @unlink($filename);
-    } else {
-        $ser = serialize($arr);
-        return file_put_contents($filename, $ser);
     }
+
+    $ser = serialize($arr);
+
+    return file_put_contents($filename, $ser);
 }
 
 function persistent_store( $sectionname, $data )

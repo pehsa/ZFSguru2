@@ -4,7 +4,7 @@
 
 function loaderconf_readsettings( $filepath = false )
 {
-    $loaderpath = ( $filepath ) ? $filepath : '/boot/loader.conf';
+    $loaderpath = ( $filepath ) ?: '/boot/loader.conf';
     $loaderconf = @file_get_contents($loaderpath);
     $loadervars = array(
     'vm.kmem_size', 'vm.kmem_size_max',
@@ -139,11 +139,11 @@ function loaderconf_reset( $profilename, $loadersettings = false,
     if (!is_array($loadersettings) ) {
         // call function
         $dist = common_distribution_type();
-        if ($dist == 'livecd'
-            OR $dist == 'embedded' 
+        if ($dist === 'livecd'
+            OR $dist === 'embedded'
         ) {
             $source_loaderconf = $guru[ 'docroot' ] . 'files/emb_loader.conf';
-        } elseif ($dist == 'RoZ' ) {
+        } elseif ($dist === 'RoZ' ) {
             $source_loaderconf = $guru[ 'docroot' ] . 'files/roz_loader.conf';
         } else {
             // set warning and use Root-on-ZFS loader.conf
@@ -211,7 +211,7 @@ function loaderconf_update( $new_settings, $filepath = false )
 {
     global $guru;
     // determine which file to work on
-    $loaderpath = ( $filepath ) ? $filepath : '/boot/loader.conf';
+    $loaderpath = ( $filepath ) ?: '/boot/loader.conf';
     // read raw config
     $rawconf = @file_get_contents($loaderpath);
     // read current config

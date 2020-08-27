@@ -42,7 +42,7 @@ function content_files_filesystems()
         }
 
         // filesystem mountpoint
-        if ($fsdata[ 'mountpoint' ] == 'legacy' ) {
+        if ($fsdata[ 'mountpoint' ] === 'legacy' ) {
             $fsmountpoint = '<i>legacy</i>';
         } elseif ($fsdata[ 'mountpoint' ] == '-' ) {
             $fsmountpoint = '<i>volume</i>';
@@ -86,7 +86,7 @@ function content_files_filesystems()
             if ($basepos = strpos($fsbase, '/') ) {
                 $fsbase = @substr($fsbase, 0, $basepos);
             }
-            if (( $fsbase == 'zfsguru' )OR( substr($fsbase, 0, strlen('zfsguru-system')) == 'zfsguru-system' )OR( $fsbase == 'SWAP001' ) ) {
+            if (( $fsbase === 'zfsguru' )OR(strpos($fsbase, 'zfsguru-system') === 0)OR( $fsbase === 'SWAP001' ) ) {
                 $querygurufs = true;
             } else {
                 $querygurufs = false;
@@ -136,7 +136,7 @@ function submit_filesystem_create()
             . 'alphanumerical + _ + - characters with a maximum length of 32', $url 
         );
     }
-    if (strlen($parent) < 1 ) {
+    if ($parent == '') {
         friendlyerror('please select a valid parent filesystem', $url);
     }
 

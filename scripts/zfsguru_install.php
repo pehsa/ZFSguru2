@@ -19,17 +19,17 @@ $scriptversion = 15;
 $fileversion = 1;
 $filelocation = '/tmp/guru_install.dat';
 $temp_mp = '/mnt/';
-$source = trim(`pwd`) . '/files';
+$source = trim(shell_exec("pwd")) . '/files';
 
 // procedures
 install_init();
 install_summary();
 install_verify();
-if ($data[ 'dist' ] == 'RoZ' ) {
+if ($data[ 'dist' ] === 'RoZ' ) {
     install_roz();
-} elseif ($data[ 'dist' ] == 'RoR' ) {
+} elseif ($data[ 'dist' ] === 'RoR' ) {
     install_ror();
-} elseif ($data[ 'dist' ] == 'RoM' ) {
+} elseif ($data[ 'dist' ] === 'RoM' ) {
     install_rom();
 } else {
     install_error('Invalid distribution!');
@@ -80,11 +80,11 @@ function install_summary()
     echo( 'distribution type: ' . $data[ 'dist' ] . chr(10) );
     echo( 'target device: ' . $data[ 'target' ] . chr(10) );
     echo( 'source data: ' . $source . chr(10) );
-    if ($data[ 'dist' ] == 'RoZ' ) {
+    if ($data[ 'dist' ] === 'RoZ' ) {
         echo( 'boot filesystem: ' . $data[ 'bootfs' ] . chr(10) );
-    } elseif ($data[ 'dist' ] == 'RoR' ) {
+    } elseif ($data[ 'dist' ] === 'RoR' ) {
     }
-    elseif ($data[ 'dist' ] == 'RoM' ) {
+    elseif ($data[ 'dist' ] === 'RoM' ) {
         echo( 'MBR bootcode: ' . $data[ 'path_mbr' ] . chr(10) );
         echo( 'loader bootcode: ' . $data[ 'path_loader' ] . chr(10) );
     }
@@ -94,7 +94,7 @@ function install_summary()
     echo( 'system SHA512 checksum: ' . substr($data[ 'checksum_sha512' ], 0, 32)
     . '...' . chr(10) );
     echo( 'loader.conf: ' . $data[ 'loaderconf' ] . chr(10) );
-    if ($data[ 'dist' ] == 'rootonzfs' ) {
+    if ($data[ 'dist' ] === 'rootonzfs' ) {
         echo( 'preserve system image: ' . ( int )$data[ 'options' ][ 'copysysimg' ]
         . chr(10) );
         echo( 'ditto copies: ' . $data[ 'options' ][ 'copies' ] . chr(10) );
@@ -356,7 +356,7 @@ function install_rom()
     $path_syslabel = '/dev/gpt/' . $gpt_system_label;
     $path_datalabel = '/dev/gpt/' . $gpt_data_label;
     $webinterface_name = 'ZFSguru-webinterface.tgz';
-    $webinterface_source = `realpath .`;
+    $webinterface_source = shell_exec("realpath .");
 
     // zero write target device
     echo( $tag . 'Zero-writing first 100MiB of target device ' . $tdev . chr(10) );

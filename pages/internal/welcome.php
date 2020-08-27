@@ -28,7 +28,7 @@ function content_internal_welcome()
     }
 
     // step 1: protection
-    if ($class_w1 == 'normal' ) {
+    if ($class_w1 === 'normal' ) {
         $w1_ac_1 = ( @$_SESSION[ 'welcomewizard' ][ 'access_control' ] == 1 ) ?
         'checked="checked"' : '';
         $w1_ac_2 = ( ( @$_SESSION[ 'welcomewizard' ][ 'access_control' ] == 2 )OR( !@isset($_SESSION[ 'welcomewizard' ][ 'access_control' ]) ) ) ?
@@ -46,7 +46,7 @@ function content_internal_welcome()
 
     // step 2: physical disks
     $physdisks = array();
-    if ($class_w2 == 'normal' ) {
+    if ($class_w2 === 'normal' ) {
         // required library
         activate_library('disk');
         // call functions
@@ -79,7 +79,7 @@ function content_internal_welcome()
                     $labelstr .= 'GEOM: ' . @htmlentities($labels[ $diskname ]);
                 }
                 if (@strlen($gpart[ $diskname ][ 'label' ]) > 0 ) {
-                    if (strlen($labelstr) > 0 ) {
+                    if ($labelstr !== '') {
                         $labelstr .= '<br />';
                     }
                     $labelstr .= 'GPT: ' . @htmlentities($gpart[ $diskname ][ 'label' ]);
@@ -101,7 +101,7 @@ function content_internal_welcome()
     }
 
     // step 3: ZFS pools
-    if ($class_w3 == 'normal' ) {
+    if ($class_w3 === 'normal' ) {
         // required libraries
         activate_library('html');
         activate_library('zfs');
@@ -122,7 +122,7 @@ function content_internal_welcome()
         foreach ( $zpools as $poolname => $pooldata ) {
             $activerow = ( @$_GET[ 'query' ] == $poolname ) ? ' class="activerow"' : '';
             $poolspa = zfs_pool_version($poolname);
-            $zpool_status = `zpool status $poolname`;
+            $zpool_status = shell_exec("zpool status \$poolname");
             if (strpos($zpool_status, 'raidz3') !== false ) {
                 $redundancy = 'RAID7 (triple parity)';
             } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -149,7 +149,7 @@ function content_internal_welcome()
             // check boot status by looking whether at least one member has GPT label
             $poolstatus = zfs_pool_status($poolname);
             foreach ( $poolstatus[ 'members' ] as $memberdata ) {
-                if (@substr($memberdata[ 'name' ], 0, strlen('gpt/')) == 'gpt/' ) {
+                if (@substr($memberdata[ 'name' ], 0, strlen('gpt/')) === 'gpt/' ) {
                     $bootablepools = true;
                 }
             }
@@ -187,7 +187,7 @@ function content_internal_welcome()
         }
 
         // radio button (zfs version)
-        $specifyversion = ( @$_GET[ 'spa' ]OR @$_GET[ 'zpl' ] ) ? true : false;
+        $specifyversion = ( @$_GET[ 'spa' ]OR @$_GET[ 'zpl' ] );
         $radio_modernzfs = ( !$specifyversion ) ? 'checked="checked"' : '';
         $radio_specify = ( $specifyversion ) ? 'checked="checked"' : '';
 
@@ -208,7 +208,7 @@ function content_internal_welcome()
         // import pool table
         $table_importpool = array();
         if (@isset($_POST[ 'import_pool' ])OR @isset($_POST[ 'import_pool_deleted' ]) ) {
-            $importdestroyed = ( @isset($_POST[ 'import_pool_deleted' ]) ) ? true : false;
+            $importdestroyed = @isset($_POST[ 'import_pool_deleted' ]);
             if ($importdestroyed ) {
                 $importables = zfs_pool_import_list(true);
             } else {
@@ -257,17 +257,17 @@ function content_internal_welcome()
         'normal' : 'hidden';
         $w3_advice_continue = ( $noimportablepools AND $pools AND $bootablepools ) ?
         'normal' : 'hidden';
-        $w3_advicebox = ( $w3_advice_continue == 'normal' ) ? 'continue' : 'stop';
+        $w3_advicebox = ( $w3_advice_continue === 'normal' ) ? 'continue' : 'stop';
     }
 
-    if ($class_w4 == 'normal' ) {
+    if ($class_w4 === 'normal' ) {
         $class_datasent = ( @isset($_GET[ 'datasent' ]) ) ? 'normal' : 'hidden';
         $dmesg = file_get_contents('/var/run/dmesg.boot');
         $dpos = strrpos($dmesg, 'Copyright (c) 1992-2011 The FreeBSD Project.');
         $w4_dmesg = substr($dmesg, ( int )$dpos);
     }
 
-    if ($class_w5 == 'normal' ) {
+    if ($class_w5 === 'normal' ) {
         // fetch activation options
         $act = @$_SESSION[ 'welcomewizard' ][ 'activation' ];
         $act_feedback = @$_SESSION[ 'welcomewizard' ][ 'feedback' ];
@@ -275,7 +275,7 @@ function content_internal_welcome()
         $uuid = @$_SESSION[ 'welcomewizard' ][ 'uuid' ];
 
         // classes
-        $class_activation_success = ( $act < 3 AND( strlen($uuid) > 0 ) ) ? 'normal' :
+        $class_activation_success = ( $act < 3 AND($uuid != '') ) ? 'normal' :
         'hidden';
         $class_activation_skipped = ( $act == 3 ) ? 'normal' : 'hidden';
         $class_activation_failure = ( $act < 3 AND!$uuid ) ? 'normal' : 'hidden';
@@ -352,7 +352,7 @@ function submit_welcome_submit_1()
     elseif (@isset($_POST[ 'submit1' ]) ) {
         // sanity check: if authentication chosen password must be set
         if ($_POST[ 'authentication' ] == 2 ) {
-            if (strlen($_POST[ 'auth_pass1' ]) < 1 ) {
+            if ($_POST['auth_pass1'] == '') {
                 friendlyerror(
                     'if you select authentication, you must set a password',
                     '?welcome1' 
@@ -419,10 +419,8 @@ function submit_welcome_submit_3()
         // scan for selected whole disks
         $wholedisks = array();
         foreach ( $_POST as $var => $value ) {
-            if (substr($var, 0, strlen('addwholedisk_')) == 'addwholedisk_' ) {
-                if ($value == 'on' ) {
-                    $wholedisks[] = substr($var, strlen('addwholedisk_'));
-                }
+            if ((substr($var, 0, strlen('addwholedisk_')) == 'addwholedisk_') && $value == 'on') {
+                $wholedisks[] = substr($var, strlen('addwholedisk_'));
             }
         }
 
@@ -566,7 +564,7 @@ function submit_welcome_submit_3()
         $old_ashift_max = @trim(shell_exec('/sbin/sysctl -n vfs.zfs.max_auto_ashift'));
         $new_ashift = 9;
         for ( $new_ashift = 9; $new_ashift <= 17; $new_ashift++ ) {
-            if (pow(2, $new_ashift) == $sectorsize ) {
+            if ((2 ** $new_ashift) == $sectorsize ) {
                 break;
             }
         }
@@ -579,8 +577,8 @@ function submit_welcome_submit_3()
 
         // force specific ashift setting to be used during pool creation
         if (is_numeric($sectorsize) ) {
-            $commands[] = '/sbin/sysctl vfs.zfs.min_auto_ashift=' . ( int )$new_ashift;
-            $commands[] = '/sbin/sysctl vfs.zfs.max_auto_ashift=' . ( int )$new_ashift;
+            $commands[] = '/sbin/sysctl vfs.zfs.min_auto_ashift=' .$new_ashift;
+            $commands[] = '/sbin/sysctl vfs.zfs.max_auto_ashift=' .$new_ashift;
         }
 
         // create pool
@@ -625,10 +623,10 @@ function submit_welcome_submit_3()
     // scan POST variables for hidden or destroyed pool import buttons
     $result = false;
     foreach ( $_POST as $var => $value ) {
-        if (substr($var, 0, strlen('import_hidden_')) == 'import_hidden_' ) {
+        if (strpos($var, 'import_hidden_') === 0) {
             $poolid = substr($var, strlen('import_hidden_'));
             $result = zfs_pool_import($poolid, false);
-        } elseif (substr($var, 0, strlen('import_destroyed_')) == 'import_destroyed_' ) {
+        } elseif (strpos($var, 'import_destroyed_') === 0) {
             $poolid = substr($var, strlen('import_destroyed_'));
             $result = zfs_pool_import($poolid, true);
         }

@@ -5,47 +5,47 @@ function samba_readconfig()
     global $guru;
     // fetch configuration file contents
     $rawtext = @file_get_contents($guru[ 'path' ][ 'Samba' ]);
-    if (strlen($rawtext) < 1 ) {
+    if ($rawtext == '') {
         return false;
-    } else {
-        // begin by splitting the configuration file in three chunks
-        $split = preg_split('/^\#(\=)+(.*)(\=)+\r?$/m', $rawtext);
-        // now fetch all the global variables
-        preg_match_all(
-            '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*\=[ ]*(.*)$/Um',
-            $split[ 1 ], $global 
-        );
-        if (is_array($global) ) {
-            foreach ( $global[ 1 ] as $id => $propertyname ) {
-                $config[ 'global' ][ trim($propertyname) ] = trim($global[ 3 ][ $id ]);
-            } 
-        } else {
-                return false;
-        }
+    }
 
-        // now work on the shares
-        $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]/Um', $split[ 2 ]);
-        preg_match_all('/^\[([a-zA-Z0-9]+)\]/Um', $split[ 2 ], $sharenames_match);
-        $sharenames = $sharenames_match[ 1 ];
-        // the following did not work, due to PREG_SPLIT_DELIM_CAPTURE messing
-        // with the results. unknown issue; to be looked at?
-        // circumvented with separate sharename regexp
-        //  $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]/Um', $split[2], 
-        //   PREG_SPLIT_DELIM_CAPTURE);
-        //  $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]\r?$/Um', $split[2]);
-        if (is_array($sharesplit) ) {
-            foreach ( $sharesplit as $sid => $singleshare ) {
-                preg_match_all(
-                    '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*\=[ ]*(.*)$/m',
-                    $singleshare, $sharecontents 
-                );
-                $sharename = @$sharenames[ $sid - 1 ];
-                // add the shares to the config array, to be returned by this function
-                if (is_array($sharecontents)AND( @strlen($sharename) > 0 ) ) {
-                    foreach ( $sharecontents[ 1 ] as $id => $propertyname ) {
-                        $config[ 'shares' ][ trim($sharename) ][ trim($propertyname) ] =
-                        $sharecontents[ 3 ][ $id ];
-                    }
+    // begin by splitting the configuration file in three chunks
+    $split = preg_split('/^\#(\=)+(.*)(\=)+\r?$/m', $rawtext);
+    // now fetch all the global variables
+    preg_match_all(
+        '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*\=[ ]*(.*)$/Um',
+        $split[ 1 ], $global
+    );
+    if (is_array($global) ) {
+        foreach ( $global[ 1 ] as $id => $propertyname ) {
+            $config[ 'global' ][ trim($propertyname) ] = trim($global[ 3 ][ $id ]);
+        }
+    } else {
+            return false;
+    }
+
+    // now work on the shares
+    $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]/Um', $split[ 2 ]);
+    preg_match_all('/^\[([a-zA-Z0-9]+)\]/Um', $split[ 2 ], $sharenames_match);
+    $sharenames = $sharenames_match[ 1 ];
+    // the following did not work, due to PREG_SPLIT_DELIM_CAPTURE messing
+    // with the results. unknown issue; to be looked at?
+    // circumvented with separate sharename regexp
+    //  $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]/Um', $split[2],
+    //   PREG_SPLIT_DELIM_CAPTURE);
+    //  $sharesplit = preg_split('/^\[([a-zA-Z0-9]+)\]\r?$/Um', $split[2]);
+    if (is_array($sharesplit) ) {
+        foreach ( $sharesplit as $sid => $singleshare ) {
+            preg_match_all(
+                '/^[ ]*([a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*)[ ]*\=[ ]*(.*)$/m',
+                $singleshare, $sharecontents
+            );
+            $sharename = @$sharenames[ $sid - 1 ];
+            // add the shares to the config array, to be returned by this function
+            if (is_array($sharecontents)AND( @strlen($sharename) > 0 ) ) {
+                foreach ( $sharecontents[ 1 ] as $id => $propertyname ) {
+                    $config[ 'shares' ][ trim($sharename) ][ trim($propertyname) ] =
+                    $sharecontents[ 3 ][ $id ];
                 }
             }
         }
@@ -79,7 +79,7 @@ function samba_readconfig()
         foreach ( $invertedvars as $invertedvar ) {
             // check global variables
             if (isset($config[ 'global' ][ $invertedvar ]) ) {
-                $config[ 'global' ][ $mastervariable ] = ( $invertedvar == 'yes' ) ? 'no' : 'yes';
+                $config[ 'global' ][ $mastervariable ] = ( $invertedvar === 'yes' ) ? 'no' : 'yes';
                 unset($config[ 'global' ][ $invertedvar ]);
             }
             // check share variables
@@ -88,7 +88,7 @@ function samba_readconfig()
                     foreach ( $sharevariables as $sharevar => $sharevalue ) {
                         if ($sharevar == $invertedvar ) {
                             unset($config[ 'shares' ][ $sharename ][ $sharevar ]);
-                            $config[ 'shares' ][ $sharename ][ $mastervariable ] = ( $sharevalue == 'yes' ) ?
+                            $config[ 'shares' ][ $sharename ][ $mastervariable ] = ( $sharevalue === 'yes' ) ?
                             'no' : 'yes';
                         }
                     }
@@ -111,11 +111,11 @@ function samba_writeconfig( $newconfig, $removeglobals = false )
     }
     // fetch configuration file contents
     $rawtext = @file_get_contents($guru[ 'path' ][ 'Samba' ]);
-    if (strlen($rawtext) < 1 ) {
+    if ($rawtext == '') {
         return false;
     }
     // split the configuration file in three parts
-    $split = preg_split('/^\#(\=)+(.*)(\=)+\r?$/m', $rawtext);
+    $split = preg_split('/^#(=)+(.*)(=)+\r?$/m', $rawtext);
     // check for expected format
     if (( count($split) != 3 )OR( !is_string(@$split[ 1 ]) ) ) {
         error('Samba configuration file smb4.conf differs from expected format.');
@@ -124,7 +124,7 @@ function samba_writeconfig( $newconfig, $removeglobals = false )
     // start work on the globals section
     foreach ( $newconfig[ 'global' ] as $name => $value ) {
         $split[ 1 ] = preg_replace(
-            '/^[ ]*(' . $name . ')[ ]*\=[ ]*(.*)$/Um',
+            '/^[ ]*(' . $name . ')[ ]*=[ ]*(.*)$/Um',
             trim($name) . ' = ' . trim($value), $split[ 1 ], 1, $pregcount 
         );
         if ($pregcount < 1 ) {
@@ -136,7 +136,7 @@ function samba_writeconfig( $newconfig, $removeglobals = false )
     if (is_array($removeglobals) ) {
         foreach ( $removeglobals as $name ) {
             $split[ 1 ] = preg_replace(
-                '/^[ ]*(' . $name . ')[ ]*\=[ ]*(.*)$/Um',
+                '/^[ ]*(' . $name . ')[ ]*=[ ]*(.*)$/Um',
                 '', $split[ 1 ] 
             );
         }
@@ -148,7 +148,7 @@ function samba_writeconfig( $newconfig, $removeglobals = false )
     foreach ( $sambaalias as $mastervariable => $aliasvars ) {
         foreach ( $aliasvars as $aliasvar ) {
             $split[ 1 ] = preg_replace(
-                '/^[ ]*(' . $aliasvar . ')[ ]*\=[ ]*(.*)$/Um', '',
+                '/^[ ]*(' . $aliasvar . ')[ ]*=[ ]*(.*)$/Um', '',
                 $split[ 1 ] 
             );
         }
@@ -156,7 +156,7 @@ function samba_writeconfig( $newconfig, $removeglobals = false )
     foreach ( $invertedalias as $mastervariable => $invertedvars ) {
         foreach ( $invertedvars as $invertedvar ) {
             $split[ 1 ] = preg_replace(
-                '/^[ ]*(' . $invertedvar . ')[ ]*\=[ ]*(.*)$/Um', '',
+                '/^[ ]*(' . $invertedvar . ')[ ]*=[ ]*(.*)$/Um', '',
                 $split[ 1 ] 
             );
         }
@@ -279,7 +279,7 @@ function samba_removesharepath_recursive( $mountpoint )
     $changed = false;
     if (@is_array($sambaconf[ 'shares' ]) ) {
         foreach ( $sambaconf[ 'shares' ] as $sharename => $sharedata ) {
-            if (substr($sharedata[ 'path' ], 0, strlen($mountpoint)) == $mountpoint ) {
+            if (strpos($sharedata['path'], $mountpoint) === 0) {
                 // remove share from array
                 unset($sambaconf[ 'shares' ][ $sharename ]);
                 $changed = true;
@@ -290,9 +290,9 @@ function samba_removesharepath_recursive( $mountpoint )
         // write new configuration and return true
         samba_writeconfig($sambaconf);
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 function samba_remove_user( $username )
@@ -331,7 +331,7 @@ function samba_remove_user( $username )
 
 function samba_remove_group( $groupname )
 {
-    if (strlen($groupname) > 0 ) {
+    if ($groupname != '') {
         samba_remove_user('+' . $groupname);
         samba_remove_user('@' . $groupname);
     }
@@ -355,10 +355,8 @@ function samba_usergroups()
     // standardusers part of GID 1000
     $standardusers = array();
     foreach ( $sysusers as $user ) {
-        if ($user[ 'groupid' ] == 1000 ) {
-            if (( $user[ 'userid' ] > 1000 )AND( $user[ 'userid' ] < 65533 ) ) {
-                $standardusers[ ( int )$user[ 'userid' ] ] = $user[ 'username' ];
-            }
+        if (($user['groupid'] == 1000) && ($user['userid'] > 1000) and ($user['userid'] < 65533)) {
+            $standardusers[ ( int )$user[ 'userid' ] ] = $user[ 'username' ];
         }
     }
 
@@ -366,7 +364,7 @@ function samba_usergroups()
     $groupusers = array();
     foreach ( $sysgroups as $group ) {
         if (( $group[ 'groupid' ] > 1000 )AND( $group[ 'groupid' ] < 65533 ) ) {
-            if (strlen(trim($group[ 'users' ])) > 0 ) {
+            if (trim($group['users']) !== '') {
                 $groupusers[ $group[ 'groupname' ] ] = explode(',', $group[ 'users' ]);
             } else {
                 $groupusers[ $group[ 'groupname' ] ] = array();
@@ -378,7 +376,7 @@ function samba_usergroups()
     $rejectedusers = array();
     foreach ( $groupusers as $groupname => $userlist ) {
         foreach ( $userlist as $user ) {
-            $uid = array_search($user, $standardusers);
+            $uid = array_search($user, $standardusers, true);
             if ($uid > 0 ) {
                 unset($standardusers[ $uid ]);
             } elseif ($sysusers[ $uid ][ 'groupid' ] != 1000 ) {
@@ -432,8 +430,8 @@ function samba_share_permissions( $sambaconf, $sharename )
         return $shareperms;
     }
     // share access defaults
-    $guestok = ( @$sambaconf[ 'shares' ][ $sharename ][ 'guest ok' ] == 'yes' );
-    $readonly = ( @$sambaconf[ 'shares' ][ $sharename ][ 'read only' ] != 'no' );
+    $guestok = ( @$sambaconf[ 'shares' ][ $sharename ][ 'guest ok' ] === 'yes' );
+    $readonly = ( @$sambaconf[ 'shares' ][ $sharename ][ 'read only' ] !== 'no' );
     // check guest access
     if (!$guestok ) {
         $shareperms[ 'noaccess' ][] = 'guest';
@@ -452,7 +450,7 @@ function samba_share_permissions( $sambaconf, $sharename )
         $accesslist_array = @explode(' ', $sambaconf[ 'shares' ][ $sharename ][ $alname ]);
         if (!empty($accesslist_array)AND is_array($accesslist_array) ) {
             foreach ( $accesslist_array as $listitem ) {
-                if (strlen(trim($listitem)) > 0 ) {
+                if (trim($listitem) !== '') {
                     $shareperms[ $spname ][] = trim($listitem);
                 }
             }
@@ -463,13 +461,13 @@ function samba_share_permissions( $sambaconf, $sharename )
 
 function samba_share_accesstype( $perm )
 {
-    if (@$perm[ 'fullaccess' ][ 0 ] == 'guest' ) {
+    if (@$perm[ 'fullaccess' ][ 0 ] === 'guest' ) {
         return 'public';
     }
     if (@empty($perm[ 'fullaccess' ])AND @empty($perm[ 'readonly' ]) ) {
         return 'noaccess';
     }
-    if (( @$perm[ 'fullaccess' ][ 0 ] == '@share' )AND @empty($perm[ 'readonly' ]) ) {
+    if (( @$perm[ 'fullaccess' ][ 0 ] === '@share' )AND @empty($perm[ 'readonly' ]) ) {
         return 'protected';
     }
     if (( @count($perm[ 'fullaccess' ]) == 1 )AND @empty($perm[ 'readonly' ]) ) {
@@ -477,9 +475,9 @@ function samba_share_accesstype( $perm )
     }
     return 'custom';
 
-    if (@$perm[ 'readonly' ][ 0 ] == 'guest' ) {
+    if (@$perm[ 'readonly' ][ 0 ] === 'guest' ) {
         $atype = 'public';
-    } elseif (in_array('@share', @$perm[ 'noaccess' ]) ) {
+    } elseif (in_array('@share', @$perm['noaccess'], true)) {
         $atype = 'access disabled';
     } else {
         $atype = '?';

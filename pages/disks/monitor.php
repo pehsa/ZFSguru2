@@ -6,14 +6,14 @@ function content_disks_monitor()
 
     // filter
     $filter = @$_GET[ 'filter' ];
-    if (strlen($filter) < 1 ) {
+    if ($filter == '') {
         $filter = '^(gpt|label)\/';
     }
 
     // execute gstat command (with elevated privileges)
-    if ($filter == '-a' ) {
+    if ($filter === '-a' ) {
         $result = super_execute('/usr/sbin/gstat -b -a');
-    } elseif ($filter == '-all' ) {
+    } elseif ($filter === '-all' ) {
         $result = super_execute('/usr/sbin/gstat -b');
     } else {
         $result = super_execute('/usr/sbin/gstat -b -f "' . $filter . '"');
@@ -40,4 +40,4 @@ function content_disks_monitor()
     return $newtags;
 }
 
-?>
+

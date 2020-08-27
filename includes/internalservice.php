@@ -9,8 +9,7 @@ function internalservice_querystart( $svc )
     $iservices = internalservice_fetch();
 
     // query autostart of $svc
-    $running = service_isprocessrunning(@$iservices[ $svc ][ 'process' ]);
-    return $running;
+    return service_isprocessrunning(@$iservices[ $svc ][ 'process' ]);
 }
 
 function internalservice_queryautostart( $svc )
@@ -46,9 +45,11 @@ function internalservice_autostart( $svc, $autostart = true )
         return false;
     }
     $current = internalservice_queryautostart($svc);
-    if ($current AND $autostart ) {
+    if ($current AND $autostart) {
         return true;
-    } elseif (!$current AND!$autostart ) {
+    }
+
+    if (!$current AND!$autostart) {
         return true;
     }
     foreach ( $rclist as $rcfragment ) {
@@ -69,9 +70,11 @@ function internalservice_isrunning_pf()
     // gather info
     $result = super_execute('/sbin/pfctl -s info');
 
-    if (preg_match('/^Status\: Enabled/m', $result[ 'output_str' ]) ) {
+    if (preg_match('/^Status\: Enabled/m', $result[ 'output_str' ])) {
         return true;
-    } elseif (preg_match('/^Status\: Disabled/m', $result[ 'output_str' ]) ) {
+    }
+
+    if (preg_match('/^Status\: Disabled/m', $result[ 'output_str' ])) {
         return false;
     } else {
         page_feedback('could not determine pf firewall status', 'a_warning');

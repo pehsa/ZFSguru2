@@ -22,15 +22,16 @@ function super_execute( $command, $raw_output = false, $redirect_output = true )
         'output_arr' => $result,
         'output_str' => $result_str
         );
-    } else {
-        // raw output
-        if ($redirect_output ) {
-            system('/usr/local/bin/sudo ' . $command . ' 2>&1', $rv);
-        } else {
-            system('/usr/local/bin/sudo ' . $command, $rv);
-        }
-        return $rv;
     }
+
+    // raw output
+    if ($redirect_output ) {
+        system('/usr/local/bin/sudo ' . $command . ' 2>&1', $rv);
+    } else {
+        system('/usr/local/bin/sudo ' . $command, $rv);
+    }
+
+    return $rv;
 }
 
 function super_script( $script_name, $parameters = '' )
@@ -40,6 +41,6 @@ function super_script( $script_name, $parameters = '' )
         error('HARD ERROR: no script name!');
     }
     $command = '/scripts/' . $script_name . '.sh ' . $parameters;
-    $result = super_execute($guru[ 'docroot' ] . $command);
-    return $result;
+
+    return super_execute($guru[ 'docroot' ] . $command);
 }

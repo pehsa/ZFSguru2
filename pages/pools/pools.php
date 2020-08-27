@@ -15,7 +15,7 @@ function content_pools_pools()
     // table: import pool
     $table_importpool = array();
     if (@isset($_POST[ 'import_pool' ])OR @isset($_POST[ 'import_pool_deleted' ]) ) {
-        $importdestroyed = ( @isset($_POST[ 'import_pool_deleted' ]) ) ? true : false;
+        $importdestroyed = @isset($_POST[ 'import_pool_deleted' ]);
         if ($importdestroyed ) {
             $importables = zfs_pool_import_list(true);
         } else {
@@ -74,7 +74,7 @@ function table_pools_poollist()
     foreach ( $zpools as $poolname => $pooldata ) {
         $class = ( @$_GET[ 'query' ] == $poolname ) ? 'activerow' : 'normal';
         $poolspa = zfs_pool_version($poolname);
-        $zpool_status = `zpool status $poolname`;
+        $zpool_status = shell_exec("zpool status \$poolname");
         if (strpos($zpool_status, 'raidz3') !== false ) {
             $redundancy = 'RAID7 (triple parity)';
         } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -87,21 +87,21 @@ function table_pools_poollist()
             $redundancy = 'RAID0 (no redundancy)';
         }
         $statusclass = 'normal';
-        if ($pooldata[ 'status' ] == 'ONLINE' ) {
+        if ($pooldata[ 'status' ] === 'ONLINE' ) {
             $statusclass = 'green pool_online';
-        } elseif ($pooldata[ 'status' ] == 'FAULTED'
-            OR $pooldata[ 'status' ] == 'UNAVAIL' 
+        } elseif ($pooldata[ 'status' ] === 'FAULTED'
+            OR $pooldata[ 'status' ] === 'UNAVAIL'
         ) {
             $statusclass = 'red pool_faulted';
-            if ($class == 'normal' ) {
+            if ($class === 'normal' ) {
                 $class = 'failurerow pool_faulted';
             }
         }
-        elseif ($pooldata[ 'status' ] == 'DEGRADED'
-            OR $pooldata[ 'status' ] == 'OFFLINE' 
+        elseif ($pooldata[ 'status' ] === 'DEGRADED'
+            OR $pooldata[ 'status' ] === 'OFFLINE'
         ) {
             $statusclass = 'amber pool_degraded';
-            if ($class == 'normal' ) {
+            if ($class === 'normal' ) {
                 $class = 'warningrow pool_degraded';
             }
         }
@@ -132,10 +132,10 @@ function submit_pools_importpool()
     // scan POST variables for hidden or destroyed pool import buttons
     $result = false;
     foreach ( $_POST as $var => $value ) {
-        if (substr($var, 0, strlen('import_hidden_')) == 'import_hidden_' ) {
+        if (strpos($var, 'import_hidden_') === 0) {
             $poolid = substr($var, strlen('import_hidden_'));
             $result = zfs_pool_import($poolid, false);
-        } elseif (substr($var, 0, strlen('import_destroyed_')) == 'import_destroyed_' ) {
+        } elseif (strpos($var, 'import_destroyed_') === 0) {
             $poolid = substr($var, strlen('import_destroyed_'));
             $result = zfs_pool_import($poolid, true);
         }

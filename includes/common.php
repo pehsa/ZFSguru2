@@ -57,7 +57,7 @@ function sizehuman( $bytes, $precision = 0 )
     $bytes = max($bytes, 0);
     $pow = floor(( $bytes ? log($bytes) : 0 ) / log(1000));
     $pow = min($pow, count($units) - 1);
-    $bytes /= pow(1000, $pow);
+    $bytes /= 1000 ** $pow;
     return round($bytes, $precision) . ' ' . $units[ $pow ];
 }
 
@@ -67,7 +67,7 @@ function sizebinary( $bytes, $precision = 0 )
     $bytes = max($bytes, 0);
     $pow = floor(( $bytes ? log($bytes) : 0 ) / log(1024));
     $pow = min($pow, count($units) - 1);
-    $bytes /= pow(1024, $pow);
+    $bytes /= 1024 ** $pow;
     return round($bytes, $precision) . ' ' . $units[ $pow ];
 }
 
@@ -114,21 +114,21 @@ function powercache_read( $element = false, $serve_expired = false )
         $arr = @unserialize($raw);
         if (!is_array($arr) ) {
             return false;
-        } else {
-            $guru[ 'powercache' ] = $arr;
         }
+
+        $guru[ 'powercache' ] = $arr;
     } else {
         $arr = $guru[ 'powercache' ];
     }
 
     // check for element
     if (@isset($arr[ $element ]) ) {
-        $expired = ( @$arr[ $element ][ 'expiry' ] <= time() ) ? true : false;
+        $expired = @$arr[ $element ][ 'expiry' ] <= time();
         if (( !$expired )OR( $expired AND $serve_expired ) ) {
             return $arr[ $element ][ 'data' ];
-        } else {
-            return false;
         }
+
+        return false;
     } else {
         return false;
     }
@@ -172,18 +172,18 @@ function powercache_purge( $element = false )
         @unlink($guru[ 'docroot' ] . '/config/cache.bin');
         unset($guru[ 'powercache' ]);
         return true;
-    } else {
-        // purge specific element
-
-        // check if powercache has been read first
-        if (!@isset($guru[ 'powercache' ]) ) {
-            powercache_read();
-        }
-
-        // unset element and store cache.bin
-        unset($guru[ 'powercache' ][ $element ]);
-        powercache_store();
     }
+
+    // purge specific element
+
+    // check if powercache has been read first
+    if (!@isset($guru[ 'powercache' ]) ) {
+        powercache_read();
+    }
+
+    // unset element and store cache.bin
+    unset($guru[ 'powercache' ][ $element ]);
+    powercache_store();
 }
 
 /* query functions */

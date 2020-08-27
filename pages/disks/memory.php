@@ -25,11 +25,11 @@ function content_disks_memory()
     if (@is_array($disks) ) {
         foreach ( $disks as $diskname => $data ) {
             // skip if not a memory disk
-            if (substr($diskname, 0, strlen('md')) != 'md' ) {
+            if (strpos($diskname, 'md') !== 0) {
                 continue;
-            } else {
-                $mdarr[ ( int )substr($diskname, strlen('md')) ] = true;
             }
+
+            $mdarr[ ( int )substr($diskname, strlen('md')) ] = true;
             // active row (unused)
             $class_activerow = ( $querydisk == $diskname ) ? 'activerow' : 'normal';
             // acquire GNOP sector size (for sectorsize override)
@@ -58,7 +58,7 @@ function content_disks_memory()
                 $labelstr .= 'GEOM: ' . @htmlentities($labels[ $diskname ]);
             }
             if (@strlen($gpart[ $diskname ][ 'label' ]) > 0 ) {
-                if (strlen($labelstr) > 0 ) {
+                if ($labelstr !== '') {
                     $labelstr .= '<br />';
                 }
                 $labelstr .= 'GPT: ' . @htmlentities($gpart[ $diskname ][ 'label' ]);
@@ -143,10 +143,10 @@ function submit_disks_memory()
 
     // destroy memory disk
     foreach ( $_POST as $name => $value ) {
-        if (substr($name, 0, strlen('md_destroy_md')) == 'md_destroy_md' ) {
+        if (strpos($name, 'md_destroy_md') === 0) {
             $mdunit = substr($name, strlen('md_destroy_md'));
             $data = disk_detect_memorydisk($mdunit);
-            if (@$data[ $mdunit ][ 'backing' ] == 'vnode' ) {
+            if (@$data[ $mdunit ][ 'backing' ] === 'vnode' ) {
                 // handle vnode (file backed) memory disks differently
                 $file = $data[ $mdunit ][ 'file' ];
                 if (file_exists($file) ) {
@@ -180,7 +180,7 @@ function submit_disks_memory()
         // remove file
         if (file_exists($file) ) {
             $commands = array(
-            '/sbin/mdconfig -d -u ' . ( int )$mdunit,
+            '/sbin/mdconfig -d -u ' .$mdunit,
             '/bin/rm -f ' . $file
             );
             dangerouscommand($commands, $url);
@@ -204,7 +204,7 @@ function submit_disks_memory()
     if (@isset($_POST[ 'md_create' ]) ) {
         // unit
         $unit = '';
-        if (( @$_POST[ 'md_unit' ] != 'auto' )AND( strlen(@$_POST[ 'md_unit' ]) > 0 ) ) {
+        if (( @$_POST[ 'md_unit' ] !== 'auto' )AND(@$_POST['md_unit'] != '') ) {
             $unit = ' -u ' . ( int )$_POST[ 'md_unit' ];
         }
         // type (malloc, swap or vnode)
@@ -213,10 +213,10 @@ function submit_disks_memory()
         $size = @$_POST[ 'md_size' ] . @$_POST[ 'md_size_unit' ];
         // options
         $options = '';
-        if (@$_POST[ 'md_type' ] == 'vnode' ) {
+        if (@$_POST[ 'md_type' ] === 'vnode' ) {
             // sanity checks
             $file = @$_POST[ 'md_file' ];
-            if (strlen($file) < 1 ) {
+            if ($file == '') {
                 friendlyerror('please provide a file name when using file backing', $url);
             }
             if (!is_dir(dirname($file)) ) {
@@ -225,26 +225,24 @@ function submit_disks_memory()
                     . dirname($file) . '" does not exist', $url 
                 );
             }
-            if ($file {           0          } != '/' 
+            if ($file {           0          } !== '/'
             ) {
                 friendlyerror('please use a full path starting with "/" character', $url);
             }
-            if (file_exists($file) ) {
-                if (!is_file($file) ) {
-                    friendlyerror(
-                        'the file you provided is either a directory or special '
-                        . 'file (symbolic link, device)', $url 
-                    );
-                }
+            if (file_exists($file) && !is_file($file)) {
+                friendlyerror(
+                    'the file you provided is either a directory or special '
+                    . 'file (symbolic link, device)', $url
+                );
             }
             // determine real size in bytes
-            if (@$_POST[ 'md_size_unit' ] == 't' ) {
+            if (@$_POST[ 'md_size_unit' ] === 't' ) {
                 $realsize = @$_POST[ 'md_size' ] * 1024 * 1024 * 1024 * 1024;
-            } elseif (@$_POST[ 'md_size_unit' ] == 'g' ) {
+            } elseif (@$_POST[ 'md_size_unit' ] === 'g' ) {
                 $realsize = @$_POST[ 'md_size' ] * 1024 * 1024 * 1024;
-            } elseif (@$_POST[ 'md_size_unit' ] == 'm' ) {
+            } elseif (@$_POST[ 'md_size_unit' ] === 'm' ) {
                 $realsize = @$_POST[ 'md_size' ] * 1024 * 1024;
-            } elseif (@$_POST[ 'md_size_unit' ] == 'k' ) {
+            } elseif (@$_POST[ 'md_size_unit' ] === 'k' ) {
                 $realsize = @$_POST[ 'md_size' ] * 1024;
             } else {
                 $realsize = @$_POST[ 'md_size' ] * @$_POST[ 'md_sectorsize' ];
@@ -266,23 +264,21 @@ function submit_disks_memory()
             // finally, add file to options string
             $options = '-f ' . $file . ' ';
         }
-        if (@$_POST[ 'md_opt_reserve' ] == 'on' ) {
+        if (@$_POST[ 'md_opt_reserve' ] === 'on' ) {
             $options .= '-o reserve ';
         }
-        if (@$_POST[ 'md_opt_compress' ] == 'on' ) {
+        if (@$_POST[ 'md_opt_compress' ] === 'on' ) {
             $options .= '-o compress ';
         }
-        if (@$_POST[ 'md_opt_readonly' ] == 'on' ) {
+        if (@$_POST[ 'md_opt_readonly' ] === 'on' ) {
             $options .= '-o readonly ';
         }
         // sector size 
-        if (@$_POST[ 'md_sectorsize' ] != 512 ) {
-            if (( int )@$_POST[ 'md_sectorsize' ] > 0 ) {
-                $options .= '-S ' . ( int )$_POST[ 'md_sectorsize' ];
-            }
+        if ((@$_POST['md_sectorsize'] != 512) && ( int )@$_POST['md_sectorsize'] > 0) {
+            $options .= '-S ' . ( int )$_POST[ 'md_sectorsize' ];
         }
         // defer to dangerouscommand function
-        if ($type == 'vnode' ) {
+        if ($type === 'vnode' ) {
             $command = '/sbin/mdconfig -a -t ' . $type . ' ' . $options . $unit;
         } else {
             $command = '/sbin/mdconfig -a -t ' . $type . ' -s ' . $size . ' ' . $options . $unit;

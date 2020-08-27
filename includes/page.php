@@ -48,20 +48,18 @@ function page_processtags( $source )
 
     // process table tags
     foreach ( $requestedtags as $id => $tag ) {
-        if (substr($tag, 0, strlen('TABLE_')) == 'TABLE_' ) {
-            if (substr($tag, -4) != '_END' ) {
-                $startpos = strpos($source, $tag);
-                $endpos = strpos($source, $tag);
-                $preg_table = '/\%\%(' . $tag . ')\%\%(.*)\%\%(' . $tag . '_END)\%\%/Usm';
-                $source = preg_replace_callback(
-                    $preg_table, 'page_callback_tableprocessor',
-                    $source 
-                );
-                unset($requestedtags[ $id ]);
-                $endid = @array_search($tag . '_END', $requestedtags);
-                if (@is_int($endid) ) {
-                    unset($requestedtags[ $endid ]);
-                }
+        if ((substr($tag, 0, strlen('TABLE_')) == 'TABLE_') && substr($tag, -4) != '_END') {
+            $startpos = strpos($source, $tag);
+            $endpos = strpos($source, $tag);
+            $preg_table = '/\%\%(' . $tag . ')\%\%(.*)\%\%(' . $tag . '_END)\%\%/Usm';
+            $source = preg_replace_callback(
+                $preg_table, 'page_callback_tableprocessor',
+                $source
+            );
+            unset($requestedtags[ $id ]);
+            $endid = @array_search($tag . '_END', $requestedtags);
+            if (@is_int($endid) ) {
+                unset($requestedtags[ $endid ]);
             }
         }
     }
@@ -110,9 +108,9 @@ function page_resolvetag( $tag, $source )
     global $tags;
     if (@isset($tags[ $tag ]) ) {
         return $tags[ $tag ];
-    } else {
-        return '';
     }
+
+    return '';
 }
 
 function page_callback_tableprocessor( $data ) 
@@ -204,7 +202,7 @@ function content_handle_path( $pagepath, $cat, $pagename,
     // working in docroot or not?
     $prefix = ( $pagepath {
     0
-    } == '/' ) ? '' : $guru[ 'docroot' ];
+    } === '/' ) ? '' : $guru[ 'docroot' ];
 
     // read page file
     $page = @file_get_contents($prefix . $pagepath . '.page');
@@ -218,15 +216,11 @@ function content_handle_path( $pagepath, $cat, $pagename,
     }
 
     // call submit function if applicable
-    if (@isset($_POST[ 'handle' ]) ) {
-        if (@function_exists('submit_' . $_POST[ 'handle' ]) ) {
-            if (!$skip_submit ) {
-                if ($data === false ) {
-                    $submittags = call_user_func('submit_' . $_POST[ 'handle' ]);
-                } else {
-                    $submittags = call_user_func('submit_' . $_POST[ 'handle' ], $data);
-                }
-            }
+    if (@isset($_POST['handle']) && @function_exists('submit_'.$_POST['handle']) && !$skip_submit) {
+        if ($data === false ) {
+            $submittags = call_user_func('submit_' . $_POST[ 'handle' ]);
+        } else {
+            $submittags = call_user_func('submit_' . $_POST[ 'handle' ], $data);
         }
     }
                 // inject all content tags into main $tags array
@@ -240,9 +234,9 @@ function content_handle_path( $pagepath, $cat, $pagename,
     $pagefunction = 'content_' . $cat . '_' . $pagename;
     if (@function_exists($pagefunction) ) {
         if ($data ) {
-            $contenttags = call_user_func($pagefunction, $data);
+            $contenttags = $pagefunction($data);
         } else {
-            $contenttags = call_user_func($pagefunction);
+            $contenttags = $pagefunction();
         }
     }
 
@@ -272,7 +266,7 @@ function content_handle_path( $pagepath, $cat, $pagename,
     // process stylesheet if existent
     $stylepath = $pagepath . '.css';
     if (@is_readable($stylepath) ) {
-        if ($stylepath {        0        } == '/' 
+        if (strpos($stylepath, '/') === 0
         ) {
             // use inline CSS for absolute pathnames
             $css_code = @file_get_contents($stylepath);
@@ -283,10 +277,8 @@ function content_handle_path( $pagepath, $cat, $pagename,
     }
 
     // process tags
-    $processed = page_processtags($page);
-
     // output processed string handled by page handler as %%CONTENT%% tag
-    return $processed;
+    return page_processtags($page);
 }
 
 
@@ -329,7 +321,7 @@ function page_register_javascript( $js_file )
 
 function page_feedback( $feedback, $style = 'c_notice' )
 {
-    if (!@in_array($_SESSION[ 'feedback' ][ $style ], $feedback) ) {
+    if (!@in_array($_SESSION['feedback'][$style], $feedback, true)) {
         $_SESSION[ 'feedback' ][ $style ][ $feedback ] = $feedback;
     }
 }

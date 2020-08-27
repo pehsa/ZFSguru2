@@ -17,12 +17,12 @@ function content_network_network()
         // check interface type
         $iftype = network_checkinterface($ifname);
         // classes
-        $class_activerow = ( ( strlen($ifname) > 0 )AND( $ifname == $queryif ) ) ?
+        $class_activerow = ( ($ifname != '')AND( $ifname == $queryif ) ) ?
         'activerow' : 'normal';
-        $class_wired = ( $iftype == 'wired' ) ? 'normal' : 'hidden';
-        $class_wireless = ( $iftype == 'wireless' ) ? 'normal' : 'hidden';
-        $class_loopback = ( $iftype == 'loopback' ) ? 'normal' : 'hidden';
-        $class_other = ( $iftype == 'other' ) ? 'normal' : 'hidden';
+        $class_wired = ( $iftype === 'wired' ) ? 'normal' : 'hidden';
+        $class_wireless = ( $iftype === 'wireless' ) ? 'normal' : 'hidden';
+        $class_loopback = ( $iftype === 'loopback' ) ? 'normal' : 'hidden';
+        $class_other = ( $iftype === 'other' ) ? 'normal' : 'hidden';
 
         // ident
         $ident_maxlen = 50;
@@ -33,7 +33,7 @@ function content_network_network()
             $ident = htmlentities($ifdata[ 'ident' ]);
         }
         // manual ident for loopback adapter
-        if ($ifname == 'lo0' ) {
+        if ($ifname === 'lo0' ) {
             $ident = 'Loopback adapter (special system adapter)';
         }
 

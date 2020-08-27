@@ -15,7 +15,7 @@ function content_disks_smart()
     $disks = disk_detect_physical();
 
     // queried disk
-    $query = ( strlen(@$_GET[ 'query' ]) > 0 ) ? $_GET[ 'query' ] : false;
+    $query = (@$_GET['query'] != '') ? $_GET[ 'query' ] : false;
 
     // query all button (stores in $_SESSION['smart'])
     if (@isset($_GET[ 'queryall' ]) ) {
@@ -50,8 +50,8 @@ function content_disks_smart()
     $sorted = $disks;
     $sortsuffix = array();
     $sort = @$_GET[ 'sort' ];
-    $invertedsort = ( @isset($_GET[ 'inverted' ]) ) ? true : false;
-    if (strlen($sort) > 0 ) {
+    $invertedsort = @isset($_GET[ 'inverted' ]);
+    if ($sort != '') {
         uasort($sorted, 'sort_disks');
     }
     if (!$invertedsort AND $sort ) {
@@ -69,13 +69,13 @@ function content_disks_smart()
 
         // classes
         $class_activerow = ( $diskname == $query ) ? 'activerow' : 'normal';
-        $class_hdd = ( $disktype == 'hdd' ) ? 'normal' : 'hidden';
-        $class_ssd = ( $disktype == 'ssd' ) ? 'normal' : 'hidden';
-        $class_flash = ( $disktype == 'flash' ) ? 'normal' : 'hidden';
-        $class_memdisk = ( $disktype == 'memdisk' ) ? 'normal' : 'hidden';
-        $class_usbstick = ( $disktype == 'usbstick' ) ? 'normal' : 'hidden';
-        $class_network = ( $disktype == 'network' ) ? 'normal' : 'hidden';
-        $class_status = ( @$_SESSION[ 'smart' ][ $diskname ][ 'status' ] == 'Healthy' ) ?
+        $class_hdd = ( $disktype === 'hdd' ) ? 'normal' : 'hidden';
+        $class_ssd = ( $disktype === 'ssd' ) ? 'normal' : 'hidden';
+        $class_flash = ( $disktype === 'flash' ) ? 'normal' : 'hidden';
+        $class_memdisk = ( $disktype === 'memdisk' ) ? 'normal' : 'hidden';
+        $class_usbstick = ( $disktype === 'usbstick' ) ? 'normal' : 'hidden';
+        $class_network = ( $disktype === 'network' ) ? 'normal' : 'hidden';
+        $class_status = ( @$_SESSION[ 'smart' ][ $diskname ][ 'status' ] === 'Healthy' ) ?
         'green smart_status_healthy' : 'red smart_status_nothealthy';
         $class_showtempsect = ( @isset($_SESSION[ 'smart' ][ $diskname ]) ) ?
         'normal' : 'hidden';
@@ -88,11 +88,11 @@ function content_disks_smart()
         }
 
         // no SMART data present
-        if ($class_showtempsect == 'hidden' ) {
+        if ($class_showtempsect === 'hidden' ) {
             $status = 'Unknown';
             $class_status = 'smart_status_incapable';
         }
-        if ($status == 'SMART incapable' ) {
+        if ($status === 'SMART incapable' ) {
             $class_status = 'grey smart_status_nothealthy';
         }
 
@@ -157,13 +157,13 @@ function content_disks_smart()
         if (is_numeric($lccrate)AND( $lccrate <= $thres[ 'lcc_rate' ] ) ) {
             $class_advice_highlccrate = 'normal';
         }
-        if (@strtoupper($_SESSION[ 'smart' ][ $diskname ][ 'status' ]) == 'IN_THE_PAST' ) {
+        if (@strtoupper($_SESSION[ 'smart' ][ $diskname ][ 'status' ]) === 'IN_THE_PAST' ) {
             $class_advice_inthepast = 'normal';
         }
-        if (@$_SESSION[ 'smart' ][ $diskname ][ 'status' ] == 'Failure' ) {
+        if (@$_SESSION[ 'smart' ][ $diskname ][ 'status' ] === 'Failure' ) {
             $class_advice_unknownfailure = 'normal';
         }
-        if (( $class_advice_activesect == 'hidden' )AND( $class_advice_cableerrors == 'hidden' )AND( $class_advice_criticaltemp == 'hidden' )AND( $class_advice_hightemp == 'hidden' )AND( $class_advice_passivesect == 'hidden' )AND( $class_advice_inthepast == 'hidden' )AND( @strtoupper($_SESSION[ 'smart' ][ $diskname ][ 'status' ]) == 'FAILURE' ) ) {
+        if (( $class_advice_activesect === 'hidden' )AND( $class_advice_cableerrors === 'hidden' )AND( $class_advice_criticaltemp === 'hidden' )AND( $class_advice_hightemp === 'hidden' )AND( $class_advice_passivesect === 'hidden' )AND( $class_advice_inthepast === 'hidden' )AND( @strtoupper($_SESSION[ 'smart' ][ $diskname ][ 'status' ]) === 'FAILURE' ) ) {
             $class_advice_unknownfailure = 'normal';
         }
         if (@!isset($_SESSION[ 'smart' ][ $diskname ]) ) {
@@ -172,7 +172,7 @@ function content_disks_smart()
     }
 
     // set no problems advice if applicable
-    if (( $class_advice_activesect == 'hidden' )AND( $class_advice_cableerrors == 'hidden' )AND( $class_advice_criticaltemp == 'hidden' )AND( $class_advice_hightemp == 'hidden' )AND( $class_advice_passivesect == 'hidden' )AND( $class_advice_highlccrate == 'hidden' )AND( $class_advice_inthepast == 'hidden' )AND( $class_advice_unknownfailure == 'hidden' )AND( $class_advice_needscan == 'hidden' ) ) {
+    if (( $class_advice_activesect === 'hidden' )AND( $class_advice_cableerrors === 'hidden' )AND( $class_advice_criticaltemp === 'hidden' )AND( $class_advice_hightemp === 'hidden' )AND( $class_advice_passivesect === 'hidden' )AND( $class_advice_highlccrate === 'hidden' )AND( $class_advice_inthepast === 'hidden' )AND( $class_advice_unknownfailure === 'hidden' )AND( $class_advice_needscan === 'hidden' ) ) {
         $class_advice_noproblems = 'normal';
     }
 
@@ -241,27 +241,27 @@ function sort_disks( $a, $b )
 
     // set easy to search attributes
     $attr = false;
-    if ($sort == 'disk' ) {
+    if ($sort === 'disk' ) {
         $attr = 'disk_name';
-    } elseif ($sort == 'status' ) {
+    } elseif ($sort === 'status' ) {
         $attr = 'status';
-    } elseif ($sort == 'temp' ) {
+    } elseif ($sort === 'temp' ) {
         $attr = 'temp_c';
-    } elseif ($sort == 'power' ) {
+    } elseif ($sort === 'power' ) {
         $attr = 'power_cycles';
-    } elseif ($sort == 'lcc' ) {
+    } elseif ($sort === 'lcc' ) {
         $attr = 'load_cycles';
-    } elseif ($sort == 'cable' ) {
+    } elseif ($sort === 'cable' ) {
         $attr = 'cable_errors';
-    } elseif ($sort == 'badsect' ) {
+    } elseif ($sort === 'badsect' ) {
         $attr = 'pending_sectors';
-    } elseif ($sort == 'lifetime' ) {
+    } elseif ($sort === 'lifetime' ) {
         $attr = 'power_on_hours';
     } else {
         error('invalid sort string');
     }
 
-    if ($sort == 'disk' ) {
+    if ($sort === 'disk' ) {
         $aa = @$a[ 'disk_name' ];
         $bb = @$b[ 'disk_name' ];
     } elseif ($attr ) {
@@ -275,9 +275,11 @@ function sort_disks( $a, $b )
     }
 
     // compare aa to bb
-    if ($aa == $bb ) {
+    if ($aa == $bb) {
         return 0;
-    } elseif ($invertedsort ) {
+    }
+
+    if ($invertedsort) {
         return ( $aa < $bb ) ? 1 : -1;
     } else {
         return ( $aa < $bb ) ? -1 : 1;
