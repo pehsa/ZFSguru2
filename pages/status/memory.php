@@ -1,6 +1,9 @@
 <?php
 
-function content_status_memory() 
+/**
+ * @return array
+ */
+function content_status_memory()
 {
     global $guru;
 
@@ -82,13 +85,13 @@ function content_status_memory()
     $swapsize = sizebinary($topswap[ 'total' ], 1);
     $class_swap = ( ( int )$topswap[ 'total' ] > 0 ) ? 'normal' : 'hidden';
     $class_noswap = ( ( int )$topswap[ 'total' ] > 0 ) ? 'hidden' : 'normal';
-    $swap = array(
+    $swap = [
     'used' => @round(( $topswap[ 'used' ] * 100 ) / $topswap[ 'total' ], 1),
     'free' => @round(( $topswap[ 'free' ] * 100 ) / $topswap[ 'total' ], 1)
-    );
+    ];
 
     // export tags
-    return array(
+    return [
     'PAGE_TITLE' => 'Memory usage',
     'CLASS_SWAP' => $class_swap,
     'CLASS_NOSWAP' => $class_noswap,
@@ -119,9 +122,14 @@ function content_status_memory()
     'GRAPH_SWAPUSED' => $swap[ 'used' ],
     'GRAPH_SWAPFREE' => $swap[ 'free' ],
     'SWAP_SIZE' => $swapsize
-    );
+    ];
 }
 
+/**
+ * @param $string
+ *
+ * @return float|int
+ */
 function convertunitsize( $string )
 {
     if ($string == '') {
@@ -132,13 +140,13 @@ function convertunitsize( $string )
     };
     $int = ( int )substr($string, 0, -1);
     switch ( $lastchar ) {
-    case "K":
+    case 'K':
         return $int * 1024;
-    case "M":
+    case 'M':
         return $int * 1024 * 1024;
-    case "G":
+    case 'G':
         return $int * 1024 * 1024 * 1024;
-    case "T":
+    case 'T':
         return $int * 1024 * 1024 * 1024 * 1024;
     default:
         return $int;

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @param false $section
+ *
+ * @return array|false|mixed
+ */
 function persistent_read( $section = false )
 {
     global $guru;
@@ -17,11 +22,16 @@ function persistent_read( $section = false )
 
     if (@!isset($arr[ $section ])) {
         return false;
-    } else {
-        return $arr[ $section ];
     }
+
+    return $arr[ $section ];
 }
 
+/**
+ * @param $arr
+ *
+ * @return bool|int
+ */
 function persistent_write( $arr )
 {
     global $guru;
@@ -36,6 +46,12 @@ function persistent_write( $arr )
     return file_put_contents($filename, $ser);
 }
 
+/**
+ * @param $sectionname
+ * @param $data
+ *
+ * @return bool|int
+ */
 function persistent_store( $sectionname, $data )
 {
     // read data
@@ -46,12 +62,17 @@ function persistent_store( $sectionname, $data )
     return persistent_write($arr);
 }
 
+/**
+ * @param false $sectionname
+ *
+ * @return bool|int
+ */
 function persistent_remove( $sectionname = false )
 {
     // read data
     $arr = persistent_read();
     if (!is_array($arr) ) {
-        $arr = array();
+        $arr = [];
     }
     // remove section
     if (@isset($arr[ $sectionname ]) ) {

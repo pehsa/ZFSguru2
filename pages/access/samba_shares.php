@@ -1,6 +1,9 @@
 <?php
 
-function content_access_samba_shares() 
+/**
+ * @return array
+ */
+function content_access_samba_shares()
 {
     // required modules
     activate_library('internalservice');
@@ -9,13 +12,13 @@ function content_access_samba_shares()
     // remove NFS share (click on trash bin icon)
     if (@isset($_GET[ 'removeshare' ]) ) {
         $sambaconf = samba_readconfig();
-        if (!@isset($sambaconf[ 'shares' ][ $_GET[ 'removeshare' ] ]) ) {
+        if (@isset($sambaconf['shares'][$_GET['removeshare']])) {
+            samba_removeshare($_GET[ 'removeshare' ]);
+        } else {
             friendlyerror(
                 'cannot remove "' . $_GET[ 'removeshare' ]
-                . '" because the share was not found.', 'access.php?shares' 
+                . '" because the share was not found.', 'access.php?shares'
             );
-        } else {
-            samba_removeshare($_GET[ 'removeshare' ]);
         }
         redirect_url('access.php?shares');
     }
@@ -66,20 +69,16 @@ function content_access_samba_shares()
         } else {
             $newshare_name = @htmlentities($_GET[ 'newshare' ]);
         }
-        $shares_zfsfslist = html_zfsfilesystems(false, @$_GET[ 'newshare' ], true);
+        $shares_zfsfslist = html_zfsfilesystems(false, @$_GET[ 'newshare' ]);
         // set div visibility classes
         $class_query = 'hidden';
         $class_newshare = ( $newshare_name ) ? 'normal' : 'hidden';
         $class_nonewshare = ( !$newshare_name ) ? 'normal' : 'hidden';
-    } elseif (!@isset($sambaconf[ 'shares' ][ $queryshare ]) ) {
-        friendlyerror(
-            'no share with the name <b>' . htmlentities($queryshare)
-            . '</b> exists!', $url 
-        );
-    } else {
+    } elseif (@isset($sambaconf['shares'][$queryshare])) {
         // display only queried share
-        $table_samba_sharelist = array(
-        $queryshare => $table_samba_sharelist[ $queryshare ] );
+        $table_samba_sharelist = [
+        $queryshare => $table_samba_sharelist[ $queryshare ]
+        ];
         $class_query = 'normal';
         $class_noquery = 'hidden';
         $querytarget = @htmlentities($sambaconf[ 'shares' ][ $queryshare ][ 'path' ]);
@@ -101,6 +100,11 @@ function content_access_samba_shares()
         } else {
             $class_grouplist = 'active';
         }
+    } else {
+        friendlyerror(
+            'no share with the name <b>' . htmlentities($queryshare)
+            . '</b> exists!', $url
+        );
     }
 
     // classes
@@ -108,7 +112,7 @@ function content_access_samba_shares()
     $class_nonewshare = ( !@$newshare_name ) ? 'normal' : 'hidden';
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'Samba shares',
     'PAGE_ACTIVETAB' => 'Shares',
     'CLASS_SAMBA_NOTRUNNING' => $class_notrunning,
@@ -145,12 +149,17 @@ function content_access_samba_shares()
     'QUERY_PUBLIC' => $querypublic,
     'NEWSHARE_NAME' => $newshare_name,
     'SHARES_ZFSFSLIST' => $shares_zfsfslist,
-    );
+    ];
 }
 
-function table_samba_sharelist( $sambaconf ) 
+/**
+ * @param $sambaconf
+ *
+ * @return array
+ */
+function table_samba_sharelist( $sambaconf )
 {
-    $table_shares = array();
+    $table_shares = [];
     if (@is_array($sambaconf[ 'shares' ]) ) {
         foreach ( $sambaconf[ 'shares' ] as $sharename => $share ) {
             // set some checkboxes on/off according to data
@@ -174,18 +183,20 @@ function table_samba_sharelist( $sambaconf )
 
             // extra share options
             $share_extra = '';
-            $table_share_extra = array();
+            $table_share_extra = [];
             foreach ( $share as $name => $value ) {
                 if (!in_array(
-                    trim($name), array( 'path', 'comment', 'browseable',
-                    'read only', 'guest ok' ) 
+                    trim($name), [
+                                   'path', 'comment', 'browseable',
+                    'read only', 'guest ok'
+                               ]
                 ) 
                 ) {
-                    $table_share_extra[] = array(
+                    $table_share_extra[] = [
                     'SE_VARNAME' => htmlentities($name),
                     'SE_DISPLAYNAME' => htmlentities(ucfirst($name)),
                     'SE_VALUE' => htmlentities($value)
-                    );
+                    ];
                 }
             }
 
@@ -200,15 +211,17 @@ function table_samba_sharelist( $sambaconf )
             $path_suffix = substr(@$share[ 'path' ], strrpos($share[ 'path' ], '/') + 1);
 
             // set classes for each type
-            $alltypes = array( 'public', 'protected', 'private', 'custom',
-            'noaccess', 'disabled', 'problem' );
+            $alltypes = [
+                'public', 'protected', 'private', 'custom',
+            'noaccess', 'disabled', 'problem'
+            ];
             foreach ( $alltypes as $type ) {
                 $access[ $type ] = 'hidden';
             }
             $access[ $access_type ] = 'normal';
 
             // add row to table
-            $table_shares[ $sharename ] = array(
+            $table_shares[ $sharename ] = [
             'TABLE_SHARE_EXTRA' => $table_share_extra,
             'SHARE_CLASS' => $activerow,
             'SHARE_NAME' => htmlentities($sharename),
@@ -227,66 +240,85 @@ function table_samba_sharelist( $sambaconf )
             'SHARE_NOACCESS' => $access[ 'noaccess' ],
             'SHARE_DISABLED' => $access[ 'disabled' ],
             'SHARE_PROBLEM' => $access[ 'problem' ],
-            );
+            ];
         }
     }
     return $table_shares;
 }
 
-function table_samba_globalvariables() 
+/**
+ * @return array
+ */
+function table_samba_globalvariables()
 {
     // required library
     activate_library('samba');
     $configvars = samba_variables_global();
-    $table_configvars = array();
+    $table_configvars = [];
     foreach ( $configvars as $varname ) {
         if (!@isset($sambaconf[ 'res' ][ $sharename ][ $varname ]) ) {
-            $table_configvars[] = array(
+            $table_configvars[] = [
                 'CV_VAR' => htmlentities($varname)
-            );
+            ];
         }
     }
     return $table_configvars;
 }
 
-function table_samba_sharevariables( $sambaconf, $sharename = false ) 
+/**
+ * @param       $sambaconf
+ * @param false $sharename
+ *
+ * @return array
+ */
+function table_samba_sharevariables( $sambaconf, $sharename = false )
 {
     // required library
     activate_library('samba');
     $configvars = samba_variables_share();
-    $table_configvars = array();
+    $table_configvars = [];
     foreach ( $configvars as $varname ) {
         if (!$sharename OR( !@isset($sambaconf[ 'shares' ][ $sharename ][ $varname ]) ) ) {
-            $table_configvars[] = array(
+            $table_configvars[] = [
                 'CV_VAR' => htmlentities($varname)
-            );
+            ];
         }
     }
     return $table_configvars;
 }
 
-function table_samba_standardusers( $grouplist ) 
+/**
+ * @param $grouplist
+ *
+ * @return array
+ */
+function table_samba_standardusers( $grouplist )
 {
-    $table_standardusers = array();
+    $table_standardusers = [];
     foreach ( reset($grouplist) as $user ) {
-        $table_standardusers[] = array(
+        $table_standardusers[] = [
         'SU_USERNAME' => htmlentities($user),
         'SU_USERUCFIRST' => htmlentities(ucfirst($user))
-        );
+        ];
     }
     return $table_standardusers;
 }
 
-function table_samba_groups( $grouplist ) 
+/**
+ * @param $grouplist
+ *
+ * @return array
+ */
+function table_samba_groups( $grouplist )
 {
-    $table_sambagroups = array();
+    $table_sambagroups = [];
     foreach ( $grouplist as $groupname => $users ) {
-        $table_users = array();
+        $table_users = [];
         foreach ( $users as $user ) {
-            $table_users[] = array(
+            $table_users[] = [
             'SAMBAUSER_USERNAME' => htmlentities($user),
             'SAMBAUSER_USERUCFIRST' => htmlentities(ucfirst($user))
-            );
+            ];
         }
         $class_hasusers = ( !empty($table_users) ) ? 'normal' : 'hidden';
         $stdgroup = ( $groupname === 'share' );
@@ -296,7 +328,7 @@ function table_samba_groups( $grouplist )
         htmlentities(ucfirst($groupname));
         $specialgroup = ( $stdgroup ) ? 'normal' : 'hidden';
         $suffix = ( $stdgroup ) ? '_special' : '';
-        $table_sambagroups[] = array(
+        $table_sambagroups[] = [
         'TABLE_SAMBA_USERS' => $table_users,
         'CLASS_SAMBAGROUP_HASUSERS' => $class_hasusers,
         'SAMBAGROUP_GROUPNAME' => htmlentities($groupname),
@@ -304,14 +336,21 @@ function table_samba_groups( $grouplist )
         'SAMBAGROUP_DISPLAY_USERS' => $display_users,
         'SAMBAGROUP_SPECIAL' => $specialgroup,
         'SAMBAGROUP_SUFFIX' => $suffix
-        );
+        ];
     }
     return $table_sambagroups;
 }
 
-function table_samba_share_accesslist( $accesstype, $sharename, $sambaconf ) 
+/**
+ * @param $accesstype
+ * @param $sharename
+ * @param $sambaconf
+ *
+ * @return array
+ */
+function table_samba_share_accesslist( $accesstype, $sharename, $sambaconf )
 {
-    $table_accesslist = array();
+    $table_accesslist = [];
     $shareperms = samba_share_permissions($sambaconf, $sharename);
     if (@is_array($shareperms[ $accesstype ]) ) {
         foreach ( $shareperms[ $accesstype ] as $name ) {
@@ -330,12 +369,12 @@ function table_samba_share_accesslist( $accesstype, $sharename, $sambaconf )
             $rname = ( $type === 'sambagroupxx' ) ? substr($name, 1) : $name;
             $uname = ( $name === '+share'
             OR $name === '@share' ) ? 'Everyone' : $rname;
-            $table_accesslist[] = array(
+            $table_accesslist[] = [
             'SP_TYPE' => $type,
             'SP_NAME' => htmlentities($rname),
             'SP_UCFIRST' => htmlentities(ucfirst($uname)),
             'SP_IMAGE' => $image,
-            );
+            ];
         }
     }
     return $table_accesslist;
@@ -373,7 +412,7 @@ function submit_access_samba_shares_create()
     }
 
     // sanity checks
-    $reservedsharenames = array( 'global', 'homes', 'printers' );
+    $reservedsharenames = ['global', 'homes', 'printers'];
     foreach ( $reservedsharenames as $reservedname ) {
         if ($sambasharename == $reservedname ) {
             friendlyerror(
@@ -397,14 +436,14 @@ function submit_access_samba_shares_create()
     }
 
     // craft new share based on chosen share profile
-    $newshare = array(
+    $newshare = [
     'path' => $mountpoint,
     'comment' => $comment,
     'browsable' => 'yes',
     'guest ok' => 'no',
     'read only' => 'yes',
     'write list' => '@share'
-    );
+    ];
     // apply access profile
     if ($accessprofile === 'public' ) {
         $newshare[ 'guest ok' ] = 'yes';
@@ -452,9 +491,9 @@ function submit_access_samba_shares_remove()
     if (@isset($_POST[ 'submit_sambadeleteshares' ]) ) {
         // only remove shares and write changes to disk
         $newconf = $sambaconf;
-        $removed_arr = array();
+        $removed_arr = [];
         foreach ( $_POST as $name => $value ) {
-            if (strpos($name, 'cb_sambashare_') === 0) {
+            if (strncmp($name, 'cb_sambashare_', 14) === 0) {
                 $sharename = trim(substr($name, strlen('cb_sambashare_')));
                 $removed_arr[] = $sharename;
                 unset($newconf[ 'shares' ][ $sharename ]);
@@ -512,7 +551,7 @@ function submit_access_samba_shares_advanced()
 
     // change all advanced variables related to share
     foreach ( $_POST as $postvar => $postvalue ) {
-        if ((strpos($postvar, 'advancedvar_') === 0) && $postvalue != '') {
+        if ((strncmp($postvar, 'advancedvar_', 12) === 0) && $postvalue != '') {
             $postvariable = trim(
                 str_replace(
                     '_', ' ',
@@ -525,7 +564,7 @@ function submit_access_samba_shares_advanced()
 
     // remove variables with checkbox checked
     foreach ( $_POST as $postvar => $postvalue ) {
-        if ((strpos($postvar, 'cb_advanced_') === 0) && $postvalue === 'on') {
+        if ((strncmp($postvar, 'cb_advanced_', 12) === 0) && $postvalue === 'on') {
             $postvariable = trim(
                 str_replace(
                     '_', ' ',
@@ -570,11 +609,11 @@ function submit_access_samba_shares_dragdrop()
     $sambashareperms = samba_share_permissions($sambaconf, $sharename);
 
     // conversion array
-    $conv = array(
+    $conv = [
     'fullaccess' => 'write list',
     'readonly' => 'read list',
     'noaccess' => 'invalid users'
-    );
+    ];
 
     // act depending on drag and drop type
     if ($dragtype === 'standarduser'
@@ -592,7 +631,7 @@ function submit_access_samba_shares_dragdrop()
             );
         }
         // remove dragitem from all access lists
-        $aclist = array();
+        $aclist = [];
         foreach ( $conv as $conv_a => $conv_b ) {
             $tmp_arr = @explode(
                 ' ', trim(
@@ -632,7 +671,7 @@ function submit_access_samba_shares_dragdrop()
             );
         }
         // remove dragname from all lists
-        $aclist = array();
+        $aclist = [];
         foreach ( $conv as $conv_a => $conv_b ) {
             $tmp_arr = @explode(
                 ' ', trim(

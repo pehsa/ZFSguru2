@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @param false $file
+ *
+ * @return mixed
+ */
 function bulletin_markread( $file = false )
 {
     global $guru;
@@ -23,6 +28,11 @@ function bulletin_markread( $file = false )
     return $max;
 }
 
+/**
+ * @param false $file
+ *
+ * @return int
+ */
 function bulletin_unread( $file = false )
 {
     // required library
@@ -38,6 +48,11 @@ function bulletin_unread( $file = false )
     return $unread;
 }
 
+/**
+ * @param $bulletin
+ *
+ * @return bool
+ */
 function bulletin_isread( $bulletin )
 {
     global $guru;
@@ -45,20 +60,24 @@ function bulletin_isread( $bulletin )
     $guru[ 'preferences' ][ 'bulletin_lastread' ] );
 }
 
+/**
+ * @param $types
+ * @param $colours
+ */
 function bulletin_types( & $types, & $colours )
 {
-    $types = array(
+    $types = [
     'gen' => 'general',
     'rel' => 'release',
     'sec' => 'security',
     'pro' => 'problem',
     'dev' => 'development',
-    );
-    $colours = array(
+    ];
+    $colours = [
     'gen' => 'warningrow',
     'rel' => 'specialrow',
     'sec' => 'failurerow',
     'pro' => 'normal',
     'dev' => 'activerow',
-    );
+    ];
 }

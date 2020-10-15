@@ -86,7 +86,7 @@ div.sambagrouptitle div.sambagroupdelete, div.sambagrouptitle_special div.sambag
 	display: none;
 	float: right;
 	overflow: hidden;
-height: auto
+height: auto;
 }
 div.sambagrouptitle div.sambagroupdelete input {
 	border: 0;

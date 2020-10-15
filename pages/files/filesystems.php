@@ -1,6 +1,9 @@
 <?php
 
-function content_files_filesystems() 
+/**
+ * @return array
+ */
+function content_files_filesystems()
 {
     // import zfs lib
     activate_library('zfs');
@@ -11,7 +14,7 @@ function content_files_filesystems()
     // call function
     $zfslist = zfs_filesystem_list();
     if (!is_array($zfslist) ) {
-        $zfslist = array();
+        $zfslist = [];
     }
 
     // keep track of ZFSguru specific filesystems
@@ -21,7 +24,7 @@ function content_files_filesystems()
 
     // construct filesystem list table
     $queryfs = 'XXX';
-    $fslist = array();
+    $fslist = [];
     $i = 0;
     foreach ( $zfslist as $fsname => $fsdata ) {
         // behavior for system filesystems
@@ -35,10 +38,10 @@ function content_files_filesystems()
 
         // filesystem class
         $fsclass = ( $systemfs ) ? 'failurerow filesystem_system ' : '';
-        if (strpos($fsname, '/') === false ) {
-            $fsclass = 'darkrow filesystem_root ';
-        } else {
+        if (strpos($fsname, '/') !== false) {
             $fsclass .= 'normal';
+        } else {
+            $fsclass = 'darkrow filesystem_root ';
         }
 
         // filesystem mountpoint
@@ -63,7 +66,7 @@ function content_files_filesystems()
         $class_fsvolume = ( $volumefs ) ? 'normal' : 'hidden';
 
         // add row to fslist table
-        $fslist[] = array(
+        $fslist[] = [
         'CLASS_FSPOOL' => $class_fspool,
         'CLASS_FSNORMAL' => $class_fsnormal,
         'CLASS_FSSYSTEM' => $class_fssystem,
@@ -74,7 +77,7 @@ function content_files_filesystems()
         'FS_REFER' => $fsdata[ 'refer' ],
         'FS_CLASS' => $fsclass,
         'FS_MOUNTPOINT' => $fsmountpoint
-        );
+        ];
     }
 
     // filesystem selectbox
@@ -86,7 +89,7 @@ function content_files_filesystems()
             if ($basepos = strpos($fsbase, '/') ) {
                 $fsbase = @substr($fsbase, 0, $basepos);
             }
-            if (( $fsbase === 'zfsguru' )OR(strpos($fsbase, 'zfsguru-system') === 0)OR( $fsbase === 'SWAP001' ) ) {
+            if (( $fsbase === 'zfsguru' )OR(strncmp($fsbase, 'zfsguru-system', 14) === 0)OR( $fsbase === 'SWAP001' ) ) {
                 $querygurufs = true;
             } else {
                 $querygurufs = false;
@@ -108,7 +111,7 @@ function content_files_filesystems()
     $class_gurufs_hide = ( !$hidegurufs ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Filesystems',
     'PAGE_TITLE' => 'Filesystems',
     'TABLE_FILES_FSLIST' => $fslist,
@@ -117,7 +120,7 @@ function content_files_filesystems()
     'CLASS_GURUFS_HIDE' => $class_gurufs_hide,
     'DISPLAYGURUFS' => $displaygurufs,
     'FILES_FSSELECTBOX' => $fsselectbox
-    );
+    ];
 }
 
 function submit_filesystem_create() 
@@ -141,10 +144,10 @@ function submit_filesystem_create()
     }
 
     // execute
-    $commands = array(
+    $commands = [
     '/sbin/zfs create ' . $fspath,
     '/usr/sbin/chown -R 1000:1000 /' . $fspath,
     '/bin/chmod 777 /' . $fspath
-    );
+    ];
     dangerouscommand($commands, $url2);
 }

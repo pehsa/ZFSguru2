@@ -1,6 +1,9 @@
 <?php
 
-function content_services_manage() 
+/**
+ * @return array
+ */
+function content_services_manage()
 {
     global $categories, $installedservices, $servicedb;
 
@@ -9,11 +12,11 @@ function content_services_manage()
     activate_library('service');
 
     // tabbar
-    $tabbar = array(
+    $tabbar = [
     '' => 'ZFSguru services',
     'system' => 'System services',
     'install' => 'Install services'
-    );
+    ];
     $url = 'services.php?manage';
 
     // select tab
@@ -21,10 +24,10 @@ function content_services_manage()
     $tab_install = @isset($_GET[ 'install' ]);
     if ($tab_system OR $tab_install ) {
         page_injecttag(
-            array(
+            [
             'PAGE_TABBAR' => $tabbar,
             'PAGE_TABBAR_URL' => $url
-            ) 
+            ]
         );
         if ($tab_system ) {
             $content = content_handle('services', 'system');
@@ -55,7 +58,7 @@ function content_services_manage()
     $class_noservices = ( @empty($installedservices) ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Manage',
     'PAGE_TITLE' => 'Manage',
     'PAGE_TABBAR' => $tabbar,
@@ -64,13 +67,18 @@ function content_services_manage()
     'TABLE_SERVICELIST' => $table_servicelist,
     'CLASS_SERVICES' => $class_services,
     'CLASS_NOSERVICES' => $class_noservices,
-    );
+    ];
 }
 
-function table_servicepanels( $panels ) 
+/**
+ * @param $panels
+ *
+ * @return array
+ */
+function table_servicepanels( $panels )
 {
     // process panels table
-    $ptable = array();
+    $ptable = [];
     if (@is_array($panels) ) {
         foreach ( $panels as $cat => $data ) {
             $loop = true;
@@ -99,7 +107,7 @@ function table_servicepanels( $panels )
                 $threelong = @htmlentities($panels[ $cat ][ $three ][ 'longname' ]);
 
                 // add row to table array
-                $ptable[] = array(
+                $ptable[] = [
                 'CLASS_HIDDEN_ONE' => $hidden_one,
                 'CLASS_HIDDEN_TWO' => $hidden_two,
                 'CLASS_HIDDEN_THREE' => $hidden_three,
@@ -109,16 +117,23 @@ function table_servicepanels( $panels )
                 'PANEL_ONE_LONG' => $onelong,
                 'PANEL_TWO_LONG' => $twolong,
                 'PANEL_THREE_LONG' => $threelong
-                );
+                ];
             }
         }
     }
     return $ptable;
 }
 
-function table_servicelist( $installedservices, $servicedb, $categories ) 
+/**
+ * @param $installedservices
+ * @param $servicedb
+ * @param $categories
+ *
+ * @return array
+ */
+function table_servicelist( $installedservices, $servicedb, $categories )
 {
-    $table = array();
+    $table = [];
     foreach ( $installedservices as $service => $data ) {
         $activerow = ( @$_GET[ 'query' ] == $service ) ? 'activerow' : 'normal';
         if ($data[ 'status' ] === 'passive' ) {
@@ -173,7 +188,7 @@ function table_servicelist( $installedservices, $servicedb, $categories )
         htmlentities($categories[ $data[ 'cat' ] ][ 'longname' ]) : $data[ 'cat' ];
 
         // add row to table
-        $table[] = @array(
+        $table[] = @[
         'CLASS_ACTIVEROW' => $activerow,
         'SERVICE_NAME' => htmlentities($service),
         'SERVICE_ICON' => $icon,
@@ -192,7 +207,7 @@ function table_servicelist( $installedservices, $servicedb, $categories )
         'CLASS_AUTOSTART_N' => $class_autostart_n,
         'CLASS_AUTOSTART_P' => $class_autostart_p,
         'SERVICE_AUTOSTART' => $autostart
-        );
+        ];
     }
     return $table;
 }
@@ -209,7 +224,7 @@ function submit_services_manage()
 
     foreach ( $_POST as $name => $value ) {
 
-        if (strpos($name, 'svc_start_') === 0) {
+        if (strncmp($name, 'svc_start_', 10) === 0) {
             // start service
             $svc = trim(substr($name, strlen('svc_start_'), -2));
             $result = service_start_blocking($svc);
@@ -221,7 +236,7 @@ function submit_services_manage()
             }
         }
 
-        if (strpos($name, 'svc_stop_') === 0) {
+        if (strncmp($name, 'svc_stop_', 9) === 0) {
             // stop service
             $svc = trim(substr($name, strlen('svc_stop_'), -2));
             $result = service_stop_blocking($svc);
@@ -232,16 +247,16 @@ function submit_services_manage()
             }
         }
 
-        if (strpos($name, 'svc_autostart_y_') === 0) {
+        if (strncmp($name, 'svc_autostart_y_', 16) === 0) {
             // autostart
             $svc = trim(substr(substr($name, strlen('svc_autostart_y_')), 0, -2));
-            $result = service_autostart($svc, true);
+            $result = service_autostart($svc);
             if (!$result ) {
                 friendlyerror('could not automatically start ' . htmlentities($svc), $url);
             }
         }
 
-        if (strpos($name, 'svc_autostart_n_') === 0) {
+        if (strncmp($name, 'svc_autostart_n_', 16) === 0) {
             // do not autostart
             $svc = trim(substr(substr($name, strlen('svc_autostart_n_')), 0, -2));
             $result = service_autostart($svc, false);

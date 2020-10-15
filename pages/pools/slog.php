@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_slog() 
+/**
+ * @return array
+ */
+function content_pools_slog()
 {
     // required libraries
     activate_library('background');
@@ -28,10 +31,10 @@ function content_pools_slog()
     $spa_below_recommended = false;
 
     // process table poollist
-    $poollist = array();
+    $poollist = [];
     $zpools = zfs_pool_list();
     if (!is_array($zpools) ) {
-        $zpools = array();
+        $zpools = [];
     }
     foreach ( $zpools as $poolname => $pooldata ) {
         $class = ( $querypool == $poolname ) ? 'activerow' : 'normal';
@@ -45,7 +48,7 @@ function content_pools_slog()
             $spa_below_recommended = true;
         }
 
-        $zpool_status = shell_exec("zpool status \$poolname");
+        $zpool_status = shell_exec('zpool status $poolname');
         if (strpos($zpool_status, 'raidz3') !== false ) {
             $redundancy = 'RAID7 (triple parity)';
         } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -72,7 +75,7 @@ function content_pools_slog()
                 $class = 'warningrow pool_degraded';
             }
         }
-        $poollist[] = array(
+        $poollist[] = [
         'POOLLIST_CLASS' => $class,
         'POOLLIST_POOLNAME' => htmlentities(trim($poolname)),
         'POOLLIST_SPA' => $poolspa,
@@ -86,7 +89,7 @@ function content_pools_slog()
         'POOLLIST_STATUS' => $pooldata[ 'status' ],
         'POOLLIST_STATUSCLASS' => $statusclass,
         'POOLLIST_POOLNAME_URLENC' => htmlentities(trim($poolname))
-        );
+        ];
     }
 
     // check whether pool is healthy when selected
@@ -108,7 +111,7 @@ function content_pools_slog()
     $pquery = background_query('pool_slog_benchmark');
 
     // performance table
-    $table_performance = array();
+    $table_performance = [];
     $slowdevice = false;
     $combinedsize = 0;
     if (is_array($performancetest) ) {
@@ -136,7 +139,7 @@ function content_pools_slog()
                 $scorefactor = round($score / 60, 1);
             }
             $combinedsize += @$diskinfo[ 'mediasize' ];
-            $table_performance[] = array(
+            $table_performance[] = [
             'CLASS_TESTED_OK' => ( $score > $minimumscore ) ? 'normal' : 'hidden',
             'CLASS_TESTED_SLOW' => ( $score < $minimumscore AND $score ) ?
             'normal' : 'hidden',
@@ -146,7 +149,7 @@ function content_pools_slog()
             'PERF_SIZEBINARY' => sizebinary(@$diskinfo[ 'mediasize' ], 1),
             'PERF_SCORE' => $score,
             'PERF_HDDCOMPARE' => $scorefactor
-            );
+            ];
         }
     }
 
@@ -182,7 +185,7 @@ function content_pools_slog()
     }
 
     // export tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Log devices',
     'PAGE_TITLE' => 'Log devices',
     'TABLE_POOL_POOLLIST' => $poollist,
@@ -207,7 +210,7 @@ function content_pools_slog()
     'SELECTEDDEVICES' => @htmlentities($_GET[ 'members' ]),
     'TOTALSIZE' => $totalsize,
     'MEMREQ' => $memreq
-    );
+    ];
 }
 
 function submit_pool_slog() 
@@ -222,10 +225,10 @@ function submit_pool_slog()
     }
 
     // selected member disks (unserialized; step 2)
-    $selecteddisks = array();
+    $selecteddisks = [];
     if (@isset($_POST[ 'select_memberdisks' ]) ) {
         foreach ( $_POST as $name => $value ) {
-            if (strpos($name, 'addmember_') === 0) {
+            if (strncmp($name, 'addmember_', 10) === 0) {
                 $selecteddisks[] = substr($name, strlen('addmember_'));
             }
         }
@@ -263,7 +266,7 @@ function submit_pool_slog()
             );
         }
         // set commands to execute
-        $commands = array();
+        $commands = [];
         foreach ( $selecteddevices as $device ) {
             $commands[ $device ] = $rawio
             . ' -W -A 4096 -c 4096 -n ' . $number . ' /dev/' . $device;
@@ -271,16 +274,16 @@ function submit_pool_slog()
         // perform random read benchmark on selected devices
         activate_library('background');
         background_register(
-            'pool_slog_benchmark', array(
+            'pool_slog_benchmark', [
             'commands' => $commands,
             'super' => true,
-            ) 
+                                 ]
         );
     }
 
     // add slog device(s) to pool
     if (@isset($_POST[ 'add_slog' ]) ) {
-        $command = array();
+        $command = [];
         // remove selected disk performance data
         activate_library('background');
         background_remove('pool_slog_benchmark');

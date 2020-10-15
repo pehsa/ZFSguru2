@@ -1,6 +1,9 @@
 <?php
 
-function content_services_query() 
+/**
+ * @return array
+ */
+function content_services_query()
 {
     global $categories, $installedservices, $servicedb;
 
@@ -9,7 +12,7 @@ function content_services_query()
     activate_library('service');
 
     // inject tags from manage.php
-    page_injecttag(content_handle('services', 'manage', false, false));
+    page_injecttag(content_handle('services', 'manage'));
 
     // include stylesheet from manage page
     // page_register_stylesheet('pages/services/manage.css');
@@ -56,7 +59,7 @@ function content_services_query()
     $class_newver = ( $upgradeavailable ) ? 'green' : 'normal';
 
     // display table of supported system versions in case service is unavailable
-    $table_sysverlist = array();
+    $table_sysverlist = [];
     if (is_array($sysimg_all) ) {
         foreach ( $sysimg_all as $sysver => $platformdata ) {
             if (is_array($platformdata) ) {
@@ -71,7 +74,7 @@ function content_services_query()
                         // TODO - REWRITE
                         //     if (!guru_checkcompatibility((int)$system[$sysver]['platform']['compat']))
                         //      $ip_compat = 'no';
-                        $table_sysverlist[] = array(
+                        $table_sysverlist[] = [
                         'IP_CLASS' => ( $sysver == $sysimg_str ) ? 'activerow' : 'normal',
                         'IP_SVCLONG' => htmlentities($svclong),
                         'IP_VERSION' => @$data[ 'version' ],
@@ -82,7 +85,7 @@ function content_services_query()
                         'IP_BRANCH' => @$system[ $sysver ][ $platform ][ 'branch' ],
                         'IP_BSDVERSION' => @$system[ $sysver ][ $platform ][ 'bsdversion' ],
                         'IP_PLATFORM' => $tplatform
-                        );
+                        ];
                     }
                 }
             }
@@ -91,7 +94,7 @@ function content_services_query()
     $class_sysvertable = ( !empty($table_sysverlist) ) ? 'normal' : 'hidden';
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Manage',
     'PAGE_TITLE' => 'Manage',
     'TABLE_SYSVERLIST' => $table_sysverlist,
@@ -115,5 +118,5 @@ function content_services_query()
     'QSERVICE_DEPEND' => nl2br($service[ 'depend' ]),
     'QSERVICE_CONFLICTS' => $service[ 'conflict' ],
     'QSERVICE_CANSTART' => $service[ 'can_start' ]
-    );
+    ];
 }

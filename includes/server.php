@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * @param       $uri
+ * @param false $filesize
+ * @param false $sha512
+ * @param false $master
+ * @param false $ims
+ *
+ * @return false|mixed|string|null
+ */
 function server_download( $uri, $filesize = false, $sha512 = false,
     $master = false, $ims = false 
 ) {
@@ -23,7 +32,7 @@ function server_download( $uri, $filesize = false, $sha512 = false,
     server_spacecheck($filesize, $dirs);
 
     // find a working slave server to download file
-    $failedservers = array();
+    $failedservers = [];
     $iterations = 0;
     $maxiterations = 10;
     $invalid = 0;
@@ -64,6 +73,13 @@ function server_download( $uri, $filesize = false, $sha512 = false,
     return $downloadedfile;
 }
 
+/**
+ * @param $failedservers
+ * @param $invalid
+ * @param $uri
+ *
+ * @return false
+ */
 function server_download_fail( $failedservers, $invalid, $uri )
 {
     $times = ( $invalid != 1 ) ? ' times' : ' time';
@@ -82,6 +98,15 @@ function server_download_fail( $failedservers, $invalid, $uri )
     return false;
 }
 
+/**
+ * @param       $url
+ * @param       $downloaddir
+ * @param false $filesize
+ * @param false $ims
+ * @param false $invalidsize
+ *
+ * @return false|string|null
+ */
 function server_download_try( $url, $downloaddir, $filesize = false,
     $ims = false, & $invalidsize = false 
 ) {
@@ -92,7 +117,7 @@ function server_download_try( $url, $downloaddir, $filesize = false,
     $downloadpath = $downloaddir . '/' . basename($url);
 
     // use external fetch command to retrieve file since it has proper timeouts
-    $param = array();
+    $param = [];
     // -T <sec> = timeout
     if (( int )@$guru[ 'preferences' ][ 'connect_timeout' ] > 0 ) {
         $param[ 'T' ] = '-T ' . ( int )$guru[ 'preferences' ][ 'connect_timeout' ];
@@ -126,6 +151,11 @@ function server_download_try( $url, $downloaddir, $filesize = false,
     return false;
 }
 
+/**
+ * @param       $uri
+ * @param false $filesize
+ * @param false $sha512
+ */
 function server_download_bg( $uri, $filesize = false, $sha512 = false )
 {
     // required library
@@ -158,14 +188,23 @@ function server_download_bg( $uri, $filesize = false, $sha512 = false )
     $command = '/usr/bin/fetch -o ' . escapeshellarg($filepath) . ' '
     . escapeshellarg($url);
     background_register(
-        $btag, array(
-        'commands' => array( 'fetch' => $command ),
-        'storage' => array( 'failedservers' => array(),
-        'lastserver' => $server[ 'name' ] ),
-        ) 
+        $btag, [
+        'commands' => ['fetch' => $command],
+        'storage' => [
+            'failedservers' => [],
+        'lastserver' => $server[ 'name' ]
+        ],
+             ]
     );
 }
 
+/**
+ * @param       $uri
+ * @param false $filesize
+ * @param false $sha512
+ *
+ * @return bool|int
+ */
 function server_download_bg_query( $uri, $filesize = false, $sha512 = false )
 {
     // required libraries
@@ -235,21 +274,29 @@ function server_download_bg_query( $uri, $filesize = false, $sha512 = false )
     $command = '/usr/bin/fetch -o ' . escapeshellarg($filepath) . ' '
     . escapeshellarg($url);
     background_register(
-        $btag, array(
-        'commands' => array( 'fetch' => $command ),
-        'storage' => array( 'failedservers' => $failedservers,
-        'lastserver' => $server[ 'name' ] ),
-        ) 
+        $btag, [
+        'commands' => ['fetch' => $command],
+        'storage' => [
+            'failedservers' => $failedservers,
+        'lastserver' => $server[ 'name' ]
+        ],
+             ]
     );
 
     // inform user and return integer 0 (download in progress)
     page_feedback(
         'trying another download server because ' . htmlentities($lastserver)
-        . ' failed to download the file: ' . htmlentities(basename($uri)), 'c_notice' 
+        . ' failed to download the file: ' . htmlentities(basename($uri))
     );
     return 0;
 }
 
+/**
+ * @param $type
+ * @param $filename
+ *
+ * @return string
+ */
 function server_uri( $type, $filename )
 {
     // required library
@@ -259,25 +306,32 @@ function server_uri( $type, $filename )
     $general = gurudb_general();
     $curver = common_systemversion();
     $platform = common_systemplatform();
-    $search = array( '%SYSVER%', '%PLATFORM%' );
-    $replace = array( $curver[ 'sysver' ], $platform );
+    $search = ['%SYSVER%', '%PLATFORM%'];
+    $replace = [$curver[ 'sysver' ], $platform];
 
     // determine prefix
     $prefix = @$general[ 'uri-' . $type ];
-    if (!$prefix ) {
+    if ($prefix) {
+        $prefix = str_replace($search, $replace, $prefix);
+    } else {
         page_feedback(
             'could not retrieve correct URI for download type: '
-            . htmlentities($type), 'a_warning' 
+            . htmlentities($type), 'a_warning'
         );
-    } else {
-        $prefix = str_replace($search, $replace, $prefix);
     }
 
     // return URI
     return $prefix . $filename;
 }
 
-function server_find( $failedservers = array(), & $serverlist = false, $master = false )
+/**
+ * @param array $failedservers
+ * @param false $serverlist
+ * @param false $master
+ *
+ * @return false|mixed
+ */
+function server_find( $failedservers = [], & $serverlist = false, $master = false )
 {
     global $guru;
     if (!$serverlist ) {
@@ -303,6 +357,10 @@ function server_find( $failedservers = array(), & $serverlist = false, $master =
     return false;
 }
 
+/**
+ * @param       $filesize
+ * @param false $dirs
+ */
 function server_spacecheck( $filesize, $dirs = false )
 {
     // verify download directory
@@ -325,6 +383,13 @@ function server_spacecheck( $filesize, $dirs = false )
     }
 }
 
+/**
+ * @param       $file
+ * @param false $filesize
+ * @param false $sha512
+ *
+ * @return bool
+ */
 function server_validate( $file, $filesize = false, $sha512 = false )
 {
     if (!@file_exists($file) ) {

@@ -1,17 +1,20 @@
 <?php
 
+/**
+ * @return array
+ */
 function system_users()
 {
-    $rawtxt = shell_exec("cat /etc/passwd");
+    $rawtxt = shell_exec('cat /etc/passwd');
     preg_match_all(
         '/^([^#\n:]*):(.*):(.*):(.*):(.*):(.*):[^#\n]*$/m',
         $rawtxt, $matches 
     );
-    $users = array();
+    $users = [];
     if (@is_array($matches[ 1 ]) ) {
         foreach ( $matches[ 1 ] as $id => $username ) {
             if ($username !== 'toor' ) {
-                $users[ @$matches[ 3 ][ $id ] ] = @array(
+                $users[ @$matches[ 3 ][ $id ] ] = @[
                     'username' => $username,
                     'password' => $matches[ 2 ][ $id ],
                     'userid' => $matches[ 3 ][ $id ],
@@ -19,7 +22,7 @@ function system_users()
                     'desc' => $matches[ 5 ][ $id ],
                     'homedir' => $matches[ 6 ][ $id ],
                     'shell' => $matches[ 7 ][ $id ],
-                    );
+                ];
             }
         }
     }
@@ -28,19 +31,22 @@ function system_users()
     return $users;
 }
 
+/**
+ * @return array
+ */
 function system_groups()
 {
-    $rawtxt = shell_exec("cat /etc/group");
+    $rawtxt = shell_exec('cat /etc/group');
     preg_match_all('/^([^#\n:]*):(.*):(.*):([^#\n]*)$/m', $rawtxt, $matches);
-    $groups = array();
+    $groups = [];
     if (@is_array($matches[ 1 ]) ) {
         foreach ( $matches[ 1 ] as $id => $groupname ) {
-            $groups[ @$matches[ 3 ][ $id ] ] = @array(
+            $groups[ @$matches[ 3 ][ $id ] ] = @[
                 'groupname' => $groupname,
                 'unkown' => $matches[ 2 ][ $id ],
                 'groupid' => $matches[ 3 ][ $id ],
                 'users' => $matches[ 4 ][ $id ],
-            );
+            ];
         }
     }
     // sort by groupid
@@ -48,6 +54,12 @@ function system_groups()
     return $groups;
 }
 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
 function sortbyid( $a, $b )
 {
     if (count($a) == 7 ) {
@@ -63,6 +75,14 @@ function sortbyid( $a, $b )
     return ( $aa < $bb ) ? -1 : 1;
 }
 
+/**
+ * @param       $username
+ * @param false $userid
+ * @param false $group
+ * @param false $useroptions
+ *
+ * @return bool
+ */
 function system_adduser(
     $username,
     $userid = false,
@@ -101,6 +121,11 @@ function system_adduser(
     return !($result['rv'] != 0);
 }
 
+/**
+ * @param $username
+ *
+ * @return bool
+ */
 function system_user_delete($username)
 {
     // elevated privileges
@@ -116,6 +141,11 @@ function system_user_delete($username)
     return $result['rv'] == 0;
 }
 
+/**
+ * @param $groupname
+ *
+ * @return bool
+ */
 function system_group_delete($groupname)
 {
     // elevated privileges
@@ -130,9 +160,12 @@ function system_group_delete($groupname)
     return $result['rv'] == 0;
 }
 
+/**
+ * @return array
+ */
 function system_mountpoints()
 {
-    $mp = array();
+    $mp = [];
     exec('/sbin/mount', $output, $rv);
     if ($rv != 0 ) {
         page_feedback('unable to check mountpoints!', 'a_warning');
@@ -141,17 +174,23 @@ function system_mountpoints()
     if (is_array($output) ) {
         foreach ( $output as $line ) {
             if (preg_match('/(.*) on (\/.*) \((.*)\)$/', $line, $matches) ) {
-                $mp[ @$matches[ 1 ] ] = array(
+                $mp[ @$matches[ 1 ] ] = [
                     'device' => @$matches[ 1 ],
                     'mountpoint' => @$matches[ 2 ],
                     'options' => @$matches[ 3 ]
-                    );
+                ];
             }
         }
     }
     return $mp;
 }
 
+/**
+ * @param       $disk
+ * @param false $mountpoints
+ *
+ * @return bool
+ */
 function system_ismounted( $disk, $mountpoints = false )
 {
     if ($mountpoints == false ) {
@@ -166,6 +205,9 @@ function system_ismounted( $disk, $mountpoints = false )
     return false;
 }
 
+/**
+ * @return false|string
+ */
 function system_detect_vmenvironment()
 {
     $dmesg_boot = @file_get_contents('/var/run/dmesg.boot');
@@ -191,6 +233,9 @@ function system_detect_vmenvironment()
     }*/
 }
 
+/**
+ * @return string
+ */
 function system_detect_networkspeed()
 {
     exec('/sbin/ifconfig', $output, $rv);
@@ -205,7 +250,9 @@ function system_detect_networkspeed()
 
     if (strpos($outputstr, '1000base') !== false) {
         return 'Gigabit';
-    } elseif (strpos($outputstr, '100base') !== false ) {
+    }
+
+    if (strpos($outputstr, '100base') !== false) {
         return '100 megabit';
     } elseif (strpos($outputstr, '10base') !== false ) {
         return '10 megabit';
@@ -214,6 +261,9 @@ function system_detect_networkspeed()
     }
 }
 
+/**
+ * @return int[]
+ */
 function system_detect_physmem()
 {
     $dmesg_boot = file_get_contents('/var/run/dmesg.boot');
@@ -221,24 +271,32 @@ function system_detect_physmem()
         '/^(real|avail) memory[\s]+= (\d+) \(.*\)[\s]*$/m',
         $dmesg_boot, $matches 
     );
-    return array(
+    return [
     'installed' => ( int )@$matches[ 2 ][ 0 ],
     'usable' => ( int )@$matches[ 2 ][ 1 ],
-    );
+    ];
 }
 
+/**
+ * @return array
+ */
 function system_uptime()
 {
     $uptime_cmd = shell_exec('/usr/bin/uptime');
     preg_match('/load averages: ([0-9.]+),/', $uptime_cmd, $matches);
     $uptime_tmp = substr($uptime_cmd, strpos($uptime_cmd, 'up ') + 3);
-    return array(
+    return [
     'uptime' => substr($uptime_tmp, 0, strpos($uptime_tmp, ',')),
     'loadavg' => trim(substr($uptime_cmd, strrpos($uptime_cmd, ':') + 1)),
     'cpupct' => ( ( double )@$matches[ 1 ] * 100 ) . ' %',
-    );
+    ];
 }
 
+/**
+ * @param $kmod
+ *
+ * @return bool
+ */
 function system_loadkernelmodule( $kmod )
 {
     activate_library('super');

@@ -12,7 +12,7 @@ require 'common.php';
 timerstart('init');
 
 // start guru global array
-$guru = array();
+$guru = [];
 
 // project data
 $guru[ 'product_name' ] = 'ZFSguru';
@@ -46,7 +46,7 @@ $guru[ 'default_bootfs' ] = 'zfsguru';
 $guru[ 'benchmark_magic_string' ] = 'XX00XXBENCHMARKXX00XX';
 $guru[ 'benchmark_poolname' ] = 'gurubenchmarkpool';
 $guru[ 'benchmark_zvolname' ] = 'guruzvoltest';
-$guru[ 'recommended_zfsversion' ] = array( 'zpl' => 5, 'spa' => 28 );
+$guru[ 'recommended_zfsversion' ] = ['zpl' => 5, 'spa' => 28];
 
 /*
  ** Configuration File
@@ -58,37 +58,37 @@ $guru[ 'configuration_file' ] = $guru[ 'docroot' ] . '/config/config.bin';
  ** File Locations
  ** If needed, change these accordingly
  */
-$guru[ 'required_binaries' ] = array(
+$guru[ 'required_binaries' ] = [
     'Tar' => '/usr/bin/tar',
     'Sudo' => '/usr/local/bin/sudo',
     'sh' => '/bin/sh'
-);
-$guru[ 'path' ] = array(
+];
+$guru[ 'path' ] = [
     'Samba' => '/usr/local/etc/smb4.conf',
     'OpenSSH' => '/etc/ssh/sshd_config'
-);
-$guru[ 'rc.d' ] = array(
+];
+$guru[ 'rc.d' ] = [
     'Lighttpd' => '/usr/local/etc/rc.d/lighttpd',
     'OpenSSH' => '/etc/rc.d/sshd',
     'Samba' => '/usr/local/etc/rc.d/samba_server',
     'NFS' => '/etc/rc.d/nfsserver',
     'iSCSI' => '/usr/local/etc/rc.d/istgt',
     'powerd' => '/etc/rc.d/powerd'
-);
-$guru[ 'runcontrol' ] = array(
+];
+$guru[ 'runcontrol' ] = [
     'Apache' => 'apache22',
     'OpenSSH' => 'sshd',
     'Lighttpd' => 'lighttpd',
     'Samba' => 'samba',
     'NFS' => 'nfs_server',
     'iSCSI' => 'istgt'
-);
+];
 
 /*
  ** Default Preferences
  ** Do NOT change these! Your actual preferences are stored in a file
  */
-$guru[ 'default_preferences' ] = array(
+$guru[ 'default_preferences' ] = [
     'uuid' => '',
     'language' => 'en',
     'preferred_master' => '',
@@ -114,7 +114,7 @@ $guru[ 'default_preferences' ] = array(
     'refresh_lastcheck' => 0,
     'bulletin_unread' => '?',
     'bulletin_lastread' => 0,
-);
+];
 
 // include page library
 require 'page.php';

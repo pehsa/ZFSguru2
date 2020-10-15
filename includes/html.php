@@ -1,6 +1,11 @@
 <?php
 
-function html_zfspools( $zfs_pool_list = false ) 
+/**
+ * @param false $zfs_pool_list
+ *
+ * @return string
+ */
+function html_zfspools( $zfs_pool_list = false )
 {
     // fetch pool list unless supplied as argument
     if (!is_array($zfs_pool_list) ) {
@@ -16,6 +21,13 @@ function html_zfspools( $zfs_pool_list = false )
     return $options;
 }
 
+/**
+ * @param false $zfs_filesystem_list
+ * @param false $selectedfs
+ * @param bool  $hidesystem
+ *
+ * @return string
+ */
 function html_zfsfilesystems( $zfs_filesystem_list = false, $selectedfs = false,
     $hidesystem = true 
 ) {
@@ -46,7 +58,13 @@ function html_zfsfilesystems( $zfs_filesystem_list = false, $selectedfs = false,
     return $options;
 }
 
-function html_memberdisks( $physdisks = false, $only_gpt = false ) 
+/**
+ * @param false $physdisks
+ * @param false $only_gpt
+ *
+ * @return string
+ */
+function html_memberdisks( $physdisks = false, $only_gpt = false )
 {
     // required libraries
     activate_library('disk');
@@ -63,7 +81,7 @@ function html_memberdisks( $physdisks = false, $only_gpt = false )
     $mdstring = '';
     foreach ( $physdisks as $disk => $diskdata ) {
         // check for usable labels
-        $usablelabels = array();
+        $usablelabels = [];
         if (is_array(@$gpart[ $disk ][ 'multilabel' ]) ) {
             foreach ( @$gpart[ $disk ][ 'multilabel' ] as $labelname => $devicenode ) {
                 $usablelabels[ $devicenode ] = $labelname;
@@ -127,7 +145,13 @@ function html_memberdisks( $physdisks = false, $only_gpt = false )
     return $mdstring;
 }
 
-function OLDhtml_memberdisks( $physdisks = false, $only_gpt = false ) 
+/**
+ * @param false $physdisks
+ * @param false $only_gpt
+ *
+ * @return string
+ */
+function OLDhtml_memberdisks( $physdisks = false, $only_gpt = false )
 {
     // required libraries
     activate_library('disk');
@@ -172,7 +196,13 @@ function OLDhtml_memberdisks( $physdisks = false, $only_gpt = false )
     return $mdstring;
 }
 
-function html_memberdisks_select( $physdisks = false, $only_gpt = false ) 
+/**
+ * @param false $physdisks
+ * @param false $only_gpt
+ *
+ * @return string
+ */
+function html_memberdisks_select( $physdisks = false, $only_gpt = false )
 {
     // required libraries
     activate_library('disk');
@@ -189,7 +219,7 @@ function html_memberdisks_select( $physdisks = false, $only_gpt = false )
     $mdstring = '';
     foreach ( $physdisks as $disk => $diskdata ) {
         // check for usable labels
-        $usablelabels = array();
+        $usablelabels = [];
         if (is_array(@$gpart[ $disk ][ 'multilabel' ]) ) {
             foreach ( $gpart[ $disk ][ 'multilabel' ] as $labelname => $device ) {
                 $usablelabels[ $device ] = 'gpt/' . $labelname;
@@ -209,7 +239,13 @@ function html_memberdisks_select( $physdisks = false, $only_gpt = false )
     return $mdstring;
 }
 
-function html_wholedisks( $physdisks = false, $only_gpt = false ) 
+/**
+ * @param false $physdisks
+ * @param false $only_gpt
+ *
+ * @return string
+ */
+function html_wholedisks( $physdisks = false, $only_gpt = false )
 {
     // required libraries
     activate_library('disk');

@@ -18,7 +18,7 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endC
 	background-image: linear-gradient(#eee, #aaa);
 }
 div.svc_navibox span {
-	color: grey;
+	color: #808080;
 }
 div.svc_navibox a, div.svc_navibox a:link, div.svc_navibox a:visited {
 	color: #22d;

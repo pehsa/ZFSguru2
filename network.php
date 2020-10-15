@@ -4,11 +4,11 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'Interfaces' => 'network.php',
     'Ports' => 'network.php?ports',
     'Firewall' => 'network.php?firewall',
-);
+];
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {
     unset($tabs[ 'Link aggregation' ]);
 }

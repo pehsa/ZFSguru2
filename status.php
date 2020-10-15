@@ -4,12 +4,12 @@
 require 'includes/main.php';
 
 // set navtabs
-$tabs = array(
+$tabs = [
     'Status' => 'status.php',
     'Processor usage' => 'status.php?cpu',
     'Memory usage' => 'status.php?memory',
     'Logs' => 'status.php?log',
-);
+];
 // hide advanced tabs unless advanced_mode is set
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {
     unset($tabs[ 'Logs' ]);

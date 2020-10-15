@@ -1,6 +1,9 @@
 <?php
 
-function content_access_nfs() 
+/**
+ * @return array
+ */
+function content_access_nfs()
 {
     // required library
     activate_library('internalservice');
@@ -9,13 +12,13 @@ function content_access_nfs()
     // remove NFS share
     if (@isset($_GET[ 'removenfs' ]) ) {
         $sharenfs = nfs_sharenfs_list($queryfs);
-        if (!@isset($sharenfs[ $_GET[ 'removenfs' ] ]) ) {
+        if (@isset($sharenfs[$_GET['removenfs']])) {
+            dangerouscommand(nfs_removeshare($_GET[ 'removenfs' ]), 'access.php?nfs');
+        } else {
             friendlyerror(
                 'cannot remove "' . $_GET[ 'removenfs' ]
-                . '" because the share was not found.', 'access.php?nfs' 
+                . '" because the share was not found.', 'access.php?nfs'
             );
-        } else {
-            dangerouscommand(nfs_removeshare($_GET[ 'removenfs' ]), 'access.php?nfs');
         }
     }
 
@@ -63,7 +66,7 @@ function content_access_nfs()
         // share profile for modify share profile page
         $access_profile = nfs_getprofile(@$sharenfs[ $queryfs ]);
         $not_shared = ( @$sharenfs[ $queryfs ][ 'sharenfs' ] === 'off' );
-        $all_profiles = array( 'public', 'protected', 'private' );
+        $all_profiles = ['public', 'protected', 'private'];
         foreach ( $all_profiles as $profile ) {
             $class_mp[ $profile ] = ( $access_profile == $profile AND!$not_shared ) ?
             'normal' : 'hidden';
@@ -106,7 +109,7 @@ function content_access_nfs()
     $serverip = @htmlentities($_SERVER[ 'SERVER_ADDR' ]);
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'NFS',
     'PAGE_ACTIVETAB' => 'NFS',
     'TABLE_NFS_ITEMS' => $table_nfs_items,
@@ -144,15 +147,21 @@ function content_access_nfs()
     'QUERY_MP' => htmlentities($query_mp),
     'QUERY_SHARENFS' => $query_sharenfs,
     'QUERY_SHOWMOUNT' => $query_showmount,
-    );
+    ];
 }
 
+/**
+ * @param       $sharenfs
+ * @param false $queryfs
+ *
+ * @return array
+ */
 function table_nfs_items($sharenfs, $queryfs = false)
 {
     if (!@is_array($sharenfs) ) {
-        return array();
+        return [];
     }
-    $table_shares = array();
+    $table_shares = [];
     foreach ( $sharenfs as $sharename => $share ) {
         // skip shares with inheritance, unless it is the queried filesystem
         if ($share[ 'inherited' ]AND( $sharename != $queryfs ) ) {
@@ -164,22 +173,24 @@ function table_nfs_items($sharenfs, $queryfs = false)
             $access_type = 'notshared';
         }
         // set classes for each type
-        $alltypes = array( 'public', 'protected', 'private', 'custom',
-        'noaccess', 'disabled', 'problem', 'notshared' );
+        $alltypes = [
+            'public', 'protected', 'private', 'custom',
+        'noaccess', 'disabled', 'problem', 'notshared'
+        ];
         foreach ( $alltypes as $type ) {
             $access[ $type ] = 'hidden';
         }
         $access[ $access_type ] = 'normal';
 
         // short name
-        if (strrpos($sharename, '/') === false ) {
-            $shortname = $sharename;
-        } else {
+        if (strrpos($sharename, '/') !== false) {
             $shortname = htmlentities(substr($sharename, strrpos($sharename, '/') + 1));
+        } else {
+            $shortname = $sharename;
         }
 
         // add row to table
-        $table_shares[ $sharename ] = array(
+        $table_shares[ $sharename ] = [
         'SHARE_CLASS' => ( $access_type === 'notshared' ) ? 'disabled' : '',
         'SHARE_NAME' => htmlentities($sharename),
         'SHARE_SHORTNAME' => $shortname,
@@ -193,14 +204,21 @@ function table_nfs_items($sharenfs, $queryfs = false)
         'SHARE_PROBLEM' => $access[ 'problem' ],
         'SHARE_SHARED' => ( $access_type !== 'notshared' ) ? 'normal' : 'hidden',
         'SHARE_NOTSHARED' => $access[ 'notshared' ],
-        );
+        ];
     }
     return $table_shares;
 }
 
+/**
+ * @param       $sharenfs
+ * @param       $showmount
+ * @param false $queryfs
+ *
+ * @return array
+ */
 function table_nfs_children( $sharenfs, $showmount, $queryfs = false )
 {
-    $table_nfs_sharelist = array();
+    $table_nfs_sharelist = [];
     foreach ( $sharenfs as $fs => $sharedata ) {
         $mp = trim($sharedata[ 'mountpoint' ]);
         if (strpos($mp, '/') !== false ) {
@@ -219,7 +237,7 @@ function table_nfs_children( $sharenfs, $showmount, $queryfs = false )
         $easypermissions = nfs_geteasypermissions($sharedata[ 'options' ]);
 
         // add table row
-        $table_nfs_sharelist[] = array(
+        $table_nfs_sharelist[] = [
         'CLASS_ACTIVEROW' => ( $queryfs AND( $fs == $queryfs ) ) ? 'activerow' : '',
         'CLASS_FSPOOL' => $class_fspool,
         'CLASS_FSNORMAL' => $class_fsnor,
@@ -232,14 +250,19 @@ function table_nfs_children( $sharenfs, $showmount, $queryfs = false )
         'CHILD_PROFILE' => $profile,
         'CHILD_EP_Y' => ( $easypermissions ) ? 'normal' : 'hidden',
         'CHILD_EP_N' => ( !$easypermissions ) ? 'normal' : 'hidden',
-        );
+        ];
     }
     return $table_nfs_sharelist;
 }
 
+/**
+ * @param $options
+ *
+ * @return array
+ */
 function table_nfs_accesscontrol( $options )
 {
-    $table_nfs_ac = array();
+    $table_nfs_ac = [];
     if (@isset($options[ 'network' ]) ) {
         foreach ( $options[ 'network' ] as $acrecord ) {
             $hasprefix = ( strrpos($acrecord, '/') !== false );
@@ -252,18 +275,24 @@ function table_nfs_accesscontrol( $options )
             } else {
                 $prefix = '/32';
             }
-            $table_nfs_ac[] = array(
+            $table_nfs_ac[] = [
             'NFS_AC_IP' => $ip,
             'NFS_AC_PREFIX' => $prefix,
             'NFS_AC_PREFIX0' => ( $prefix === '/0' ) ? 'normal' : 'hidden',
             'NFS_AC_PREFIX32' => ( $prefix === '/32' ) ? 'normal' : 'hidden',
             'NFS_AC_B64' => base64_encode($acrecord),
-            );
+            ];
         }
     }
     return $table_nfs_ac;
 }
 
+/**
+ * @param $sharenfs
+ * @param $queryfs
+ *
+ * @return array
+ */
 function table_nfs_shareconf($sharenfs, $queryfs)
 {
     // required library
@@ -271,16 +300,16 @@ function table_nfs_shareconf($sharenfs, $queryfs)
     // call function
     $nfsvars = nfs_configuration_list();
     // create table
-    $table_nfs_shareconf = array();
+    $table_nfs_shareconf = [];
     foreach ( $nfsvars as $nfsvar => $nfsvardesc ) {
         // check if nfsvar exists in current configuration
         $exists = @isset($sharenfs[ $queryfs ][ 'options' ][ $nfsvar ]);
         $class_activerow = ( $exists ) ? 'activerow' : 'normal';
-        $booleanvars = array( 'alldirs', 'quiet', 'ro', 'webnfs', 'public' );
+        $booleanvars = ['alldirs', 'quiet', 'ro', 'webnfs', 'public'];
         $class_showtext = ( !in_array($nfsvar, $booleanvars, true) AND( $nfsvar !== 'network' ) ) ? 'normal' : 'hidden';
         $class_network = ( $nfsvar === 'network' ) ? 'normal' : 'hidden';
         $checked = ( $exists ) ? 'checked="checked"' : '';
-        $table_nfs_shareconf[] = array(
+        $table_nfs_shareconf[] = [
         'CLASS_ACTIVEROW' => $class_activerow,
         'CLASS_SHOWTEXT' => $class_showtext,
         'CLASS_NETWORK' => $class_network,
@@ -288,20 +317,23 @@ function table_nfs_shareconf($sharenfs, $queryfs)
         'CONFIG_CHECKED' => $checked,
         'CONFIG_VALUE' => @$sharenfs[ $queryfs ][ 'options' ][ $nfsvar ][ 0 ],
         'CONFIG_DESC' => $nfsvardesc
-        );
+        ];
     }
     return $table_nfs_shareconf;
 }
 
+/**
+ * @return array
+ */
 function table_nfs_variables()
 {
     $nfsconfig = nfs_configuration_list();
-    $table_nfs_variables = array();
+    $table_nfs_variables = [];
     foreach ( $nfsconfig as $configvar ) {
-        $table_nfs_variables[] = array(
+        $table_nfs_variables[] = [
         'CONFIG_NAME' => htmlentities($configvar),
         'CONFIG_VALUE' => htmlentities($configvar)
-        );
+        ];
     }
     return $table_nfs_variables;
 }
@@ -309,11 +341,21 @@ function table_nfs_variables()
 
 /* helper functions */
 
-function convert_cidr2ip( $cidr ) 
+/**
+ * @param $cidr
+ *
+ * @return string
+ */
+function convert_cidr2ip( $cidr )
 {
     return long2ip(-1 << ( 32 - ( int )$cidr ));
 }
 
+/**
+ * @param $ip
+ *
+ * @return int|string
+ */
 function convert_ip2cidr( $ip )
 {
     for ( $cidr = 0; $cidr <= 32; $cidr++ ) {
@@ -374,9 +416,9 @@ function submit_access_nfs_massaction()
     activate_library('nfs');
 
     // list of filesystems selected
-    $massfs = array();
+    $massfs = [];
     foreach ( $_POST as $postname => $postvalue ) {
-        if (strpos($postname, 'cb_nfsfs_') === 0) {
+        if (strncmp($postname, 'cb_nfsfs_', 9) === 0) {
             $massfs[] = substr($postname, strlen('cb_nfsfs_'));
         }
     }
@@ -385,10 +427,10 @@ function submit_access_nfs_massaction()
     $action = @$_POST[ 'nfs_massaction' ];
 
     // mass action: unshare
-    $commands = array();
+    $commands = [];
     if ($action === 'inherit' ) {
         foreach ( $massfs as $fs ) {
-            $commands = array_merge($commands, nfs_removeshare($fs, false));
+            $commands = array_merge($commands, nfs_removeshare($fs));
         }
     }
     if ($action === 'off' ) {
@@ -397,7 +439,7 @@ function submit_access_nfs_massaction()
         }
     }
     // mass action: share with selected profile
-    if (in_array($action, array( 'public', 'protected', 'private' )) ) {
+    if (in_array($action, ['public', 'protected', 'private']) ) {
         foreach ( $massfs as $fs ) {
             $commands = array_merge(
                 $commands,
@@ -413,7 +455,7 @@ function submit_access_nfs_massaction()
     }
     if ($action === 'epon' ) {
         foreach ( $massfs as $fs ) {
-            $commands = array_merge($commands, nfs_seteasypermissions($fs, true));
+            $commands = array_merge($commands, nfs_seteasypermissions($fs));
         }
     }
     if ($action === 'resetpermissions' ) {
@@ -463,12 +505,12 @@ function submit_access_nfs_accesscontrol()
         dangerouscommand(nfs_setreadonly($fs, false), $url);
     }
     if (@isset($_POST[ 'submit_access_nfs_ac_readonly' ]) ) {
-        dangerouscommand(nfs_setreadonly($fs, true), $url);
+        dangerouscommand(nfs_setreadonly($fs), $url);
     }
 
     // Easy Permissions
     if (@isset($_POST[ 'submit_access_nfs_ep_enable' ]) ) {
-        dangerouscommand(nfs_seteasypermissions($fs, true), $url);
+        dangerouscommand(nfs_seteasypermissions($fs), $url);
     }
     if (@isset($_POST[ 'submit_access_nfs_ep_disable' ]) ) {
         dangerouscommand(nfs_seteasypermissions($fs, false), $url);
@@ -492,7 +534,7 @@ function submit_access_nfs_accesscontrol()
         dangerouscommand(
             nfs_setsharenfs(
                 $fs,
-                array( 'network' => $networkconfig ) 
+                ['network' => $networkconfig]
             ), $url 
         );
     }
@@ -500,7 +542,7 @@ function submit_access_nfs_accesscontrol()
     // Access Control - remove IP
     if (is_array($_POST) ) {
         foreach ( $_POST as $postvar => $postvalue ) {
-            if (strpos($postvar, 'submit_access_nfs_acremove_') === 0
+            if (strncmp($postvar, 'submit_access_nfs_acremove_', 27) === 0
             ) {
                 $acrecord = base64_decode(
                     substr(
@@ -512,7 +554,7 @@ function submit_access_nfs_accesscontrol()
                     friendlyerror('cannot remove IP from access control configuration!', $url);
                 }
                 $sharenfs = nfs_sharenfs_list($fs);
-                $networkconfig = array();
+                $networkconfig = [];
                 if (is_array($sharenfs[ $fs ][ 'options' ][ 'network' ]) ) {
                     foreach ( @$sharenfs[ $fs ][ 'options' ][ 'network' ] as $acip ) {
                         if ($acip != $acrecord ) {
@@ -527,7 +569,7 @@ function submit_access_nfs_accesscontrol()
                 dangerouscommand(
                     nfs_setsharenfs(
                         $fs,
-                        array( 'network' => $networkconfig ) 
+                        ['network' => $networkconfig]
                     ), $url 
                 );
             }
@@ -549,9 +591,9 @@ function submit_access_nfs_advanced()
     }
 
     // scan POST vars for selected checkboxes
-    $newconfig = array();
+    $newconfig = [];
     foreach ( $_POST as $postname => $postvalue ) {
-        if (strpos($postname, 'cb_nfsoption_') === 0) {
+        if (strncmp($postname, 'cb_nfsoption_', 13) === 0) {
             $option = substr($postname, strlen('cb_nfsoption_'));
             $index = 'text_nfsoption_'.$option;
             if (($option !== 'network') && $option && @isset($_POST[$index])) {

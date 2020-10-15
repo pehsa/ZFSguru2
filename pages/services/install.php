@@ -1,6 +1,9 @@
 <?php
 
-function content_services_install() 
+/**
+ * @return array
+ */
+function content_services_install()
 {
     global $guru;
 
@@ -27,9 +30,9 @@ function content_services_install()
     $class_hassvc = ( $nav_svcshort ) ? 'normal' : 'hidden';
 
     // tables
-    $table_categories = array();
-    $table_services = array();
-    $table_infopage = array();
+    $table_categories = [];
+    $table_services = [];
+    $table_infopage = [];
 
     // check which table to display (1: categories, 2: services, 3: infopage)
     if (@isset($_GET[ 'service' ]) ) {
@@ -184,12 +187,12 @@ function content_services_install()
         // handle services table
         foreach ( @$services as $service ) {
             if ($service[ 'cat' ] == $cat ) {
-                $table_services[] = @array(
+                $table_services[] = @[
                 'SVC_SHORTNAME' => htmlentities($service[ 'shortname' ]),
                 'SVC_LONGNAME' => ( @$service[ 'longname' ] ) ?
                 $service[ 'longname' ] : $service[ 'shortname' ],
                 'SVC_DESCRIPTION' => htmlentities($service[ 'desc' ])
-                );
+                ];
             }
         }
     }
@@ -207,18 +210,18 @@ function content_services_install()
                         $servicecount++;
                     }
                 }
-                $table_categories[] = @array(
+                $table_categories[] = @[
                 'CAT_SHORTNAME' => $cat[ 'shortname' ],
                 'CAT_LONGNAME' => $cat[ 'longname' ],
                 'CAT_SERVICECOUNT' => $servicecount,
                 'CAT_DESCRIPTION' => $cat[ 'desc' ]
-                );
+                ];
             }
         }
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Manage',
     'PAGE_TITLE' => 'Install services',
     'TABLE_CATEGORIES' => $table_categories,
@@ -255,9 +258,16 @@ function content_services_install()
     'CLASS_UPGRADE1' => $ip_class_upgrade1,
     'CLASS_UPGRADE2' => $ip_class_upgrade2,
     'UPGRADE_VER' => @$upgradever[ 'available' ],
-    );
+    ];
 }
 
+/**
+ * @param $depfile_contents
+ * @param $slist
+ * @param $services
+ *
+ * @return array
+ */
 function serviceinstall_checkdependencies( $depfile_contents, $slist, $services )
 {
     if (is_string($depfile_contents) ) {
@@ -275,17 +285,7 @@ function serviceinstall_checkdependencies( $depfile_contents, $slist, $services 
         }
         // $line can be name of service dependency, but also a list of services
         // where only one is necessary, like: X-server|X-server-KMS
-        if (strpos($line, '|') === false ) {
-            $depservice = trim($line);
-            $deplong = ( @$services[ $depservice ][ 'longname' ] ) ?
-            $services[ $depservice ][ 'longname' ] : $depservice;
-            if (!@isset($slist[ $depservice ]) ) {
-                $requiresdep = true;
-                $deplist .= '<p><a onclick="window.open(this.href,\'_blank\');'
-                . 'return false;" href="services.php?install&service='
-                . htmlentities($depservice) . '">' . htmlentities($deplong) . '</a></p>' . chr(10);
-            }
-        } else {
+        if (strpos($line, '|') !== false) {
             $depservices = explode('|', trim($line));
             $atleastone = false;
             foreach ( $depservices as $depservice ) {
@@ -295,7 +295,7 @@ function serviceinstall_checkdependencies( $depfile_contents, $slist, $services 
             }
             if (!$atleastone ) {
                 $requiresdep = true;
-                $atleastone_deplist = array();
+                $atleastone_deplist = [];
                 foreach ( $depservices as $depservice ) {
                     $deplong = ( @$services[ $depservice ][ 'longname' ] ) ?
                     $services[ $depservice ][ 'longname' ] : $depservice;
@@ -305,12 +305,19 @@ function serviceinstall_checkdependencies( $depfile_contents, $slist, $services 
                 }
                 $deplist .= '<p>' . implode(' or ', $atleastone_deplist) . '</p>' . chr(10);
             }
+        } else {
+            $depservice = trim($line);
+            $deplong = ( @$services[ $depservice ][ 'longname' ] ) ?
+            $services[ $depservice ][ 'longname' ] : $depservice;
+            if (!@isset($slist[ $depservice ]) ) {
+                $requiresdep = true;
+                $deplist .= '<p><a onclick="window.open(this.href,\'_blank\');'
+                . 'return false;" href="services.php?install&service='
+                . htmlentities($depservice) . '">' . htmlentities($deplong) . '</a></p>' . chr(10);
+            }
         }
     }
-    return array(
-    'requiresdep' => $requiresdep,
-    'deplist' => $deplist,
-    );
+    return compact('requiresdep', 'deplist');
 }
 
 function submit_services_infopage() 

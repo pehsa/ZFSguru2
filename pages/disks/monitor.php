@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_monitor() 
+/**
+ * @return array
+ */
+function content_disks_monitor()
 {
     activate_library('super');
 
@@ -28,7 +31,7 @@ function content_disks_monitor()
     $class_stoprefreshing = ( @!isset($_GET[ 'norefresh' ]) ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'I/O monitor',
     'PAGE_TITLE' => htmlentities('I/O monitor'),
     'CLASS_STOPREFRESH' => $class_stoprefreshing,
@@ -36,7 +39,7 @@ function content_disks_monitor()
     'MONITOR_FILTER' => htmlentities($filter),
     'MONITOR_OUTPUT' => $result[ 'output_str' ],
     'MONITOR_REFRESH' => $page_refresh
-    );
+    ];
 }
 
 

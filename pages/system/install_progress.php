@@ -1,6 +1,9 @@
 <?php
 
-function content_system_install_progress() 
+/**
+ * @return array
+ */
+function content_system_install_progress()
 {
     // required library
     activate_library('zfsguru');
@@ -29,7 +32,7 @@ function content_system_install_progress()
     $class_progress = ( !$installation OR $activetask ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Install',
     'PAGE_TITLE' => 'Installing ZFSguru',
     'TABLE_PROGRESS' => $table_progress,
@@ -38,12 +41,17 @@ function content_system_install_progress()
     'CLASS_INSTALLING' => $class_installing,
     'CLASS_PROGRESS' => $class_progress,
     'INSTALL_ACTIVETASK' => htmlentities($activetask),
-    );
+    ];
 }
 
+/**
+ * @param $installtasks
+ *
+ * @return array
+ */
 function table_progress( $installtasks )
 {
-    $table = array();
+    $table = [];
     $lastitem = false;
     foreach ( $installtasks as $tagname => $subtasks ) {
         $firsttask = reset($subtasks);
@@ -68,7 +76,7 @@ function table_progress( $installtasks )
                 $status = 'done';
             }
         }
-        $table[] = array(
+        $table[] = [
         'CLASS_DONE' => ( $status === 'done' ) ? 'normal' : 'hidden',
         'CLASS_ACTIVE' => ( $status === 'active' ) ? 'normal' : 'hidden',
         'CLASS_FAILED' => ( $status === 'failed' ) ? 'normal' : 'hidden',
@@ -79,7 +87,7 @@ function table_progress( $installtasks )
         'PROG_RV' => htmlentities($task[ 'rv' ]),
         'PROG_COMMAND' => htmlentities($task[ 'command' ]),
         'PROG_OUTPUT' => htmlentities($task[ 'output' ]),
-        );
+        ];
     }
     return $table;
 }

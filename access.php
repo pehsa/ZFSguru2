@@ -4,13 +4,13 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'Shares' => 'access.php?samba&shares',
     'Users' => 'access.php?samba&users',
     'Settings' => 'access.php?samba&settings',
     'NFS' => 'access.php?nfs',
     'SSH' => 'access.php?ssh'
-);
+];
 
 $content = '';
 

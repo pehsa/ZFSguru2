@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_version() 
+/**
+ * @return array
+ */
+function content_pools_version()
 {
     global $guru;
 
@@ -13,7 +16,7 @@ function content_pools_version()
     $poolversions = zfs_pool_versions();
 
     // zplversions table
-    $table_zplversions = array();
+    $table_zplversions = [];
     $zpl_defaultselected = min(
         $guru[ 'recommended_zfsversion' ][ 'zpl' ],
         $zfsver[ 'zpl' ] 
@@ -21,17 +24,17 @@ function content_pools_version()
     foreach ( $fsversions as $nr => $desc ) {
         $selected = ( $nr == $zpl_defaultselected ) ? 'checked ' : '';
         $systemlow = ( $nr > $zfsver[ 'zpl' ] ) ? 'normal' : 'hidden';
-        $table_zplversions[] = array(
+        $table_zplversions[] = [
         'ZPL_SELECT' => $selected,
         'ZPL_VER' => $nr,
         'ZPL_DESC' => $desc,
         'ZPL_CANSELECT' => ( $nr <= $zfsver[ 'zpl' ] ) ? 'normal' : 'hidden',
         'ZPL_SYSTEMLOW' => ( $nr > $zfsver[ 'zpl' ] ) ? 'normal' : 'hidden'
-        );
+        ];
     }
 
     // spaversions table
-    $table_spaversions = array();
+    $table_spaversions = [];
     $spa_defaultselected = min(
         $guru[ 'recommended_zfsversion' ][ 'spa' ],
         $zfsver[ 'spa' ] 
@@ -40,21 +43,21 @@ function content_pools_version()
     foreach ( $poolversions as $nr => $desc ) {
         $selected = ( $nr == $spa_defaultselected ) ? 'checked ' : '';
         $systemlow = ( $nr > $zfsver[ 'spa' ] ) ? 'normal' : 'hidden';
-        $table_spaversions[] = array(
+        $table_spaversions[] = [
         'SPA_SELECT' => $selected,
         'SPA_VER' => $nr,
         'SPA_DESC' => $desc,
         'SPA_CANSELECT' => ( $nr <= $zfsver[ 'spa' ] ) ? 'normal' : 'hidden',
         'SPA_SYSTEMLOW' => ( $nr > $zfsver[ 'spa' ] ) ? 'normal' : 'hidden'
-        );
+        ];
     }
 
     // inject tags and handle page
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Create',
     'TABLE_ZPLVERSIONS' => $table_zplversions,
     'TABLE_SPAVERSIONS' => $table_spaversions
-    );
+    ];
 }
 
 function submit_pools_version() 

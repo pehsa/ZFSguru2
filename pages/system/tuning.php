@@ -1,18 +1,21 @@
 
 <?php
 
-function content_system_tuning() 
+/**
+ * @return array
+ */
+function content_system_tuning()
 {
     // required libraries
     activate_library('loaderconf');
     activate_library('system');
 
     // tabbar
-    $tabbar = array(
+    $tabbar = [
     'auto' => 'Automatic tuning',
     'zfs' => 'ZFS tuning',
     'advanced' => 'Advanced'
-    );
+    ];
     $url = 'system.php?tuning';
 
     // select tab
@@ -66,14 +69,14 @@ function content_system_tuning()
     );
 
     // prefetching
-    $prefetch = array(
+    $prefetch = [
     'i386_normal' => 'hidden',
     'i386_forced' => 'hidden',
     'amd64_enabled' => 'hidden',
     'amd64_disabled' => 'hidden',
     'amd64_forced' => 'hidden',
     'unknown' => 'hidden'
-    );
+    ];
     $enoughmemory = ( $physmem[ 'usable' ] > ( 4 * 1024 * 1024 * 1024 ) );
     $forced = ( @$loadersettings[ 'vfs.zfs.prefetch_disable' ] === 0 );
     if ($platform === 'i386' ) {
@@ -105,7 +108,7 @@ function content_system_tuning()
     /* tab: zfs */
 
     // zfs tuning table
-    $tuningvars = array(
+    $tuningvars = [
     'vfs.zfs.arc_min' =>
     'minimum ARC (Adaptive Replacement Cache) memory allocated',
     'vfs.zfs.arc_max' =>
@@ -128,37 +131,37 @@ function content_system_tuning()
     'ignore application flush commands - <span class="red">DANGER!</span>',
     'vfs.zfs.zil_disable' =>
     'completely disable ZFS Intent Log (ZIL) - <span class="red">DANGER!!</span>'
-    );
-    $zfstuning = array();
+    ];
+    $zfstuning = [];
     foreach ( $loadersettings as $loadervar => $data ) {
         if (@isset($tuningvars[ $loadervar ]) ) {
             $enabled = ( $data[ 'enabled' ] ) ? 'checked="checked"' : '';
-            $zfstuning[] = array(
+            $zfstuning[] = [
             'TUNING_VAR' => $loadervar,
             'TUNING_VAR_B64' => base64_encode($loadervar),
             'TUNING_ENABLED' => $enabled,
             'TUNING_VALUE' => htmlentities($data[ 'value' ]),
             'TUNING_DESC' => ucfirst($tuningvars[ $loadervar ])
-            );
+            ];
         }
     }
 
     /* tab: advanced */
 
     // advanced tuning table
-    $advancedtuning = array();
+    $advancedtuning = [];
     foreach ( $loadersettings as $loadervar => $data ) {
         $enabled = ( $data[ 'enabled' ] ) ? 'checked="checked"' : '';
-        $advancedtuning[] = array(
+        $advancedtuning[] = [
         'TUNING_VAR' => $loadervar,
         'TUNING_VAR_B64' => base64_encode($loadervar),
         'TUNING_ENABLED' => $enabled,
         'TUNING_VALUE' => htmlentities($data[ 'value' ])
-        );
+        ];
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Tuning',
     'PAGE_TITLE' => 'System Tuning',
     'PAGE_TABBAR' => $tabbar,
@@ -192,7 +195,7 @@ function content_system_tuning()
     'TUNING_CON' => $tuning[ 'conservative' ],
     'TUNING_MIN' => $tuning[ 'minimal' ],
     'TUNING_I38' => $tuning[ 'i386' ]
-    );
+    ];
 }
 
 function submit_system_tuning_auto() 
@@ -241,14 +244,18 @@ function submit_system_tuning_advanced()
             if (( $data[ 'enabled' ] )&&( !@isset($_POST[ 'enabled_' . base64_encode($name) ]) )&&( @isset($_POST[ base64_encode($name) ]) ) ) {
                 $loadersettings[ $name ][ 'enabled' ] = false;
             } elseif (@isset($_POST[ 'enabled_' . base64_encode($name) ])&&( @strlen($_POST[ base64_encode($name) ]) > 0 ) ) {
-                $loadersettings[ $name ] = array( 'enabled' => true,
-                'value' => $_POST[ base64_encode($name) ] );
+                $loadersettings[ $name ] = [
+                    'enabled' => true,
+                'value' => $_POST[ base64_encode($name) ]
+                ];
             }
         }
         // add new variable
         if (@strlen($_POST[ 'new_tuning_name' ]) > 0 ) {
-            $loadersettings[ $_POST[ 'new_tuning_name' ] ] = @array( 'enabled' => true,
-            'value' => $_POST[ 'new_tuning_value' ] );
+            $loadersettings[ $_POST[ 'new_tuning_name' ] ] = @[
+                'enabled' => true,
+            'value' => $_POST[ 'new_tuning_value' ]
+            ];
         }
         // save loadersettings
         $result = loaderconf_update($loadersettings);

@@ -20,10 +20,12 @@ function nfsNewShareProfile(o) {
 }
 
 function nfsMassAction(o) {
-	if (o.value === 'private')
+	if (o.value === 'private') {
 		document.getElementById('nfs_ma_pi').className = 'normal';
-	else
+	}
+	else {
 		document.getElementById('nfs_ma_pi').className = 'hidden';
+	}
 }
 
 function nfsModifyShareProfile(o) {

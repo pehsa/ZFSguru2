@@ -1,6 +1,9 @@
 <?php
 
-function content_status_hardware() 
+/**
+ * @return string[]
+ */
+function content_status_hardware()
 {
     // fetch DMI data
     $dmidata = dmi_decode();
@@ -10,13 +13,16 @@ function content_status_hardware()
     $hw_status = 'X';
     viewarray($dmidata);
     // export tags
-    return array(
+    return [
     'PAGE_TITLE' => 'Hardware',
     'HW_STATUS' => $hw_status
-    );
+    ];
 }
 
-function dmi_decode() 
+/**
+ * @return array
+ */
+function dmi_decode()
 {
     // required library
     activate_library('super');
@@ -26,14 +32,14 @@ function dmi_decode()
 
     $split = preg_split('/\nHandle /m', $result[ 'output_str' ]);
     if (count($split) < 2 ) {
-        return array();
+        return [];
     }
 
-    $dmidata = array();
+    $dmidata = [];
     for ($i = 1, $iMax = count($split); $i <= $iMax; $i++ ) {
         @preg_match('/^(0x[0-9a-fA-F]+), DMI type (\d+), ([^\n]+)\n([^\n]+)\n(.+)$/s', $split[ $i ], $matches);
         @preg_match_all('/^[\s]*(.+): (.+)$/m', $matches[ 5 ], $datamatches);
-        $data = array();
+        $data = [];
         if (@strlen($matches[ 1 ]) < 1 ) {
             continue;
         }
@@ -42,17 +48,22 @@ function dmi_decode()
                 $data[ trim($name) ] = trim($datamatches[ 2 ][ $id ]);
             }
         }
-        $dmidata[ $matches[ 1 ] ] = array(
+        $dmidata[ $matches[ 1 ] ] = [
         'id' => $matches[ 1 ],
         'type' => $matches[ 2 ],
         'desc' => $matches[ 4 ],
         'data' => $data
-        );
+        ];
     }
     return $dmidata;
 }
 
-function dmi_analyse( $dmi ) 
+/**
+ * @param $dmi
+ *
+ * @return array[]
+ */
+function dmi_analyse( $dmi )
 {
     // BIOS
     foreach ( $dmi as $id => $dmidata ) {
@@ -61,7 +72,7 @@ function dmi_analyse( $dmi )
         }
     }
     //viewarray($dmidata); die('z');
-    $bios = array();
+    $bios = [];
     $bios[ 'vendor' ] = $dmidata[ 'data' ][ 'Vendor' ];
     $bios[ 'version' ] = $dmidata[ 'data' ][ 'Version' ];
     $bios[ 'date' ] = $dmidata[ 'data' ][ 'Release Date' ];
@@ -73,7 +84,7 @@ function dmi_analyse( $dmi )
             break;
         }
     }
-    $motherboard = array();
+    $motherboard = [];
     $motherboard[ 'brand' ] = $dmidata[ 'data' ][ 'Manufacturer' ];
     $motherboard[ 'model' ] = $dmidata[ 'data' ][ 'Product Name' ];
     // processor
@@ -82,7 +93,7 @@ function dmi_analyse( $dmi )
             break;
         }
     }
-    $processor = array();
+    $processor = [];
     $processor[ 'brand' ] = $dmidata[ 'data' ][ 'Manufacturer' ];
     $processor[ 'family' ] = $dmidata[ 'data' ][ 'Family' ];
     $processor[ 'model' ] = $dmidata[ 'data' ][ 'Version' ];
@@ -100,7 +111,7 @@ function dmi_analyse( $dmi )
     // cache info
 
     // memory
-    $memory = array();
+    $memory = [];
     foreach ( $dmi as $id => $dmidata ) {
         if (( int )$dmidata[ 'type' ] == 17 ) {
             $data_width = ( int )substr(
@@ -111,7 +122,7 @@ function dmi_analyse( $dmi )
                 $dmidata[ 'data' ][ 'Data Width' ], 0,
                 strpos($dmidata[ 'data' ][ 'Total Width' ], ' ') 
             );
-            $memory[ 'modules' ][ $id ] = array(
+            $memory[ 'modules' ][ $id ] = [
             'size' => $dmidata[ 'data' ][ 'Size' ],
             'type' => $dmidata[ 'data' ][ 'Form Factor' ],
             'class' => $dmidata[ 'data' ][ 'Type' ],
@@ -126,27 +137,30 @@ function dmi_analyse( $dmi )
             ( $dmidata[ 'data' ][ 'Configured Clock Speed' ] == $dmidata[ 'data' ][ 'Speed' ] ),
             'partnumber' => $dmidata[ 'data' ][ 'Part Number' ],
             'errors' => $dmidata[ 'data' ][ 'Error Information Handle' ]
-            );
+            ];
         }
     }
     $memory[ 'count' ] = count($memory[ 'modules' ]);
 
     // extra
-    $extra = array();
+    $extra = [];
 
     // return final data
-    return array(
+    return [
     'BIOS' => $bios,
     'Motherboard' => $motherboard,
     'Processor' => $processor,
     'Memory' => $memory,
     'Extra' => $extra
-    );
+    ];
 }
 
-function dmi_types() 
+/**
+ * @return string[]
+ */
+function dmi_types()
 {
-    return array(
+    return [
     0 => 'BIOS',
     1 => 'System',
     2 => 'Base Board',
@@ -191,5 +205,5 @@ function dmi_types()
     41 => 'Onboard Device',
     126 => 'Disabled',
     127 => 'End of table marker'
-    );
+    ];
 }

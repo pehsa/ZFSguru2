@@ -1,6 +1,9 @@
 <?php
 
-function content_files_browse() 
+/**
+ * @return array
+ */
+function content_files_browse()
 {
     global $guru;
 
@@ -42,7 +45,7 @@ function content_files_browse()
     // fetch directory contents
     $command = '/bin/ls -la ' . $wd;
     exec($command, $ls);
-    $lsarr = array();
+    $lsarr = [];
     if (is_array($ls) ) {
         foreach ( $ls as $line ) {
             $split = preg_split('/[\s]+/m', $line, 9);
@@ -79,11 +82,11 @@ function content_files_browse()
     $browsebox = implode(chr(10), $lsarr);
 
     // new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'File browser',
     'PAGE_TITLE' => 'File browser',
     'CLASS_AJAX' => $class_ajax,
     'FILES_WD' => $wd,
     'FILES_BROWSEBOX' => $browsebox
-    );
+    ];
 }

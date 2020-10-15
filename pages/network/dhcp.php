@@ -1,6 +1,9 @@
 <?php
 
-function content_network_dhcp() 
+/**
+ * @return array
+ */
+function content_network_dhcp()
 {
     // required library
     activate_library('dnsmasq');
@@ -12,8 +15,8 @@ function content_network_dhcp()
     $dnsmasq = dnsmasq_readconfig();
 
     // tables
-    $table[ 'dhcp' ][ 'string' ] = array();
-    $table[ 'dhcp' ][ 'switch' ] = array();
+    $table[ 'dhcp' ][ 'string' ] = [];
+    $table[ 'dhcp' ][ 'switch' ] = [];
 
     // populate tables
     $servicetype = 'dhcp';
@@ -21,12 +24,12 @@ function content_network_dhcp()
         foreach ( $dnsmasq[ $servicetype ] as $datatype => $dataarray ) {
             if (is_array($dataarray) ) {
                 foreach ( $dataarray as $configvar ) {
-                    $table[ $servicetype ][ $datatype ][ $configvar ] = array(
+                    $table[ $servicetype ][ $datatype ][ $configvar ] = [
                     strtoupper($servicetype) . '_' . strtoupper($datatype) . '_NAME' =>
                     htmlentities($configvar),
                     strtoupper($servicetype) . '_' . strtoupper($datatype) . '_VALUE' =>
                     @htmlentities($dnsmasq[ $servicetype ][ $datatype ][ $configvar ]),
-                    );
+                    ];
                 }
             }
         }
@@ -35,13 +38,13 @@ function content_network_dhcp()
     // table: network interfaces for dhcp configuration
     activate_library('network');
     $netif = network_interfaces();
-    $table_dhcp_if = array();
+    $table_dhcp_if = [];
     foreach ( $netif as $ifname => $ifdata ) {
-        if (strpos($ifname, 'lo') !== 0) {
+        if (strncmp($ifname, 'lo', 2) !== 0) {
             $maskhex = @$ifdata[ 'inet' ][ 0 ][ 'netmask' ];
             $mask = '';
             if ($maskhex ) {
-                $iparr = array();
+                $iparr = [];
                 for ( $i = 2; $i < 10; $i += 2 ) {
                     $iparr[] = hexdec(
                         $maskhex {
@@ -59,25 +62,25 @@ function content_network_dhcp()
             //error($mask);
             //   $netmask = long2ip(-1 << (32 - (int)$int));
 
-            $table_dhcp_if[] = array(
+            $table_dhcp_if[] = [
             'DHCP_IF_NAME' => htmlentities($ifname),
             'DHCP_IF_INET4' => @$ifdata[ 'ip' ],
             'DHCP_IF_INET6' => @$ifdata[ 'inet6' ][ 0 ][ 'ip' ],
             'DHCP_IF_MASK4' => $mask,
             'DHCP_IF_MASK6' => @$ifdata[ 'inet6' ][ 0 ][ 'prefixlen' ],
             'DHCP_IF_CONNECTED' => '',
-            );
+            ];
         }
     }
     //viewarray($netif);
     //viewarray($table_dhcp_if);
 
     // export tags
-    return array(
+    return [
     'PAGE_TITLE' => 'DNSmasq',
     'PAGE_ACTIVETAB' => 'DNSmasq',
     'TABLE_DHCP_STRING' => $table[ 'dhcp' ][ 'string' ],
     'TABLE_DHCP_SWITCH' => $table[ 'dhcp' ][ 'switch' ],
     'TABLE_DHCP_IF' => $table_dhcp_if,
-    );
+    ];
 }

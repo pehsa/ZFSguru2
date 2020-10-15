@@ -67,15 +67,15 @@ tr.center td, tr.center th, table.widetable tr.center th {
 	display: none !important;
 }
 .red {
-	color: red;
+	color: #ff0000;
 	text-shadow: 1px 1px #f99, -1px -1px #fdd;
 }
 .green {
-	color: green;
+	color: #008000;
 	text-shadow: 1px 1px #9f9, -1px -1px #dfd;
 }
 .blue {
-	color: blue;
+	color: #0000ff;
 }
 .white {
 	color: #fff;
@@ -84,7 +84,7 @@ tr.center td, tr.center th, table.widetable tr.center th {
 	color: #000;
 }
 .grey {
-	color: grey;
+	color: #808080;
 }
 .transparent {
 	color: transparent;
@@ -443,7 +443,7 @@ table.hover tr:hover td.green, table.hover tr:hover td.green span b, table.hover
  color:#cfc;
 }
  50% {
- color:green;
+ color: #008000;
 }
  100% {
  color:#cfc;
@@ -454,7 +454,7 @@ table.hover tr:hover td.green, table.hover tr:hover td.green span b, table.hover
  color:#cfc;
 }
  50% {
- color:green;
+ color: #008000;
 }
  100% {
  color:#cfc;
@@ -465,7 +465,7 @@ table.hover tr:hover td.green, table.hover tr:hover td.green span b, table.hover
  color:#cfc;
 }
  50% {
- color:green;
+ color: #008000;
 }
  100% {
  color:#cfc;
@@ -476,7 +476,7 @@ table.hover tr:hover td.green, table.hover tr:hover td.green span b, table.hover
  color:#cfc;
 }
  50% {
- color:green;
+ color: #008000;
 }
  100% {
  color:#cfc;
@@ -487,7 +487,7 @@ table.hover tr:hover td.green, table.hover tr:hover td.green span b, table.hover
  color:#cfc;
 }
  50% {
- color:green;
+ color: #008000;
 }
  100% {
  color:#cfc;
@@ -937,11 +937,11 @@ span.diskinuse {
 }
 span.service_running {
 	font-weight: bold;
-	color: green;
+	color: #008000;
 }
 span.service_stopped {
 	font-weight: bold;
-	color: red;
+	color: #ff0000;
 }
 span.minortext {
 	font-size: 85%;

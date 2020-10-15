@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @return array
+ */
 function content_layout_layout()
 {
     global $tabs, $tags;
@@ -9,7 +12,7 @@ function content_layout_layout()
 
     // menu
     $menu = '<ul>';
-    $menus = array(
+    $menus = [
     'Status' => 'status.php',
     'Network' => 'network.php',
     'Disks' => 'disks.php',
@@ -17,7 +20,8 @@ function content_layout_layout()
     'Files' => 'files.php',
     'Access' => 'access.php',
     'Services' => 'services.php',
-    'System' => 'system.php');
+    'System' => 'system.php'
+    ];
 
     $uri = $_SERVER['SCRIPT_NAME'];
     $reluri = substr($uri, strrpos($uri, '/'));
@@ -92,12 +96,12 @@ function content_layout_layout()
     $timekeeper = timekeeper();
 
     // return as tags
-    return array(
+    return [
     'LAYOUT_MENU'        => $menu, 
     'LAYOUT_NAVTABS'    => $navtabs,
     'LAYOUT_FEEDBACK'    => $feedback,
     'LAYOUT_TABBAR'    => $tabbar,
     'LAYOUT_TIMEKEEPER'    => $timekeeper,
-    );
+    ];
 }
 

@@ -1,6 +1,9 @@
 <?php
 
-function content_network_networkquery() 
+/**
+ * @return array
+ */
+function content_network_networkquery()
 {
     // required library
     activate_library('network');
@@ -15,7 +18,7 @@ function content_network_networkquery()
     $queryif = @$_GET[ 'query' ];
 
     // process table IFLIST
-    $iflist = array();
+    $iflist = [];
     foreach ( $interfaces as $ifname => $ifdata ) {
         // check interface type
         $iftype = network_checkinterface($ifname);
@@ -40,7 +43,7 @@ function content_network_networkquery()
             $ident = 'Loopback adapter (special system adapter)';
         }
 
-        $iflist[] = array(
+        $iflist[] = [
         'CLASS_ACTIVEROW' => $class_activerow,
         'CLASS_WIRED' => $class_wired,
         'CLASS_WIRELESS' => $class_wireless,
@@ -52,34 +55,34 @@ function content_network_networkquery()
         'IF_STATUS' => $ifdata[ 'status' ],
         'IF_MTU' => $ifdata[ 'mtu' ],
         'IF_MAC' => $ifdata[ 'ether' ]
-        );
+        ];
     }
 
     // queried filesystem
     $int = $interfaces[ $queryif ];
 
     // ipv4 list
-    $table_ipv4 = array();
+    $table_ipv4 = [];
     foreach ( $int[ 'inet' ] as $id => $ipdata ) {
-        $table_ipv4[] = array(
+        $table_ipv4[] = [
         'IPV4_IP' => $ipdata[ 'ip' ],
         'IPV4_SUBNET' => network_netmask($ipdata[ 'netmask' ]),
         'IPV4_BROADCAST' => $ipdata[ 'broadcast' ]
-        );
+        ];
     }
 
     // ipv6 list
-    $table_ipv6 = array();
+    $table_ipv6 = [];
     foreach ( $int[ 'inet6' ] as $id => $ipdata ) {
-        $table_ipv6[] = array(
+        $table_ipv6[] = [
         'IPV6_IP' => $ipdata[ 'ip' ],
         'IPV6_PREFIXLEN' => $ipdata[ 'prefixlen' ],
         'IPV6_SCOPEID' => $ipdata[ 'scopeid' ]
-        );
+        ];
     }
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Interfaces',
     'PAGE_TITLE' => 'Network interface ' . $queryif,
     'TABLE_NETWORK_IFLIST' => $iflist,
@@ -93,12 +96,17 @@ function content_network_networkquery()
     'QUERY_CAPABILITIES' => htmlentities($int[ 'options_str' ]),
     'QUERY_MAC' => $int[ 'ether' ],
     'QUERY_MTU' => $int[ 'mtu' ]
-    );
+    ];
 }
 
+/**
+ * @param $netmask
+ *
+ * @return string
+ */
 function network_netmask( $netmask )
 {
-    $subnet = array();
+    $subnet = [];
     for ($i = 2; $i <= 8; $i += 2) {
         $subnet[] = hexdec(
             $netmask {

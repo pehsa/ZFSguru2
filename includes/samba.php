@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @return false
+ */
 function samba_readconfig()
 {
     global $guru;
@@ -99,6 +102,12 @@ function samba_readconfig()
     return $config;
 }
 
+/**
+ * @param       $newconfig
+ * @param false $removeglobals
+ *
+ * @return bool
+ */
 function samba_writeconfig( $newconfig, $removeglobals = false )
 {
     global $guru;
@@ -190,6 +199,12 @@ function samba_writeconfig( $newconfig, $removeglobals = false )
     return true;
 }
 
+/**
+ * @param $username
+ * @param $password
+ *
+ * @return bool
+ */
 function samba_setpassword( $username, $password )
 {
     // elevated privileges
@@ -210,6 +225,9 @@ function samba_setpassword( $username, $password )
     return ( @$result[ 'rv' ] === 0 );
 }
 
+/**
+ * @return mixed
+ */
 function samba_restartservice()
 {
     global $guru;
@@ -222,6 +240,11 @@ function samba_restartservice()
     return ( $result[ 'rv' ] );
 }
 
+/**
+ * @param $path
+ *
+ * @return false|int|string
+ */
 function samba_isshared( $path )
 {
     $config = samba_readconfig();
@@ -236,6 +259,11 @@ function samba_isshared( $path )
     return false;
 }
 
+/**
+ * @param $sharename
+ *
+ * @return bool
+ */
 function samba_removeshare( $sharename )
 {
     // read samba configuration
@@ -251,6 +279,11 @@ function samba_removeshare( $sharename )
     return true;
 }
 
+/**
+ * @param $mountpoint
+ *
+ * @return bool
+ */
 function samba_removesharepath( $mountpoint )
 {
     // read samba configuration
@@ -271,6 +304,11 @@ function samba_removesharepath( $mountpoint )
     return false;
 }
 
+/**
+ * @param $mountpoint
+ *
+ * @return bool
+ */
 function samba_removesharepath_recursive( $mountpoint )
 {
     // read samba configuration
@@ -295,20 +333,23 @@ function samba_removesharepath_recursive( $mountpoint )
     return false;
 }
 
+/**
+ * @param $username
+ */
 function samba_remove_user( $username )
 {
     // read samba configuration
     $sambaconf_orig = samba_readconfig();
     $sambaconf = $sambaconf_orig;
     // access lists
-    $accesslists = array( 'read list', 'write list', 'admin users', 'invalid users' );
+    $accesslists = ['read list', 'write list', 'admin users', 'invalid users'];
     // traverse each share in search for access lists that include username
     if (@is_array($sambaconf[ 'shares' ]) ) {
         foreach ( $sambaconf[ 'shares' ] as $sharename => $shareproperties ) {
             foreach ( $accesslists as $accesslist ) {
                 if (@isset($shareproperties[ $accesslist ]) ) {
                     $expl = explode(' ', $shareproperties[ $accesslist ]);
-                    $newlist = array();
+                    $newlist = [];
                     foreach ( $expl as $userorgroup ) {
                         if ($userorgroup != $username ) {
                             $newlist[] = $userorgroup;
@@ -329,6 +370,9 @@ function samba_remove_user( $username )
     }
 }
 
+/**
+ * @param $groupname
+ */
 function samba_remove_group( $groupname )
 {
     if ($groupname != '') {
@@ -337,7 +381,10 @@ function samba_remove_group( $groupname )
     }
 }
 
-function samba_usergroups() 
+/**
+ * @return array[]
+ */
+function samba_usergroups()
 {
     // required library
     activate_library('system');
@@ -353,7 +400,7 @@ function samba_usergroups()
     }
 
     // standardusers part of GID 1000
-    $standardusers = array();
+    $standardusers = [];
     foreach ( $sysusers as $user ) {
         if (($user['groupid'] == 1000) && ($user['userid'] > 1000) and ($user['userid'] < 65533)) {
             $standardusers[ ( int )$user[ 'userid' ] ] = $user[ 'username' ];
@@ -361,19 +408,19 @@ function samba_usergroups()
     }
 
     // groupusers contain the users in other groups than the standard group #1000
-    $groupusers = array();
+    $groupusers = [];
     foreach ( $sysgroups as $group ) {
         if (( $group[ 'groupid' ] > 1000 )AND( $group[ 'groupid' ] < 65533 ) ) {
             if (trim($group['users']) !== '') {
                 $groupusers[ $group[ 'groupname' ] ] = explode(',', $group[ 'users' ]);
             } else {
-                $groupusers[ $group[ 'groupname' ] ] = array();
+                $groupusers[ $group[ 'groupname' ] ] = [];
             }
         }
     }
 
     // remove users in special groups from the standardusers array
-    $rejectedusers = array();
+    $rejectedusers = [];
     foreach ( $groupusers as $groupname => $userlist ) {
         foreach ( $userlist as $user ) {
             $uid = array_search($user, $standardusers, true);
@@ -396,11 +443,11 @@ function samba_usergroups()
     }
 
                 // start array with standard users
-    $usergroups = array( 'share' => $standardusers );
+    $usergroups = ['share' => $standardusers];
 
     // add the other groups
     foreach ( $groupusers as $groupname => $userlist ) {
-        $usergroups[ $groupname ] = array();
+        $usergroups[ $groupname ] = [];
         foreach ( $userlist as $user ) {
             if (@!isset($rejectedusers[ $user ]) ) {
                 $usergroups[ $groupname ] = $userlist;
@@ -419,13 +466,19 @@ function samba_usergroups()
     return $usergroups;
 }
 
-function samba_share_permissions( $sambaconf, $sharename ) 
+/**
+ * @param $sambaconf
+ * @param $sharename
+ *
+ * @return array[]
+ */
+function samba_share_permissions( $sambaconf, $sharename )
 {
-    $shareperms = array(
-    'fullaccess' => array(),
-    'readonly' => array(),
-    'noaccess' => array()
-    );
+    $shareperms = [
+    'fullaccess' => [],
+    'readonly' => [],
+    'noaccess' => []
+    ];
     if (!@isset($sambaconf[ 'shares' ][ $sharename ]) ) {
         return $shareperms;
     }
@@ -441,11 +494,11 @@ function samba_share_permissions( $sambaconf, $sharename )
         $shareperms[ 'fullaccess' ][] = 'guest';
     }
     // share access lists
-    $accesslists_names = array(
+    $accesslists_names = [
     'fullaccess' => 'write list',
     'readonly' => 'read list',
     'noaccess' => 'invalid users'
-    );
+    ];
     foreach ( $accesslists_names as $spname => $alname ) {
         $accesslist_array = @explode(' ', $sambaconf[ 'shares' ][ $sharename ][ $alname ]);
         if (!empty($accesslist_array)AND is_array($accesslist_array) ) {
@@ -459,6 +512,11 @@ function samba_share_permissions( $sambaconf, $sharename )
     return $shareperms;
 }
 
+/**
+ * @param $perm
+ *
+ * @return string
+ */
 function samba_share_accesstype( $perm )
 {
     if (@$perm[ 'fullaccess' ][ 0 ] === 'guest' ) {
@@ -485,9 +543,12 @@ function samba_share_accesstype( $perm )
     return $atype;*/
 }
 
+/**
+ * @return string[]
+ */
 function samba_variables_global()
 {
-    return array(
+    return [
     'abort shutdown script',
     'acl allow execute always',
     'acl compatibility',
@@ -738,12 +799,15 @@ function samba_variables_global()
     'workgroup',
     'write raw',
     'wtmp directory'
-    );
+    ];
 }
 
+/**
+ * @return string[]
+ */
 function samba_variables_share()
 {
-    return array(
+    return [
     'access based share enum',
     'acl check permissions',
     'acl group control',
@@ -877,52 +941,58 @@ function samba_variables_share()
     'wide links',
     'write cache size',
     'write list'
-    );
+    ];
 }
 
+/**
+ * @return \string[][]
+ */
 function samba_variables_alias()
 {
-    return array(
-    'browseable' => array( 'browsable' ),
-    'case sensitive' => array( 'casesignames' ),
-    'create mask' => array( 'create mode' ),
-    'debug timestamp' => array( 'timestamp logs' ),
-    'default service' => array( 'default' ),
-    'directory mask' => array( 'directory mode' ),
-    'force group' => array( 'group' ),
-    'guest ok' => array( 'public' ),
-    'guest only' => array( 'only guest' ),
-    'hosts allow' => array( 'allow hosts' ),
-    'hosts deny' => array( 'deny hosts' ),
-    'idmap gid' => array( 'winbind gid' ),
-    'idmap uid' => array( 'winbind uid' ),
-    'ldap passwd sync' => array( 'ldap password sync' ),
-    'lock directory' => array( 'lock dir' ),
-    'log level' => array( 'debuglevel' ),
-    'nbt client socket address' => array( 'socket address' ),
-    'path' => array( 'directory' ),
-    'preexec' => array( 'exec' ),
-    'preferred master' => array( 'prefered master' ),
-    'preload' => array( 'auto services' ),
-    'printable' => array( 'print ok' ),
-    'printcap name' => array( 'printcap' ),
-    'printer name' => array( 'printer' ),
-    'private dir' => array( 'private directory' ),
+    return [
+    'browseable' => ['browsable'],
+    'case sensitive' => ['casesignames'],
+    'create mask' => ['create mode'],
+    'debug timestamp' => ['timestamp logs'],
+    'default service' => ['default'],
+    'directory mask' => ['directory mode'],
+    'force group' => ['group'],
+    'guest ok' => ['public'],
+    'guest only' => ['only guest'],
+    'hosts allow' => ['allow hosts'],
+    'hosts deny' => ['deny hosts'],
+    'idmap gid' => ['winbind gid'],
+    'idmap uid' => ['winbind uid'],
+    'ldap passwd sync' => ['ldap password sync'],
+    'lock directory' => ['lock dir'],
+    'log level' => ['debuglevel'],
+    'nbt client socket address' => ['socket address'],
+    'path' => ['directory'],
+    'preexec' => ['exec'],
+    'preferred master' => ['prefered master'],
+    'preload' => ['auto services'],
+    'printable' => ['print ok'],
+    'printcap name' => ['printcap'],
+    'printer name' => ['printer'],
+    'private dir' => ['private directory'],
     // write ok is synonymous with read only? this has to be a bug....
     //  'read only'        => array('write ok'),
-    'root directory' => array( 'root', 'root dir' ),
-    'server max protocol' => array( 'max protocol', 'protocol' ),
-    'server min protocol' => array( 'min protocol' ),
-    'username' => array( 'user', 'users' ),
-    'vfs objects' => array( 'vfs object' ),
-    'writeable' => array( 'writable' ),
-    );
+    'root directory' => ['root', 'root dir'],
+    'server max protocol' => ['max protocol', 'protocol'],
+    'server min protocol' => ['min protocol'],
+    'username' => ['user', 'users'],
+    'vfs objects' => ['vfs object'],
+    'writeable' => ['writable'],
+    ];
 }
 
+/**
+ * @return \string[][]
+ */
 function samba_variables_alias_inverted()
 {
-    return array(
-    'disable spoolss' => array( 'enable spoolss' ),
-    'read only' => array( 'writeable' ),
-    );
+    return [
+    'disable spoolss' => ['enable spoolss'],
+    'read only' => ['writeable'],
+    ];
 }

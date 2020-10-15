@@ -1,6 +1,9 @@
 <?php
 
-function content_system_preferences() 
+/**
+ * @return array
+ */
+function content_system_preferences()
 {
     global $guru;
 
@@ -8,12 +11,12 @@ function content_system_preferences()
     activate_library('gurudb');
 
     // tabbar
-    $tabbar = array(
+    $tabbar = [
     'main' => 'Main preferences',
     'access' => 'Access control',
     'usability' => 'Usability',
     'advanced' => 'Advanced'
-    );
+    ];
     $url = 'system.php?pref';
 
     // select tab
@@ -66,7 +69,7 @@ function content_system_preferences()
             . htmlentities($timezone) . '</option>' . chr(10);
         }
     }
-    $system_time = shell_exec("date");
+    $system_time = shell_exec('date');
     $php_time = date('D M j H:i:s e Y');
     // master servers (note that we hide the trailing forward slash)
     $master = '';
@@ -116,24 +119,24 @@ function content_system_preferences()
     $cb_destroypools = ( $pref[ 'destroy_pools' ] ) ? 'checked="checked"' : '';
     $cb_timekeeper = ( $pref[ 'timekeeper' ] ) ? 'checked="checked"' : '';
     // visual themes
-    $themelist = array();
+    $themelist = [];
     exec('/bin/ls -1 ' . $guru[ 'docroot' ] . '/theme/', $output);
     if (is_array($output) ) {
         foreach ( $output as $dir ) {
             if (($dir !== 'default') && is_dir($guru['docroot'].'/theme/'.$dir)) {
-                $themelist[] = array(
+                $themelist[] = [
                 'THEME_ACTIVE' => ( $dir === $guru[ 'preferences' ][ 'theme' ] ) ?
                 'selected="selected"' : '',
                 'THEME_DIR' => htmlentities($dir),
                 'THEME_NAME' => htmlentities(ucfirst($dir))
-                );
+                ];
             }
         }
     }
 
                 // advanced
-    $refresh = array();
-    $refresh_choices = array(
+    $refresh = [];
+    $refresh_choices = [
     0 => 'Always',
     15 * 60 => '15 minutes',
     30 * 60 => '30 minutes',
@@ -143,27 +146,27 @@ function content_system_preferences()
     2 * 24 * 60 * 60 => '2 days',
     8 * 24 * 60 * 60 => '8 days',
     30 * 24 * 60 * 60 => '30 days'
-    );
+    ];
     foreach ( $refresh_choices as $refreshrate => $refreshname ) {
-        $refresh[] = array(
+        $refresh[] = [
         'REFRESH_ACTIVE' => ( ( string )@$pref[ 'refresh_rate' ] === $refreshrate ) ?
         'selected="selected"' : '',
         'REFRESH_NAME' => htmlentities($refreshname),
         'REFRESH_RATE' => $refreshrate,
-        );
+        ];
     }
-    $timeouts = array();
-    $timeout_choices = array( 2, 3, 4, 5, 7, 10, 15, 20, 25, 30 );
+    $timeouts = [];
+    $timeout_choices = [2, 3, 4, 5, 7, 10, 15, 20, 25, 30];
     foreach ( $timeout_choices as $timeout ) {
-        $timeouts[] = array(
+        $timeouts[] = [
         'TIMEOUT_ACTIVE' => ( @$pref[ 'connect_timeout' ] === $timeout ) ?
         'selected="selected"' : '',
         'TIMEOUT_SEC' => $timeout
-        );
+        ];
     }
     $cb_offlinemode = ( @$pref[ 'offline_mode' ] ) ? 'checked="checked"' : '';
     $segment_hide = '';
-    $segment_sizes = array( 8, 128, 1024, 4096 );
+    $segment_sizes = [8, 128, 1024, 4096];
     foreach ( $segment_sizes as $kib ) {
         $sel = ( $kib === @$pref[ 'segment_hide' ] ) ? ' selected="selected"' : '';
         $segment_hide .= '   <option value="' . $kib . '" ' . $sel . '>'
@@ -171,7 +174,7 @@ function content_system_preferences()
     }
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Preferences',
     'PAGE_TITLE' => 'Preferences',
     'PAGE_TABBAR' => $tabbar,
@@ -210,14 +213,17 @@ function content_system_preferences()
     'TABLE_CONNECTION_TIMEOUT' => $timeouts,
     'PREF_OFFLINE_MODE' => $cb_offlinemode,
     'PREF_SEGMENT_HIDE' => $segment_hide
-    );
+    ];
 }
 
+/**
+ * @return array
+ */
 function fetch_timezones()
 {
     // fetch PHP known timezones
     $tz_php_raw = fetchphptimezones();
-    $tz_php = array();
+    $tz_php = [];
     foreach ( $tz_php_raw as $city => $tzdat ) {
         $tz_php[] = $city;
     }
@@ -235,7 +241,7 @@ function fetch_timezones()
     asort($tz_combine);
 
     // begin timezone array
-    $timezones = array();
+    $timezones = [];
 
     // start with general timezones
     foreach ( $tz_combine as $tz ) {
@@ -255,9 +261,12 @@ function fetch_timezones()
     return $timezones;
 }
 
-function extra_timezone_list() 
+/**
+ * @return string[]
+ */
+function extra_timezone_list()
 {
-    return array(
+    return [
     'CET',
     'EST',
     'EET',
@@ -274,13 +283,16 @@ function extra_timezone_list()
     'Australia/Lord_Howe',
     'Australia/Melbourne',
     'Australia/Sydney'
-    );
+    ];
 }
 
+/**
+ * @return array
+ */
 function fetchphptimezones()
 {
     $timezones = DateTimeZone::listAbbreviations();
-    $cities = array();
+    $cities = [];
     foreach ( $timezones as $key => $zones ) {
         foreach ( $zones as $id => $zone ) {
             $cities[ $zone[ 'timezone_id' ] ][] = $key;
@@ -369,7 +381,7 @@ function submit_system_preferences()
         // whitelist
         if (@isset($_POST[ 'pref_access_whitelist' ]) ) {
             $whitelist_arr = explode(',', $_POST[ 'pref_access_whitelist' ]);
-            $pref[ 'access_whitelist' ] = array();
+            $pref[ 'access_whitelist' ] = [];
             foreach ( $whitelist_arr as $ipaddr ) {
                 $ipa = trim($ipaddr);
                 $pref[ 'access_whitelist' ][ $ipa ] = $ipa;
@@ -403,13 +415,7 @@ function submit_system_preferences()
 
         // fool-proof authentication settings; do not allow bad auth settings
         $authcheck = procedure_authenticate($pref, true);
-        if (!$authcheck ) {
-            page_feedback(
-                'you have chosen settings which would deny you access to the '
-                . 'web-interface. To protect against mistakes, your changes have <b>not</b>'
-                . ' been saved!', 'a_warning' 
-            );
-        } else {
+        if ($authcheck) {
             // save preferences
             if (( @is_array($pref) )&&( @count($pref) > 0 ) ) {
                 $result = procedure_writepreferences($pref);
@@ -421,6 +427,12 @@ function submit_system_preferences()
             } else {
                 page_feedback('error writing preferences!', 'a_error');
             }
+        } else {
+            page_feedback(
+                'you have chosen settings which would deny you access to the '
+                . 'web-interface. To protect against mistakes, your changes have <b>not</b>'
+                . ' been saved!', 'a_warning'
+            );
         }
     } elseif (@isset($_POST[ 'submit_refreshdb' ]) ) {
         $result = gurudb_update();

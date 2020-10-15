@@ -1,6 +1,9 @@
 <?php
 
-function content_network_network() 
+/**
+ * @return array
+ */
+function content_network_network()
 {
     // required library
     activate_library('network');
@@ -12,7 +15,7 @@ function content_network_network()
     $queryif = @$_GET[ 'query' ];
 
     // process table IFLIST
-    $iflist = array();
+    $iflist = [];
     foreach ( $interfaces as $ifname => $ifdata ) {
         // check interface type
         $iftype = network_checkinterface($ifname);
@@ -37,7 +40,7 @@ function content_network_network()
             $ident = 'Loopback adapter (special system adapter)';
         }
 
-        $iflist[] = array(
+        $iflist[] = [
         'CLASS_ACTIVEROW' => $class_activerow,
         'CLASS_WIRED' => $class_wired,
         'CLASS_WIRELESS' => $class_wireless,
@@ -49,13 +52,13 @@ function content_network_network()
         'IF_STATUS' => $ifdata[ 'status' ],
         'IF_MTU' => $ifdata[ 'mtu' ],
         'IF_MAC' => $ifdata[ 'ether' ]
-        );
+        ];
     }
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Interfaces',
     'PAGE_TITLE' => 'Network interfaces',
     'TABLE_NETWORK_IFLIST' => $iflist
-    );
+    ];
 }

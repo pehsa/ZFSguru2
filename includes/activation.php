@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @return bool
+ */
 function activation_serverstatus()
 {
     // host
@@ -12,6 +15,13 @@ function activation_serverstatus()
     return ( stripos(@file_get_contents($aliveurl), 'online') !== false );
 }
 
+/**
+ * @param $activationType
+ * @param $earlyFeedback
+ * @param $feedbackText
+ *
+ * @return false|mixed|string
+ */
 function activation_submit( $activationType, $earlyFeedback, $feedbackText )
 {
     global $guru;
@@ -35,7 +45,7 @@ function activation_submit( $activationType, $earlyFeedback, $feedbackText )
     $currentver = common_systemversion();
 
     // construct POST data
-    $postdata = @array(
+    $postdata = @[
     'ver' => 1,
     'magic' => '__ZFSGURU_ACTIVATION__',
     'dist' => $currentver[ 'dist' ],
@@ -45,7 +55,7 @@ function activation_submit( $activationType, $earlyFeedback, $feedbackText )
     'feedback' => $earlyFeedback,
     'feedback_text' => $feedbackText,
     'dmesg' => $dmesg
-    );
+    ];
 
     // set user agent
     $useragent = 'ZFSguru/' . $guru[ 'product_version_string' ];
@@ -78,17 +88,25 @@ function activation_submit( $activationType, $earlyFeedback, $feedbackText )
     }
     // store data for late activation
     activate_library('persistent');
-    $pstore = array(
+    $pstore = [
     'activation_type' => $activationType,
     'early_feedback' => $earlyFeedback,
     'feedback_text' => $feedbackText
-    );
+    ];
     persistent_store('activation_delayed', $pstore);
 
     // return failure
     return false;
 }
 
+/**
+ * @param       $host
+ * @param       $url
+ * @param       $postdata
+ * @param false $useragent
+ *
+ * @return array
+ */
 function activation_post_request( $host, $url, $postdata, $useragent = false )
 {
     // set variables
@@ -104,11 +122,11 @@ function activation_post_request( $host, $url, $postdata, $useragent = false )
     // open socket
     $fp = fsockopen($host, $http_port, $errno, $errstr, $http_timeout);
     if (( $fp == false )||( $errno > 0 ) ) {
-        return array(
+        return [
         'success' => false,
         'errno' => $errno,
         'errstr' => $errstr
-        );
+        ];
     }
 
     $success = true;
@@ -148,13 +166,16 @@ function activation_post_request( $host, $url, $postdata, $useragent = false )
     }
 
     // return data array
-    return array(
+    return [
     'success' => $success,
     'headers' => $headerblock,
     'body' => $body
-    );
+    ];
 }
 
+/**
+ * @return bool
+ */
 function activation_delayed()
 {
     global $guru;
@@ -176,7 +197,7 @@ function activation_delayed()
     }
 
     // add message that we are trying to activate using late activation data
-    page_feedback('trying to activate using delayed activation data', 'c_notice');
+    page_feedback('trying to activate using delayed activation data');
 
     // try to activate
     $uuid = activation_submit(
@@ -204,6 +225,11 @@ function activation_delayed()
     return false;
 }
 
+/**
+ * @param false $storenewhash
+ *
+ * @return bool
+ */
 function activation_hwchange( $storenewhash = false )
 {
     // required library
@@ -215,7 +241,7 @@ function activation_hwchange( $storenewhash = false )
     // search for interface MAC
     $rxp = '/^[a-z]+\d+\: Ethernet address\: (([0-9a-f]{2}\:){5}[0-9a-f]{2})/m';
     preg_match_all($rxp, $dmesg, $mac_matches);
-    $mac = array();
+    $mac = [];
     foreach ( $mac_matches[ 1 ] as $id => $macaddr ) {
         if ($macaddr !== '') {
             $mac[] = $macaddr;
@@ -247,6 +273,9 @@ function activation_hwchange( $storenewhash = false )
     return false;
 }
 
+/**
+ * @return array|false
+ */
 function activation_info()
 {
     global $guru;
@@ -264,11 +293,11 @@ function activation_info()
     $url = '/zfsguru_info.php';
 
     // construct POST data
-    $postdata = array(
+    $postdata = [
     'ver' => 1,
     'magic' => '__ZFSGURU_ACTIVATION_INFO__',
     'uuid' => $uuid,
-    );
+    ];
 
     // set user agent
     $useragent = 'ZFSguru/' . $guru[ 'product_version_string' ];

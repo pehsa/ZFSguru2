@@ -1,6 +1,9 @@
 <?php
 
-function content_status_status() 
+/**
+ * @return array
+ */
+function content_status_status()
 {
     global $guru;
 
@@ -10,31 +13,31 @@ function content_status_status()
     activate_library('zfs');
 
     // gather data
-    $fbsdver = trim(shell_exec("/usr/bin/uname -r"));
+    $fbsdver = trim(shell_exec('/usr/bin/uname -r'));
     $cpu = common_sysctl('hw.model');
     $cpucount = common_sysctl('hw.ncpu');
-    $arch = trim(shell_exec("/usr/bin/uname -p"));
+    $arch = trim(shell_exec('/usr/bin/uname -p'));
     $currentver = common_systemversion();
     $syszfsver = zfs_version();
     $physdisks = disk_detect_physical();
     $physmem = system_detect_physmem();
     $vmsolution = system_detect_vmenvironment();
     $uptime = system_uptime();
-    $systime = trim(shell_exec("date"));
+    $systime = trim(shell_exec('date'));
     $network_speed = system_detect_networkspeed();
 
     // distributions
     $dist_type = common_distribution_type();
     $dist_name = common_distribution_name($dist_type);
 
-    $dist_green = array(
+    $dist_green = [
     'RoZ' => '',
     'RoR' => '',
     'RoR+union' => '',
     'RoM' => '',
-    );
-    $dist_amber = array();
-    $dist_red = array();
+    ];
+    $dist_amber = [];
+    $dist_red = [];
 
     // top status bar
     $unknownsys = ( $currentver[ 'sysver' ] === 'unknown' );
@@ -50,7 +53,7 @@ function content_status_status()
     // top bar color
     if (!$unknownsys AND( $dist_type === 'RoZ' ) ) {
         $status_color = 'grey';
-    } elseif (!$unknownsys AND(strpos($dist_type, 'RoR') === 0) ) {
+    } elseif (!$unknownsys AND(strncmp($dist_type, 'RoR', 3) === 0) ) {
         $status_color = 'red';
     } elseif (!$unknownsys AND( $dist_type === 'RoM' ) ) {
         $status_color = 'blue';
@@ -108,7 +111,7 @@ function content_status_status()
     $class_cpu_freq = ( is_numeric($cpu_freq) ) ? 'normal' : 'hidden';
     $freqscaling = common_sysctl('dev.cpu.0.freq_levels');
     $freqscaling_arr = explode(' ', $freqscaling);
-    $freqrange = array();
+    $freqrange = [];
     foreach ( $freqscaling_arr as $rawtext ) {
         if (strpos($rawtext, '/') != false ) {
             $freqrange[] = ( int )substr($rawtext, 0, strpos($rawtext, '/'));
@@ -123,7 +126,7 @@ function content_status_status()
     $memory_usable = sizebinary($physmem[ 'usable' ], 1);
 
     // disk drives
-    $disk_count = array();
+    $disk_count = [];
     foreach ( $physdisks as $diskname => $diskdata ) {
         $ddt = disk_detect_type($diskname);
         $disk_count[ $ddt ] =
@@ -131,32 +134,33 @@ function content_status_status()
     }
     foreach ( $disk_count as $disktype => $nrofdisks ) {
         page_injecttag(
-            array(
+            [
             'COUNT_' . strtoupper($disktype) => $nrofdisks,
-            'CLASS_' . strtoupper($disktype) => 'not' ) 
+            'CLASS_' . strtoupper($disktype) => 'not'
+            ]
         );
     }
 
     // sensors
-    if (stripos($cpu, 'amd') === 0) {
+    if (strncasecmp($cpu, 'amd', 3) === 0) {
         exec('/sbin/kldstat -n amdtemp.ko', $output, $rv);
         if ($rv == 1 ) {
             system_loadkernelmodule('amdtemp');
         }
-    } elseif (stripos($cpu, 'intel') === 0) {
+    } elseif (strncasecmp($cpu, 'intel', 5) === 0) {
         exec('/sbin/kldstat -n coretemp.ko', $output, $rv);
         if ($rv == 1 ) {
             system_loadkernelmodule('coretemp');
         }
     }
-    $cputemp = array();
+    $cputemp = [];
     for ( $i = 0; $i <= 7; $i++ ) {
         $rawtemp = common_sysctl('dev.cpu.' .$i. '.temperature');
         if (@strlen($rawtemp) > 1 ) {
-            $cputemp[] = array(
+            $cputemp[] = [
             'CPUTEMP_CPUNR' => ( $i + 1 ),
             'CPUTEMP_TEMP' => substr($rawtemp, 0, -1)
-            );
+            ];
         } else {
             break;
         }
@@ -174,7 +178,7 @@ function content_status_status()
         $class_mbmon_nosensor = 'normal';
     }
     $mbmon_str = implode(chr(10), $mbmon);
-    $mbmon = array();
+    $mbmon = [];
     preg_match('/^TEMP0 :(.*)$/m', $mbmon_str, $mbmon[ 'temp0' ]);
     preg_match('/^TEMP1 :(.*)$/m', $mbmon_str, $mbmon[ 'temp1' ]);
     preg_match('/^TEMP2 :(.*)$/m', $mbmon_str, $mbmon[ 'temp2' ]);
@@ -192,7 +196,7 @@ function content_status_status()
             if ($sensor_name === 'fan0'
                 OR( ( double )$value < 99 )
             ) {
-                if (strpos($value, '+') === 0
+                if (strncmp($value, '+', 1) === 0
                 ) {
                     $sensor[ $sensor_name ] = substr($value, 1);
                     $sensorclass[ $sensor_name ] = 'normal';
@@ -204,7 +208,7 @@ function content_status_status()
     }
 
     // export new tags
-    return array(
+    return [
     'CLASS_SYSIMG_OFFICIAL' => $class_sysimg_official,
     'CLASS_SYSIMG_UNKNOWN' => $class_sysimg_unknown,
     'CLASS_DIST_GREEN' => $class_dist_green,
@@ -270,5 +274,5 @@ function content_status_status()
     'SYSTEM_UPTIME' => $uptime[ 'uptime' ],
     'SYSTEM_LOADAVG' => $uptime[ 'loadavg' ],
     'SYSTEM_CPUUSAGE' => $uptime[ 'cpupct' ],
-    );
+    ];
 }

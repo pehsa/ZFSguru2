@@ -1,6 +1,9 @@
 <?php
 
-function content_files_destroy() 
+/**
+ * @return array
+ */
+function content_files_destroy()
 {
     // required library
     activate_library('zfs');
@@ -17,7 +20,7 @@ function content_files_destroy()
     $fs_snap = zfs_filesystem_list($fs, '-r -t snapshot');
 
     // table listing children datasets
-    $table_children = array();
+    $table_children = [];
     foreach ( $fs_all as $data ) {
         // determine dataset type
         $type = 'filesystem';
@@ -27,14 +30,14 @@ function content_files_destroy()
             $type = 'snapshot';
         }
         // add row to table
-        $table_children[] = @array(
+        $table_children[] = @[
         'CHILD_NAME' => $data[ 'name' ],
         'CHILD_USED' => $data[ 'used' ],
         'CHILD_AVAIL' => $data[ 'avail' ],
         'CHILD_REFER' => $data[ 'refer' ],
         'CHILD_MOUNTPOINT' => $data[ 'mountpoint' ],
         'CHILD_TYPE' => $type
-        );
+        ];
     }
 
     // scan for SWAP volumes
@@ -47,12 +50,12 @@ function content_files_destroy()
     }
 
     // call functions
-    return array(
+    return [
     'PAGE_TITLE' => 'Destroy filesystems',
     'TABLE_CHILDREN' => $table_children,
     'CLASS_SWAP' => $class_swap,
     'FSNAME' => htmlentities($fs)
-    );
+    ];
 }
 
 function submit_recursive_destroy_fs() 
@@ -86,17 +89,17 @@ function submit_recursive_destroy_fs()
     if ($sharesremoved > 1 ) {
         page_feedback(
             'removed <b>' .$sharesremoved. ' Samba shares</b> that were'
-            . ' attached to the filesystems you are about to destroy', 'c_notice' 
+            . ' attached to the filesystems you are about to destroy'
         );
     } elseif ($sharesremoved == 1 ) {
         page_feedback(
             'removed <b>one Samba share</b> that was attached to one of '
-            . 'the filesystems you are about to destroy', 'c_notice' 
+            . 'the filesystems you are about to destroy'
         );
     }
 
     // start command array
-    $command = array();
+    $command = [];
 
     // scan for swap volumes and deactivate them prior to destroying them
     $vollist = zfs_filesystem_list($fs, '-r -t volume');
@@ -117,14 +120,13 @@ function submit_recursive_destroy_fs()
     // display message if swap volumes detected
     if (count($command) == 1 ) {
         page_feedback(
-            'if you continue, one SWAP volume will be deactivated',
-            'c_notice' 
+            'if you continue, one SWAP volume will be deactivated'
         );
     }
     if (count($command) > 1 ) {
         page_feedback(
             'if you continue, ' . count($command) . ' SWAP volumes will be '
-            . 'deactivated', 'c_notice' 
+            . 'deactivated'
         );
     }
 

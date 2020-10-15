@@ -4,13 +4,14 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'Formatting' => 'disks.php',
     'Memory disks' => 'disks.php?mem',
     'SMART' => 'disks.php?smart',
     'Advanced' => 'disks.php?advanced',
     'I/O monitor' => 'disks.php?monitor',
-    'Benchmark' => 'disks.php?benchmark' );
+    'Benchmark' => 'disks.php?benchmark'
+];
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {
     unset($tabs[ 'Memory disks' ], $tabs[ 'Benchmark' ]);
 }

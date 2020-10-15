@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_query() 
+/**
+ * @return array
+ */
+function content_disks_query()
 {
     global $guru;
 
@@ -26,7 +29,7 @@ function content_disks_query()
     $gnop = disk_detect_gnop();
 
     // gpt types
-    $gpttypes = array(
+    $gpttypes = [
     'freebsd' => '516E7CB4-6ECF-11D6-8FF8-00022D09712B',
     'freebsd-boot' => '83BD6B9D-7F41-11DC-BE0B-001560B84F0F',
     'freebsd-swap' => '516E7CB5-6ECF-11D6-8FF8-00022D09712B',
@@ -41,10 +44,10 @@ function content_disks_query()
     'solaris-root' => '6A85CF4D-1DD2-11B2-99A6-080020736631',
     'solaris-swap' => '6A87C46F-1DD2-11B2-99A6-080020736631',
     'solaris-var' => '6A8EF2E9-1DD2-11B2-99A6-080020736631'
-    );
+    ];
     // mbr types
     // TODO: this list may be incorrect, need feedback
-    $mbrtypes = array(
+    $mbrtypes = [
     'FAT12' => '1',
     'FAT16' => '14',
     'FAT32' => '12',
@@ -55,7 +58,7 @@ function content_disks_query()
     'NetBSD' => '169',
     'OpenBSD' => '166',
     'Solaris' => '191'
-    );
+    ];
 
     // list only the queried disk
     if (@is_array($disks) ) {
@@ -105,7 +108,7 @@ function content_disks_query()
             }
 
             // add new row to table array
-            $physdisks[] = array(
+            $physdisks[] = [
             'CLASS_ACTIVEROW' => $class_activerow,
             'CLASS_HDD' => $class_hdd,
             'CLASS_SSD' => $class_ssd,
@@ -120,7 +123,7 @@ function content_disks_query()
             'DISK_SIZE_BINARY' => @sizebinary($data[ 'mediasize' ], 1),
             'DISK_SIZE_SECTOR' => $sectorsize,
             'DISK_IDENTIFY' => @$dmesg[ $diskname ]
-            );
+            ];
         }
     }
 
@@ -156,7 +159,7 @@ function content_disks_query()
     $totalseg = count($pmap);
 
     // partition table
-    $table_partition_map = array();
+    $table_partition_map = [];
     if (is_array($pmap) ) {
         foreach ( $pmap as $id => $segment ) {
             $stype = @$segment[ 'type' ];
@@ -165,7 +168,7 @@ function content_disks_query()
                     $stype = $gptname;
                 }
             }
-            $table_partition_map[] = @array(
+            $table_partition_map[] = @[
             'PMAP_ID' => ( int )$id,
             'PMAP_SEL' => ( $id === $seg ) ? 'pmap_selected' : '',
             'PMAP_LABEL' => $segment[ 'label' ],
@@ -173,7 +176,7 @@ function content_disks_query()
             'PMAP_START' => $segment[ 'start' ],
             'PMAP_SIZE' => sizebinary($segment[ 'size' ], 1),
             'PMAP_PCT' => $segment[ 'pct' ]
-            );
+            ];
         }
     }
 
@@ -260,15 +263,15 @@ function content_disks_query()
                 }
                 $segopt[ 'mounted' ] = 'normal';
                 // table mounteddevices
-                $table_mounteddevices = array();
+                $table_mounteddevices = [];
                 foreach ( $mp as $data ) {
-                    $table_mounteddevices[] = array(
+                    $table_mounteddevices[] = [
                     'MD_CLASS' => ( $data[ 'device' ] == $pmap[ $seg ][ 'dev' ]OR $data[ 'device' ] == 'gpt/' . @$pmap[ $seg ][ 'label' ] ) ?
                     'activerow' : 'normal',
                     'MD_DEVICE' => htmlentities($data[ 'device' ]),
                     'MD_MOUNTPOINT' => htmlentities($data[ 'mountpoint' ]),
                     'MD_OPTIONS' => htmlentities($data[ 'options' ])
-                    );
+                    ];
                 }
             }
         }
@@ -296,24 +299,24 @@ function content_disks_query()
         // determine sector size by gpart consumer data
         $seg_size_sectorsize = @$gpart[ $querydisk ][ 'consumers' ][ 'Sectorsize' ];
         // partition type tables
-        $table_seggpt_types = array();
+        $table_seggpt_types = [];
         foreach ( $gpttypes as $gptname => $gptid ) {
-            $table_seggpt_types[ $gptname ] = array(
+            $table_seggpt_types[ $gptname ] = [
             'GPTTYPE_NAME' => htmlentities($gptname),
             'GPTTYPE_VAL' => '!' . htmlentities(strtolower($gptid)),
             'GPTTYPE_SEL' => ( strtolower($gptid) == @$pmap[ $seg ][ 'rawtype' ] ) ?
             'selected="selected"' : ''
-            );
+            ];
         }
         // partition type tables
-        $table_segmbr_types = array();
+        $table_segmbr_types = [];
         foreach ( $mbrtypes as $mbrname => $mbrid ) {
-            $table_segmbr_types[ $mbrname ] = array(
+            $table_segmbr_types[ $mbrname ] = [
             'MBRTYPE_NAME' => htmlentities($mbrname),
             'MBRTYPE_VAL' => '!' . ( int )$mbrid,
             'MBRTYPE_SEL' => ( $mbrid == @$pmap[ $seg ][ 'rawtype' ] ) ?
             'selected="selected"' : ''
-            );
+            ];
         }
     }
 
@@ -405,9 +408,7 @@ function content_disks_query()
     }
 
     // corrupt partition scheme detection
-    if (strpos(shell_exec("/sbin/gpart show \$querydisk"), 'CORRUPT') === false ) {
-        $segopt[ 'corrupt' ] = 'hidden';
-    } else {
+    if (strpos(shell_exec('/sbin/gpart show $querydisk'), 'CORRUPT') !== false) {
         // hide all segments dirst
         foreach ( $segopt as $name => $value ) {
             $segopt[ $name ] = 'hidden';
@@ -417,10 +418,12 @@ function content_disks_query()
         // make segment option visible
         $class_segoptions = 'normal';
         $class_segnooptions = 'hidden';
+    } else {
+        $segopt[ 'corrupt' ] = 'hidden';
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Formatting',
     'PAGE_TITLE' => 'Formatting',
     'TABLE_DISKS_PHYSDISKS' => $physdisks,
@@ -476,7 +479,7 @@ function content_disks_query()
     'FORMAT_GEOMCHECKED' => @$geomchecked,
     'FORMAT_GPTLABEL' => @$gptlabel,
     'FORMAT_GEOMLABEL' => @$geomlabel
-    );
+    ];
 }
 
 function submit_disks_segmentprocess() 
@@ -567,7 +570,7 @@ function submit_disks_segmentprocess()
                 $pmbr = '/boot/pmbr';
                 page_feedback(
                     'could not use <b>pmbr</b> from webinterface - '
-                    . 'using system image version', 'c_notice' 
+                    . 'using system image version'
                 );
             }
             if (file_exists($fd . 'gptzfsboot') ) {
@@ -576,7 +579,7 @@ function submit_disks_segmentprocess()
                 $gptzfsboot = '/boot/gptzfsboot';
                 page_feedback(
                     'could not use <b>gptzfsboot</b> from webinterface'
-                    . ' - using system image version', 'c_notice' 
+                    . ' - using system image version'
                 );
             }
             // create boot partition now
@@ -646,7 +649,7 @@ function submit_disks_segmentprocess()
             $r = super_execute($commands);
         }
         else {
-            page_feedback('nothing changed to GEOM labeled disk', 'c_notice');
+            page_feedback('nothing changed to GEOM labeled disk');
         }
         if ($r[ 'rv' ] != 0 ) {
             friendlyerror('error while performing action on geom labeled disk', $url2);
@@ -732,8 +735,7 @@ function submit_disks_segmentprocess()
         } elseif ($size_sectaligned > $maxsize ) {
             page_feedback(
                 'partition size adjusted to ' . $maxsize
-                . ' sectors (' . sizebinary($maxsize * $diskinfo[ 'sectorsize' ]) . ')',
-                'c_notice' 
+                . ' sectors (' . sizebinary($maxsize * $diskinfo[ 'sectorsize' ]) . ')'
             );
             $size_sectaligned = $maxsize;
         }
@@ -804,14 +806,14 @@ function submit_disks_segmentprocess()
             $devnode = false;
             foreach ( $pmap as $id => $pdata ) {
                 if ($pdata[ 'size_sect' ] == $size_sectaligned ) {
-                    if ($devnode === false ) {
-                        $devnode = @$pdata[ 'dev' ];
-                    } else {
+                    if ($devnode !== false) {
                         friendlyerror(
                             'could not TRIM erase newly created partition because '
                             . 'device node could not be found. This should only happen if another '
-                            . 'partition exists with the exact same size.', $url2 
+                            . 'partition exists with the exact same size.', $url2
                         );
+                    } else {
+                        $devnode = @$pdata[ 'dev' ];
                     }
                 }
             }
@@ -845,7 +847,7 @@ function submit_disks_segmentprocess()
             $pmbr = '/boot/pmbr';
             page_feedback(
                 'could not use <b>pmbr</b> from webinterface - '
-                . 'using system image version', 'c_notice' 
+                . 'using system image version'
             );
         }
         if (file_exists($fd . 'gptzfsboot') ) {
@@ -854,7 +856,7 @@ function submit_disks_segmentprocess()
             $gptzfsboot = '/boot/gptzfsboot';
             page_feedback(
                 'could not use <b>gptzfsboot</b> from webinterface'
-                . ' - using system image version', 'c_notice' 
+                . ' - using system image version'
             );
         }
         // insert bootcode onto boot partition
@@ -868,8 +870,7 @@ function submit_disks_segmentprocess()
                 . 'got return value ' . $r[ 'rv' ], 'a_failure' 
             );
             page_feedback(
-                'command output:<br />' . nl2br(htmlentities($r[ 'output_str' ])),
-                'c_notice' 
+                'command output:<br />' . nl2br(htmlentities($r[ 'output_str' ]))
             );
         } else {
             page_feedback(
@@ -899,8 +900,7 @@ function submit_disks_segmentprocess()
                 . 'got return value ' . $r[ 'rv' ], 'a_failure' 
             );
             page_feedback(
-                'command output:<br />' . nl2br(htmlentities($r[ 'output_str' ])),
-                'c_notice' 
+                'command output:<br />' . nl2br(htmlentities($r[ 'output_str' ]))
             );
         } else {
             page_feedback(
@@ -940,7 +940,7 @@ function submit_disks_segmentprocess()
             );
             page_feedback(
                 'command output:<br />'
-                . nl2br(htmlentities($result[ 'output_str' ])), 'c_notice' 
+                . nl2br(htmlentities($result[ 'output_str' ]))
             );
         }
     }
@@ -960,7 +960,7 @@ function submit_disks_segmentprocess()
             );
             page_feedback(
                 'command output:<br />'
-                . nl2br(htmlentities($result[ 'output_str' ])), 'c_notice' 
+                . nl2br(htmlentities($result[ 'output_str' ]))
             );
         }
     }
@@ -985,7 +985,7 @@ function submit_disks_segmentprocess()
         }
 
         // command result array
-        $result = array();
+        $result = [];
 
         // update/rename GPT partition label (not available for MBR)
         if (@isset($_POST['gpt_seg_label']) && @$_POST['gpt_seg_label'] != @$pmap[$seg]['label']) {
@@ -1020,7 +1020,7 @@ function submit_disks_segmentprocess()
             );
             // workaround for FreeBSD bug where device changes are not always propagated
             $result[] = super_script('device_activate_changes', $diskname);
-            page_feedback('partition type changed to ' . $newtype, 'c_notice');
+            page_feedback('partition type changed to ' . $newtype);
         }
 
         // dangerous operations

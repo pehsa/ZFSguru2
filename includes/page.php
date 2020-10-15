@@ -3,16 +3,19 @@
 /* page.php */
 
 // start tags
-$tags = array(
+$tags = [
     'PAGE_TITLE' => @$guru[ 'product_name' ],
     'PRODUCT_NAME' => @$guru[ 'product_name' ],
     'PRODUCT_VERSION_STRING' => @$guru[ 'product_version_string' ],
     'PRODUCT_URL' => @$guru[ 'product_url' ],
-);
+];
 
 
 // functions
 
+/**
+ * @param $content
+ */
 function page_handle( $content )
 {
     global $guru, $tags;
@@ -38,6 +41,11 @@ function page_handle( $content )
     echo( $processed );
 }
 
+/**
+ * @param $source
+ *
+ * @return string|string[]|null
+ */
 function page_processtags( $source )
 {
     // get all tags
@@ -48,7 +56,7 @@ function page_processtags( $source )
 
     // process table tags
     foreach ( $requestedtags as $id => $tag ) {
-        if ((strpos($tag, 'TABLE_') === 0) && substr($tag, -4) !== '_END') {
+        if ((strncmp($tag, 'TABLE_', 6) === 0) && substr($tag, -4) !== '_END') {
             $startpos = strpos($source, $tag);
             $endpos = strpos($source, $tag);
             $preg_table = '/\%\%(' . $tag . ')\%\%(.*)\%\%(' . $tag . '_END)\%\%/Usm';
@@ -93,6 +101,9 @@ function page_processtags( $source )
     return $processed;
 }
 
+/**
+ * @param $newtags
+ */
 function page_injecttag( $newtags )
 {
     global $tags;
@@ -103,6 +114,11 @@ function page_injecttag( $newtags )
     }
 }
 
+/**
+ * @param $tag
+ *
+ * @return mixed|string
+ */
 function page_resolvetag($tag)
 {
     global $tags;
@@ -113,7 +129,12 @@ function page_resolvetag($tag)
     return '';
 }
 
-function page_callback_tableprocessor( $data ) 
+/**
+ * @param $data
+ *
+ * @return string
+ */
+function page_callback_tableprocessor( $data )
 {
     global $tags;
     $tabletag = @( string )$data[ 1 ];
@@ -140,6 +161,9 @@ function page_callback_tableprocessor( $data )
     return $output;
 }
 
+/**
+ * @param $filepath
+ */
 function page_rawfile( $filepath )
 {
     global $guru;
@@ -152,6 +176,9 @@ function page_rawfile( $filepath )
     echo( $processed );
 }
 
+/**
+ * @return mixed|string
+ */
 function page_themepath()
 {
     global $guru, $tags;
@@ -179,7 +206,15 @@ function page_themepath()
 
 /* content handler */
 
-function content_handle( $cat, $pagename, $data = false, $skip_submit = false ) 
+/**
+ * @param       $cat
+ * @param       $pagename
+ * @param false $data
+ * @param false $skip_submit
+ *
+ * @return string|string[]|null
+ */
+function content_handle( $cat, $pagename, $data = false, $skip_submit = false )
 {
     timerstart('content');
     $pagepath = 'pages/' . $cat . '/' . $pagename;
@@ -188,6 +223,15 @@ function content_handle( $cat, $pagename, $data = false, $skip_submit = false )
     return $c;
 }
 
+/**
+ * @param       $pagepath
+ * @param       $cat
+ * @param       $pagename
+ * @param false $data
+ * @param false $skip_submit
+ *
+ * @return string|string[]|null
+ */
 function content_handle_path( $pagepath, $cat, $pagename,
     $data = false, $skip_submit = false 
 ) {
@@ -209,7 +253,7 @@ function content_handle_path( $pagepath, $cat, $pagename,
 
     // process content file
     $contentfile = $prefix . $pagepath . '.php';
-    $contenttags = array();
+    $contenttags = [];
     if (@is_readable($contentfile) ) {
         // include contentpage (.php)
         include_once $contentfile;
@@ -217,10 +261,10 @@ function content_handle_path( $pagepath, $cat, $pagename,
 
     // call submit function if applicable
     if (@isset($_POST['handle']) && @function_exists('submit_'.$_POST['handle']) && !$skip_submit) {
-        if ($data === false ) {
-            $submittags = call_user_func('submit_' . $_POST[ 'handle' ]);
-        } else {
+        if ($data !== false) {
             $submittags = call_user_func('submit_' . $_POST[ 'handle' ], $data);
+        } else {
+            $submittags = call_user_func('submit_' . $_POST[ 'handle' ]);
         }
     }
                 // inject all content tags into main $tags array
@@ -266,7 +310,7 @@ function content_handle_path( $pagepath, $cat, $pagename,
     // process stylesheet if existent
     $stylepath = $pagepath . '.css';
     if (@is_readable($stylepath) ) {
-        if (strpos($stylepath, '/') === 0
+        if (strncmp($stylepath, '/', 1) === 0
         ) {
             // use inline CSS for absolute pathnames
             $css_code = @file_get_contents($stylepath);
@@ -284,26 +328,38 @@ function content_handle_path( $pagepath, $cat, $pagename,
 
 /* head and body handlers */
 
-function page_register_headelement( $element_raw ) 
+/**
+ * @param $element_raw
+ */
+function page_register_headelement( $element_raw )
 {
     global $tags;
     $newtag = @$tags[ 'HEAD' ] . ' ' . $element_raw . chr(10);
     $tags[ 'HEAD' ] = $newtag;
 }
 
-function page_register_bodyelement( $element_raw ) 
+/**
+ * @param $element_raw
+ */
+function page_register_bodyelement( $element_raw )
 {
     global $tags;
     $newtag = @$tags[ 'BODY' ] . ' ' . $element_raw;
     $tags[ 'BODY' ] = $newtag;
 }
 
+/**
+ * @param $relative_path
+ */
 function page_register_stylesheet( $relative_path )
 {
     $str = '<link rel="stylesheet" type="text/css" href="' . $relative_path . '" />';
     page_register_headelement($str);
 }
 
+/**
+ * @param $css_code
+ */
 function page_register_inlinestyle( $css_code )
 {
     $str = '<style type="text/css">' . chr(10);
@@ -312,6 +368,9 @@ function page_register_inlinestyle( $css_code )
     page_register_headelement($str);
 }
 
+/**
+ * @param $js_file
+ */
 function page_register_javascript( $js_file )
 {
     $str = '<script type="text/javascript" src="'
@@ -319,6 +378,10 @@ function page_register_javascript( $js_file )
     page_register_headelement($str);
 }
 
+/**
+ * @param        $feedback
+ * @param string $style
+ */
 function page_feedback( $feedback, $style = 'c_notice' )
 {
     if (!@in_array($_SESSION['feedback'][$style], $feedback, true)) {
@@ -326,6 +389,10 @@ function page_feedback( $feedback, $style = 'c_notice' )
     }
 }
 
+/**
+ * @param       $seconds
+ * @param false $url
+ */
 function page_refreshinterval( $seconds, $url = false )
 {
     if (( int )$seconds <= 0 ) {

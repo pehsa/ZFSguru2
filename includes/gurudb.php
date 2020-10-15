@@ -2,6 +2,13 @@
 
 /* GuruDB library */
 
+/**
+ * @param       $item
+ * @param false $file
+ * @param false $silent
+ *
+ * @return array|string|null
+ */
 function gurudb_fetch( $item, $file = false, $silent = false )
 {
     if (!$file ) {
@@ -13,7 +20,7 @@ function gurudb_fetch( $item, $file = false, $silent = false )
     if (( $output === null )AND!$silent ) {
         page_feedback('tar error extracting GuruDB, item: ' . htmlentities($item), 'a_warning');
     } elseif (substr($item, -4) === '.ser' ) {
-        $o = unserialize($output)or $o = array();
+        $o = unserialize($output)or $o = [];
         if (!is_array($o) ) {
             die('DEBUG: notarray!!!');
         }
@@ -22,42 +29,84 @@ function gurudb_fetch( $item, $file = false, $silent = false )
     return $output;
 }
 
-function gurudb_general( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_general( $file = false )
 {
     return gurudb_fetch('general/index.ser', $file);
 }
 
-function gurudb_master( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_master( $file = false )
 {
     return gurudb_fetch('master/index.ser', $file);
 }
 
-function gurudb_slave( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_slave( $file = false )
 {
     return gurudb_fetch('slave/index.ser', $file);
 }
 
-function gurudb_interface( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_interface( $file = false )
 {
     return gurudb_fetch('interface/index.ser', $file);
 }
 
-function gurudb_system( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_system( $file = false )
 {
     return gurudb_fetch('system/index.ser', $file);
 }
 
-function gurudb_category( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_category( $file = false )
 {
     return gurudb_fetch('category/index.ser', $file);
 }
 
-function gurudb_service( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_service( $file = false )
 {
     return gurudb_fetch('service/index.ser', $file);
 }
 
-function gurudb_distribution( $sysver = false, $platform = false, $file = false ) 
+/**
+ * @param false $sysver
+ * @param false $platform
+ * @param false $file
+ *
+ * @return array|string
+ */
+function gurudb_distribution( $sysver = false, $platform = false, $file = false )
 {
     if (!$sysver ) {
         $sysver = common_systemversion();
@@ -71,21 +120,37 @@ function gurudb_distribution( $sysver = false, $platform = false, $file = false 
         return $dist;
     }
 
-    return array();
+    return [];
 }
 
-function gurudb_bulletin( $file = false ) 
+/**
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_bulletin( $file = false )
 {
     return gurudb_fetch('bulletin/index.ser', $file);
 }
 
-function gurudb_bulletin_body( $nr, $file = false ) 
+/**
+ * @param       $nr
+ * @param false $file
+ *
+ * @return array|string|null
+ */
+function gurudb_bulletin_body( $nr, $file = false )
 {
     return gurudb_fetch("bulletin/$nr", $file);
 }
 
 /* guruDB internal functions */
 
+/**
+ * @param $newgeneral
+ *
+ * @return bool
+ */
 function gurudb_validate( $newgeneral )
 {
     global $guru;
@@ -131,6 +196,9 @@ function gurudb_validate( $newgeneral )
     return true;
 }
 
+/**
+ * @return bool|null
+ */
 function gurudb_update()
 {
     global $guru;
@@ -157,7 +225,7 @@ function gurudb_update()
         );
         page_feedback(
             'if you have no internet connection, you can disable remote '
-            . 'file downloading on the System->Preferences->Advanced page', 'c_notice'
+            . 'file downloading on the System->Preferences->Advanced page'
         );
         return false;
     }
@@ -202,8 +270,7 @@ function gurudb_update()
         // report about new database installed
         $newdate = date('j M Y @ H:i e', $newgeneral[ 'timestamp' ]);
         page_feedback(
-            'installed new GuruDB database, created on: <b>' . $newdate . '</b>',
-            'c_notice'
+            'installed new GuruDB database, created on: <b>' . $newdate . '</b>'
         );
     }
 
@@ -213,7 +280,7 @@ function gurudb_update()
 
     if ($result === null ) {
         // remove message
-        page_feedback('database is up to date with master server', 'c_notice');
+        page_feedback('database is up to date with master server');
         return null;
     }
     return true;

@@ -1,17 +1,20 @@
 <?php
 
-function content_access_ssh() 
+/**
+ * @return array
+ */
+function content_access_ssh()
 {
     $username = 'ssh';
     $ipaddress = $_SERVER[ 'SERVER_ADDR' ];
 
     // export new tags
-    return array(
+    return [
     'PAGE_TITLE' => 'SSH access',
     'PAGE_ACTIVETAB' => 'SSH',
     'SSH_USERNAME' => $username,
     'SSH_IPADDRESS' => $ipaddress
-    );
+    ];
 }
 
 function submit_access_ssh_reset() 

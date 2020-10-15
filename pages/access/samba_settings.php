@@ -1,6 +1,9 @@
 <?php
 
-function content_access_samba_settings() 
+/**
+ * @return array
+ */
+function content_access_samba_settings()
 {
     // required modules
     activate_library('internalservice');
@@ -26,7 +29,7 @@ function content_access_samba_settings()
     '' : 'disabled="disabled"';
 
     // global settings
-    $smbdv_output = shell_exec("/usr/local/sbin/smbd -V");
+    $smbdv_output = shell_exec('/usr/local/sbin/smbd -V');
     $sambaversion = htmlentities(trim(substr($smbdv_output, strlen('Version'))));
     $workgroup = htmlentities($sambaconf[ 'global' ][ 'workgroup' ]);
     $netbiosname = htmlentities($sambaconf[ 'global' ][ 'netbios name' ]);
@@ -88,16 +91,18 @@ function content_access_samba_settings()
     // table: share variables
     $table_samba_shareglobalvars = table_samba_sharevariables($sambaconf);
     // table: extraglobals
-    $table_samba_extraglobals = array();
-    $globalvars = array( 'workgroup', 'netbios name', 'server string',
+    $table_samba_extraglobals = [];
+    $globalvars = [
+        'workgroup', 'netbios name', 'server string',
     'aio read size', 'aio write size', 'aio write behind', 'use sendfile',
-    'security', 'passdb backend', 'create mask', 'directory mask' );
+    'security', 'passdb backend', 'create mask', 'directory mask'
+    ];
     if (( strlen(@$sambaconf[ 'global' ][ 'dfree command' ]) < 2 )OR $dfree ) {
         $globalvars[] = 'dfree command';
     }
     foreach ( $sambaconf[ 'global' ] as $property => $value ) {
         if (!in_array($property, $globalvars, true)) {
-            $table_samba_extraglobals[] = array(
+            $table_samba_extraglobals[] = [
                 'EXTRAGLOB_PROPERTY' => htmlentities($property),
                 'EXTRAGLOB_VALUE' => htmlentities($value),
                 'EXTRAGLOB_TYPE_BOOLEAN' => ( ( $value === 'yes' )OR( $value === 'no' ) ) ?
@@ -106,7 +111,7 @@ function content_access_samba_settings()
                 'normal' : 'hidden',
                 'EXTRAGLOB_ENABLED' => ( $value === 'yes' ) ? 'normal' : 'hidden',
                 'EXTRAGLOB_DISABLED' => ( $value === 'no' ) ? 'normal' : 'hidden'
-            );
+            ];
         }
     }
 
@@ -116,7 +121,7 @@ function content_access_samba_settings()
         $logdir = '/var/log/samba4/';
         $scandir = scandir($logdir);
         if (!is_array($scandir) ) {
-            $scandir = array();
+            $scandir = [];
         }
         unset($scandir[0], $scandir[1]);
         foreach ( $scandir as $id => $logname ) {
@@ -159,7 +164,7 @@ function content_access_samba_settings()
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'Samba settings',
     'PAGE_ACTIVETAB' => 'Settings',
 
@@ -198,39 +203,48 @@ function content_access_samba_settings()
     'SAMBA_LOG_LIST' => $samba_log_list,
     'SAMBA_LOG' => $samba_log,
     'SAMBA_LOG_PATH' => $samba_log_path,
-    );
+    ];
 }
 
 
 /* table functions */
 
-function table_samba_globalvariables() 
+/**
+ * @return array
+ */
+function table_samba_globalvariables()
 {
     // required library
     activate_library('samba');
     $configvars = samba_variables_global();
-    $table_configvars = array();
+    $table_configvars = [];
     foreach ( $configvars as $varname ) {
         if (!@isset($sambaconf[ 'res' ][ $sharename ][ $varname ]) ) {
-            $table_configvars[] = array(
+            $table_configvars[] = [
                 'CV_VAR' => htmlentities($varname)
-            );
+            ];
         }
     }
     return $table_configvars;
 }
 
-function table_samba_sharevariables( $sambaconf, $sharename = false ) 
+/**
+ * @param       $sambaconf
+ * @param false $sharename
+ *
+ * @return array
+ */
+function table_samba_sharevariables( $sambaconf, $sharename = false )
 {
     // required library
     activate_library('samba');
     $configvars = samba_variables_share();
-    $table_configvars = array();
+    $table_configvars = [];
     foreach ( $configvars as $varname ) {
         if (!$sharename OR( !@isset($sambaconf[ 'shares' ][ $sharename ][ $varname ]) ) ) {
-            $table_configvars[] = array(
+            $table_configvars[] = [
                 'CV_VAR' => htmlentities($varname)
-            );
+            ];
         }
     }
     return $table_configvars;
@@ -269,10 +283,10 @@ function submit_access_samba_settings()
 
         // process global variables
         foreach ( $_POST as $name => $value ) {
-            if (strpos($name, 'global-') === 0) {
+            if (strncmp($name, 'global-', 7) === 0) {
                 $globalattr = trim(str_replace('_', ' ', substr($name, strlen('global-'))));
                 $newconf[ 'global' ][ $globalattr ] = trim($value);
-            } elseif (strpos($name, 'extraglob-') === 0) {
+            } elseif (strncmp($name, 'extraglob-', 10) === 0) {
                 $globalattr = trim(
                     str_replace(
                         '_', ' ',
@@ -281,7 +295,7 @@ function submit_access_samba_settings()
                 );
                 $newconf[ 'global' ][ $globalattr ] = trim($value);
             }
-            elseif (strpos($name, 'cbglobal0-') === 0) {
+            elseif (strncmp($name, 'cbglobal0-', 10) === 0) {
                 $globalattr = trim(
                     str_replace(
                         '_', ' ',
@@ -290,7 +304,7 @@ function submit_access_samba_settings()
                 );
                 $newconf[ 'global' ][ $globalattr ] = 'no';
             }
-            elseif (strpos($name, 'cbglobal1-') === 0) {
+            elseif (strncmp($name, 'cbglobal1-', 10) === 0) {
                 $globalattr = trim(
                     str_replace(
                         '_', ' ',
@@ -302,9 +316,9 @@ function submit_access_samba_settings()
         }
 
         // remove extra globals
-        $removeglobals = array();
+        $removeglobals = [];
         foreach ( $_POST as $name => $value ) {
-            if ((strpos($name, 'cb_removeglob_') === 0) && $value === 'on') {
+            if ((strncmp($name, 'cb_removeglob_', 14) === 0) && $value === 'on') {
                 $removeglob = trim(
                     str_replace(
                         '_', ' ',

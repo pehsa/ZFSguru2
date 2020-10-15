@@ -1,11 +1,14 @@
 <?php
 
-function content_system_cli() 
+/**
+ * @return array
+ */
+function content_system_cli()
 {
     global $tags;
 
     // hostname
-    $hostname = trim(shell_exec("hostname"));
+    $hostname = trim(shell_exec('hostname'));
 
     // visible classes
     $class_output = ( @isset($tags[ 'CLASS_OUTPUT' ]) ) ?
@@ -16,17 +19,20 @@ function content_system_cli()
     $tags[ 'CLASS_NOOUTPUT' ] : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Command line',
     'PAGE_TITLE' => 'Command line',
     'CLI_HOSTNAME' => $hostname,
     'CLASS_OUTPUT' => @$class_output,
     'CLASS_RV' => @$class_rv,
     'CLASS_NOOUTPUT' => @$class_nooutput
-    );
+    ];
 }
 
-function submit_cli_execute() 
+/**
+ * @return array
+ */
+function submit_cli_execute()
 {
     // sanity
     $url = 'system.php?cli';
@@ -56,7 +62,7 @@ function submit_cli_execute()
     }
 
     // hostname
-    $hostname = trim(shell_exec("hostname"));
+    $hostname = trim(shell_exec('hostname'));
 
     // check for root or normal execution
     if (@$_POST[ 'cli_root' ] === 'on' ) {
@@ -80,7 +86,7 @@ function submit_cli_execute()
     }
 
     // export as tags
-    return array(
+    return [
     'CLI_COMMAND' => $command,
     'CLI_OUTPUT' => @$output,
     'CLI_RV' => @$rv,
@@ -88,5 +94,5 @@ function submit_cli_execute()
     'CLASS_RV' => @$class_rv,
     'CLASS_NOOUTPUT' => @$class_nooutput,
     'CHECKED_CLIROOT' => @$cliroot
-    );
+    ];
 }

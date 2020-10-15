@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_expansion() 
+/**
+ * @return array
+ */
+function content_pools_expansion()
 {
     // required libraries
     activate_library('html');
@@ -22,13 +25,13 @@ function content_pools_expansion()
     $expanddisable = ( @empty($zpools) ) ? 'disabled="disabled"' : '';
 
     // new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Expansion',
     'PAGE_TITLE' => 'Expansion',
     'POOL_SELECTBOX' => $poolselectbox,
     'POOL_MEMBERDISKS' => $memberdisks,
     'POOL_EXPANDDISABLE' => $expanddisable
-    );
+    ];
 }
 
 function submit_pools_expandpool() 
@@ -96,7 +99,7 @@ function submit_pools_expandpool()
         OR $redundancy === 'mirror3'
         OR $redundancy === 'mirror4'
     ) {
-        $member_arr = array();
+        $member_arr = [];
         $member_str = '';
         for ( $i = 2; $i <= 10; $i++ ) {
             if ($redundancy == 'mirror' . $i ) {
@@ -134,7 +137,7 @@ function submit_pools_expandpool()
     }
 
     // command array
-    $commands = array();
+    $commands = [];
 
     // prepend commands for sectorsize override
     if (is_numeric($sectorsize) ) {

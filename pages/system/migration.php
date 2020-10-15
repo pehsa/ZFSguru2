@@ -1,6 +1,9 @@
 <?php
 
-function content_system_migration() 
+/**
+ * @return array
+ */
+function content_system_migration()
 {
     global $guru;
 
@@ -11,12 +14,12 @@ function content_system_migration()
     $spaces = migration_spaces();
 
     // add a free space at the end
-    $spaces[] = array(
+    $spaces[] = [
     'name' => 'free',
     'type' => 'free',
     'size' => 0,
     'changed' => 'no'
-    );
+    ];
 
     // query migration space
     $query = @$_GET[ 'migration' ];
@@ -29,18 +32,18 @@ function content_system_migration()
     }
 
     // table migrationspaces
-    $table_mig = array();
+    $table_mig = [];
     $count = count($spaces);
     for ( $i = 1; $i <= $count; $i += 3 ) {
-        $class = array();
+        $class = [];
         for ( $y = $i; $y <= $i + 2; $y++ ) {
             if (!is_array(@$spaces[ $y ]) ) {
-                $spaces[ $y ] = array(
+                $spaces[ $y ] = [
                 'name' => 'free',
                 'type' => 'free',
                 'size' => 0,
                 'changed' => 'no'
-                );
+                ];
             }
             $class[ $y ] = 'mig_' . $spaces[ $y ][ 'type' ];
             if ($y === ( int )$query ) {
@@ -49,7 +52,7 @@ function content_system_migration()
             $sel[ $y ] = ( $y === ( int )$query ) ? 'normal' : 'hidden';
         }
         // add row to table mig (who processes three table columns at once)
-        $table_mig[] = @array(
+        $table_mig[] = @[
         'MIG1_ID' => $i,
         'MIG1_CLASS' => $class[ $i ],
         'MIG1_SELECTED' => $sel[ $i ],
@@ -71,7 +74,7 @@ function content_system_migration()
         'MIG3_TYPE' => $spaces[ $i + 2 ][ 'type' ],
         'MIG3_SIZE' => $spaces[ $i + 2 ][ 'size' ],
         'MIG3_CHANGED' => $spaces[ $i + 2 ][ 'changed' ]
-        );
+        ];
     }
 
     // classes
@@ -87,19 +90,19 @@ function content_system_migration()
         activate_library('service');
         $slist = service_list();
         // construct services table
-        $table_services = array();
+        $table_services = [];
         foreach ( $slist as $data ) {
-            $table_services[] = @array(
+            $table_services[] = @[
             'SVC_SHORT' => htmlentities($data[ 'name' ]),
             'SVC_LONGNAME' => htmlentities($data[ 'longname' ]),
             'SVC_SIZE' => sizebinary(( int )$data[ 'size' ]),
-            );
+            ];
         }
         // document root
         $docroot = $guru[ 'docroot' ];
         // size of system files
         $msysfiles = migration_sysfiles();
-        $size = array();
+        $size = [];
         foreach ( $msysfiles as $systag => $sysfiles ) {
             foreach ( $sysfiles as $sysfile ) {
                 if (is_dir($sysfile) ) {
@@ -124,7 +127,7 @@ function content_system_migration()
     $docroot = $guru[ 'docroot' ];
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'Migration',
     'PAGE_ACTIVETAB' => 'Migration',
     'TABLE_MIGRATIONSPACES' => $table_mig,
@@ -146,10 +149,15 @@ function content_system_migration()
     'SIZE_WEB' => sizebinary($size[ 'web' ], 1),
     'SIZE_HOME' => sizebinary($size[ 'home' ], 1),
     'SIZE_ROOT' => sizebinary($size[ 'root' ], 1),
-    );
+    ];
 }
 
-function dirSize( $directory ) 
+/**
+ * @param $directory
+ *
+ * @return int
+ */
+function dirSize( $directory )
 {
     if (!is_dir($directory) ) {
         return 0;
@@ -189,7 +197,7 @@ function submit_system_migration()
         // fetch sysfiles array
         $msysfiles = migration_sysfiles();
         // determine which sysfiles were selected by user
-        $selected = array();
+        $selected = [];
         foreach ( $msysfiles as $systag => $sysfiles ) {
             foreach ( $sysfiles as $sysfile ) {
                 if (@$_POST[ 'mig_cfg_' . $systag ] === 'on' ) {
@@ -198,16 +206,16 @@ function submit_system_migration()
             }
         }
         // construct profile
-        $newprofile = array(
+        $newprofile = [
         'name' => $mig_name,
         'desc' => $mig_desc,
         'type' => 'light',
         'size' => $mig_size,
         'changed' => $mig_date,
-        'contents' => array(
+        'contents' => [
         'sysfiles' => $selected
-        )
-        );
+        ]
+        ];
         // save profile
         migration_addprofile($newprofile, $mig_id);
         // redirect
@@ -228,7 +236,7 @@ function submit_system_migration()
             break;
         case 'delete':
             migration_deleteprofile($mig_id);
-            page_feedback('profile deleted!', 'c_notice');
+            page_feedback('profile deleted!');
             redirect_url($url);
             break;
             // heavy

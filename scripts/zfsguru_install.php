@@ -14,12 +14,12 @@
 
 // variables
 $tag = '* ';
-$data = array();
+$data = [];
 $scriptversion = 15;
 $fileversion = 1;
 $filelocation = '/tmp/guru_install.dat';
 $temp_mp = '/mnt/';
-$source = trim(shell_exec("pwd")) . '/files';
+$source = trim(shell_exec('pwd')) . '/files';
 
 // procedures
 install_init();
@@ -147,7 +147,7 @@ function install_roz()
     $root = $data[ 'target' ] . '/' . $data[ 'bootfs' ];
     $proot = '/' . $root;
     // $umount_fs = array($root.'/usr', $root.'/var', $root);
-    $umount_fs = array( $root );
+    $umount_fs = [$root];
 
     // zfsguru specific filesystems
     $fs_zfsguru = $data[ 'target' ] . '/zfsguru';
@@ -480,6 +480,10 @@ function install_rom()
 
 }
 
+/**
+ * @param       $errormsg
+ * @param false $rv
+ */
 function install_error( $errormsg, $rv = false )
 {
     global $tag;

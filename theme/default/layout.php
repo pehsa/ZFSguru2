@@ -1,6 +1,9 @@
 <?php
 
-function content_layout_layout() 
+/**
+ * @return array
+ */
+function content_layout_layout()
 {
     global $guru, $tabs, $tags;
 
@@ -13,7 +16,7 @@ function content_layout_layout()
 
     // menu (hide when welcome manager is active)
     if (@isset($guru[ 'preferences' ]) ) {
-        $menus = array(
+        $menus = [
         'Status' => 'status.php',
         'Network' => 'network.php',
         'Disks' => 'disks.php',
@@ -22,9 +25,9 @@ function content_layout_layout()
         'Access' => 'access.php',
         'Services' => 'services.php',
         'System' => 'system.php'
-        );
+        ];
     } else {
-        $menus = array();
+        $menus = [];
     }
 
     $menu = '';
@@ -98,12 +101,12 @@ function content_layout_layout()
     $timekeeper = timekeeper();
 
     // return as tags
-    return array(
+    return [
     'LAYOUT_BULLETINS' => $bulletins,
     'LAYOUT_MENU' => $menu,
     'LAYOUT_NAVTABS' => $navtabs,
     'LAYOUT_FEEDBACK' => $feedback,
     'LAYOUT_TABBAR' => $tabbar,
     'LAYOUT_TIMEKEEPER' => $timekeeper,
-    );
+    ];
 }

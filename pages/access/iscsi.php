@@ -1,6 +1,9 @@
 <?php
 
-function content_services_iscsi() 
+/**
+ * @return array
+ */
+function content_services_iscsi()
 {
     // required library
     activate_library('internalservice');
@@ -27,7 +30,7 @@ function content_services_iscsi()
     $class_noquery = ( !$queryfs ) ? 'normal' : 'hidden';
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'iSCSI',
     'PAGE_ACTIVETAB' => 'iSCSI',
     'CLASS_NOTRUNNING' => $class_notrunning,
@@ -41,5 +44,5 @@ function content_services_iscsi()
     'QUERY_MP' => $query_mp,
     'QUERY_SHARENFS' => $query_sharenfs,
     'QUERY_SHOWMOUNT' => $query_showmount
-    );
+    ];
 }

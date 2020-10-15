@@ -6,6 +6,9 @@
  */
 
 
+/**
+ * @param $library
+ */
 function activate_library( $library )
 {
     global $guru;
@@ -14,46 +17,67 @@ function activate_library( $library )
     include_once $librarypath;
 }
 
-function dangerouscommand( $commands, $redirect_url ) 
+/**
+ * @param $commands
+ * @param $redirect_url
+ */
+function dangerouscommand( $commands, $redirect_url )
 {
-    $data = array(
-    'commands' => $commands,
-    'redirect_url' => $redirect_url,
-    );
+    $data = compact('commands', 'redirect_url');
     $content = content_handle('internal', 'dangerouscommand', $data, true);
     page_handle($content);
     die();
 }
 
-function error( $message ) 
+/**
+ * @param $message
+ */
+function error( $message )
 {
-    page_injecttag(array( 'MESSAGE' => $message ));
+    page_injecttag(['MESSAGE' => $message]);
     $content = content_handle('internal', 'error', false, true);
     page_handle($content);
     die();
 }
 
-function friendlyerror( $message, $url ) 
+/**
+ * @param $message
+ * @param $url
+ */
+function friendlyerror( $message, $url )
 {
     page_feedback($message, 'a_error');
     redirect_url($url);
 }
 
-function friendlynotice( $message, $url ) 
+/**
+ * @param $message
+ * @param $url
+ */
+function friendlynotice( $message, $url )
 {
     page_feedback($message);
     redirect_url($url);
 }
 
-function redirect_url( $url ) 
+/**
+ * @param $url
+ */
+function redirect_url( $url )
 {
     header('Location: ' . $url);
     die();
 }
 
+/**
+ * @param     $bytes
+ * @param int $precision
+ *
+ * @return string
+ */
 function sizehuman( $bytes, $precision = 0 )
 {
-    $units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+    $units = ['B', 'KB', 'MB', 'GB', 'TB'];
     $bytes = max($bytes, 0);
     $pow = floor(( $bytes ? log($bytes) : 0 ) / log(1000));
     $pow = min($pow, count($units) - 1);
@@ -61,9 +85,15 @@ function sizehuman( $bytes, $precision = 0 )
     return round($bytes, $precision) . ' ' . $units[ $pow ];
 }
 
+/**
+ * @param     $bytes
+ * @param int $precision
+ *
+ * @return string
+ */
 function sizebinary( $bytes, $precision = 0 )
 {
-    $units = array( 'B', 'KiB', 'MiB', 'GiB', 'TiB' );
+    $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
     $bytes = max($bytes, 0);
     $pow = floor(( $bytes ? log($bytes) : 0 ) / log(1024));
     $pow = min($pow, count($units) - 1);
@@ -71,6 +101,14 @@ function sizebinary( $bytes, $precision = 0 )
     return round($bytes, $precision) . ' ' . $units[ $pow ];
 }
 
+/**
+ * @param        $input
+ * @param string $rules
+ * @param null   $modify
+ * @param int    $maxlen
+ *
+ * @return bool
+ */
 function sanitize( $input, $rules = 'a-zA-Z0-9_-', & $modify = null, $maxlen = 0 )
 {
     if ($maxlen === 0 ) {
@@ -84,6 +122,9 @@ function sanitize( $input, $rules = 'a-zA-Z0-9_-', & $modify = null, $maxlen = 0
     return ( $modify === $input );
 }
 
+/**
+ * @return string[]
+ */
 function common_dirs()
 {
     if (!is_dir('/download')OR!is_dir('/services') ) {
@@ -91,21 +132,29 @@ function common_dirs()
         zfsguru_init_dirs();
     }
 
-    return array(
+    return [
     'services' => '/services',
     'download' => '/download',
     'temp' => '/tmp',
-    );
+    ];
 }
 
 /* power cache */
 
-function powercache_read( $element = false, $serve_expired = false ) 
+/**
+ * @param false $element
+ * @param false $serve_expired
+ *
+ * @return false|mixed
+ */
+function powercache_read( $element = false, $serve_expired = false )
 {
     global $guru;
 
     // read cache.bin file to $guru['powercache'] array
-    if (!@is_array($guru[ 'powercache' ]) ) {
+    if (@is_array($guru['powercache'])) {
+        $arr = $guru[ 'powercache' ];
+    } else {
         // read cache.bin file
         $raw = @file_get_contents($guru[ 'docroot' ] . '/config/cache.bin');
         $arr = @unserialize($raw);
@@ -114,8 +163,6 @@ function powercache_read( $element = false, $serve_expired = false )
         }
 
         $guru[ 'powercache' ] = $arr;
-    } else {
-        $arr = $guru[ 'powercache' ];
     }
 
     // check for element
@@ -131,6 +178,11 @@ function powercache_read( $element = false, $serve_expired = false )
     return false;
 }
 
+/**
+ * @param false $element
+ * @param false $data
+ * @param int   $expiry
+ */
 function powercache_store( $element = false, $data = false, $expiry = 5 )
 {
     global $guru;
@@ -142,10 +194,10 @@ function powercache_store( $element = false, $data = false, $expiry = 5 )
 
     // store value in $guru['powercache']
     if (( $element !== false )AND( $data !== false ) ) {
-        $guru[ 'powercache' ][ $element ] = array(
+        $guru[ 'powercache' ][ $element ] = [
         'expiry' => time() + $expiry,
         'data' => $data
-        );
+        ];
     }
 
     // check if cache.bin exists, if not create with root user
@@ -160,7 +212,12 @@ function powercache_store( $element = false, $data = false, $expiry = 5 )
     file_put_contents($guru[ 'docroot' ] . '/config/cache.bin', $ser);
 }
 
-function powercache_purge( $element = false ) 
+/**
+ * @param false $element
+ *
+ * @return bool
+ */
+function powercache_purge( $element = false )
 {
     global $guru;
 
@@ -185,16 +242,27 @@ function powercache_purge( $element = false )
 
 /* query functions */
 
+/**
+ * @param $sysctl_var
+ *
+ * @return string
+ */
 function common_sysctl( $sysctl_var )
 {
     return @trim(shell_exec('/sbin/sysctl -n ' . escapeshellarg($sysctl_var)));
 }
 
+/**
+ * @return string
+ */
 function common_systemplatform()
 {
     return common_sysctl('hw.machine_arch');
 }
 
+/**
+ * @return array|string[]
+ */
 function common_systemversion()
 {
     activate_library('gurudb');
@@ -207,15 +275,18 @@ function common_systemversion()
         $sha512 = @trim(file_get_contents($sha512file));
         foreach ( $system as $sysver => $platforms ) {
             if ($platforms[ $platform ][ 'sha512' ] == $sha512 ) {
-                return array( 'dist' => $dist, 'sysver' => $sysver, 'sha512' => $sha512 );
+                return compact('dist', 'sysver', 'sha512');
             }
         }
         // current running system not known by remote system version list
-        return array( 'dist' => $dist, 'sysver' => 'unknown', 'sha512' => $sha512 );
+        return ['dist' => $dist, 'sysver' => 'unknown', 'sha512' => $sha512];
     }
-    return array( 'dist' => $dist, 'sysver' => 'unknown', 'sha512' => '0' );
+    return ['dist' => $dist, 'sysver' => 'unknown', 'sha512' => '0'];
 }
 
+/**
+ * @return string
+ */
 function common_distribution_type()
 {
     global $guru;
@@ -226,14 +297,19 @@ function common_distribution_type()
     return 'unknown';
 }
 
+/**
+ * @param $type
+ *
+ * @return string
+ */
 function common_distribution_name( $type )
 {
-    $distnames = array(
+    $distnames = [
     'RoZ' => 'Root-on-ZFS',
     'RoR' => 'Root-on-RAM',
     'RoR+union' => 'Root-on-RAM + Union',
     'RoM' => 'Root-on-Media',
-    );
+    ];
     if (@isset($distnames[ $type ]) ) {
         return $distnames[ $type ];
     }
@@ -242,6 +318,10 @@ function common_distribution_name( $type )
 
 /* timekeeper */
 
+/**
+ * @param       $name
+ * @param false $parent
+ */
 function timerstart( $name, $parent = false )
 {
     global $timer;
@@ -254,23 +334,27 @@ function timerstart( $name, $parent = false )
     //  $timer[$name]['parent'] = $parent;
 }
 
+/**
+ * @param $name
+ */
 function timerend( $name )
 {
     global $timer;
     $timer[ 'p' ][ $name ][ 'end' ] = microtime(true);
 }
 
+/**
+ * @param false $name
+ *
+ * @return string|void
+ */
 function timekeeper( $name = false )
 {
     global $guru, $timer;
     if (!@$guru[ 'preferences' ][ 'timekeeper' ] ) {
         return;
     }
-    if (!$name ) {
-        $timer[ 'end' ] = microtime(true);
-        $timer[ 'total' ] = $timer[ 'end' ] - $_SERVER[ 'REQUEST_TIME_FLOAT' ];
-        $str = '<div id="timekeeper">';
-    } else {
+    if ($name) {
         $total = $timer[ 'total' ];
         $piece = @$timer[ 'p' ][ $name ][ 'end' ] - $timer[ 'p' ][ $name ][ 'start' ];
         $msec = round($piece * 1000, 1);
@@ -283,6 +367,10 @@ function timekeeper( $name = false )
         $xtra = ( $top > 0 ) ? 'z-index:1;' : '';
         $colour = '666';
         $str = '<div style="top:' . $top . 'px; left:' . $left . 'px; width:' . $width . 'px; background:#' . $colour . '; ' . $xtra . '" title="' . htmlentities($name) . ': ' . $msec . ' ms"></div>';
+    } else {
+        $timer[ 'end' ] = microtime(true);
+        $timer[ 'total' ] = $timer[ 'end' ] - $_SERVER[ 'REQUEST_TIME_FLOAT' ];
+        $str = '<div id="timekeeper">';
     }
     if (is_array($timer) ) {
         foreach ( $timer[ 'p' ] as $tname => $data ) {
@@ -302,7 +390,10 @@ function timekeeper( $name = false )
 
 /* debug functions */
 
-function viewarray( $arr ) 
+/**
+ * @param $arr
+ */
+function viewarray( $arr )
 {
     echo( '<table style="padding: 0; border-collapse: collapse; border-spacing: 0; border: 1px;">' );
     foreach ( ( array )$arr as $key1 => $elem1 ) {
@@ -318,7 +409,10 @@ function viewarray( $arr )
     echo( '</table>' );
 }
 
-function extarray( $arr ) 
+/**
+ * @param $arr
+ */
+function extarray( $arr )
 {
     echo( '<td>' );
     echo( '<table  style="padding: 0; border-collapse: collapse; border-spacing: 0; border: 1px;">' );
@@ -326,7 +420,7 @@ function extarray( $arr )
         echo( '<tr>' );
         echo( '<td>' . htmlentities($key) . '&nbsp;</td>' );
         if (is_array($elem) ) {
-            extArray($elem);
+            extarray($elem);
         } else {
             echo( '<td>' . nl2br(htmlentities($elem)) . '&nbsp;</td>' );
         }

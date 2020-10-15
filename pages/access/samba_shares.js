@@ -24,15 +24,21 @@ function sambaNewShareProfile(o) {
 	document.getElementById('newshare_span_protected').className = 'hidden';
 	document.getElementById('newshare_span_private').className = 'hidden';
 	document.getElementById('newshare_span_noaccess').className = 'hidden';
-	if (o.value === 'public') {
-		document.getElementById('newshare_span_public').className = 'normal';
-	} else if (o.value === 'protected') {
-		document.getElementById('newshare_span_protected').className = 'normal';
-	} else if (o.value === 'private') {
-		document.getElementById('newshare_span_private').className = 'normal';
-		document.getElementById('newshare_private').className = 'normal';
-	} else {
-		document.getElementById('newshare_span_noaccess').className = 'normal';
+
+	switch (o.value) {
+		case 'public':
+			document.getElementById('newshare_span_public').className = 'normal';
+			break;
+		case 'protected':
+			document.getElementById('newshare_span_protected').className = 'normal';
+			break;
+		case 'private':
+			document.getElementById('newshare_span_private').className = 'normal';
+			document.getElementById('newshare_private').className = 'normal';
+			break;
+		default:
+			document.getElementById('newshare_span_noaccess').className = 'normal';
+			break;
 	}
 }
 

@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_smart() 
+/**
+ * @return array
+ */
+function content_disks_smart()
 {
     global $sort, $invertedsort, $smart;
 
@@ -48,7 +51,7 @@ function content_disks_smart()
 
     // sorting
     $sorted = $disks;
-    $sortsuffix = array();
+    $sortsuffix = [];
     $sort = @$_GET[ 'sort' ];
     $invertedsort = @isset($_GET[ 'inverted' ]);
     if ($sort != '') {
@@ -59,7 +62,7 @@ function content_disks_smart()
     }
 
     // disk list
-    $disklist = array();
+    $disklist = [];
     foreach ( $sorted as $diskname => $diskdata ) {
         // detect disk type
         $disktype = disk_detect_type($diskname);
@@ -97,7 +100,7 @@ function content_disks_smart()
         }
 
         // add row
-        $disklist[] = array(
+        $disklist[] = [
         'CLASS_ACTIVEROW' => $class_activerow,
         'CLASS_HDD' => $class_hdd,
         'CLASS_SSD' => $class_ssd,
@@ -126,7 +129,7 @@ function content_disks_smart()
         'CLASS_LIFETIME' => @$_SESSION[ 'smart' ][ $diskname ][ 'class_lifetime' ],
         'CLASS_SHOWTEMP' => $class_showtempsect,
         'CLASS_SHOWSECT' => $class_showtempsect
-        );
+        ];
         // set highest LCC rate (highest = lowest number = most cycles per timeunit)
         if (@$_SESSION[ 'smart' ][ $diskname ][ 'power_on_hours' ] > 24 ) {
             $current_lccrate = @( $_SESSION[ 'smart' ][ $diskname ][ 'power_on_hours' ] /
@@ -177,7 +180,7 @@ function content_disks_smart()
     }
 
     // smart list when querying disk
-    $smartlist = array();
+    $smartlist = [];
     if ($query AND is_array(@$smart[ 'data' ]) ) {
         // query disk smart list
         foreach ( $smart[ 'data' ] as $id => $data ) {
@@ -191,7 +194,7 @@ function content_disks_smart()
             } else {
                 $activerow = '';
             }
-            $smartlist[] = array(
+            $smartlist[] = [
             'SMART_ACTIVEROW' => $activerow,
             'SMART_ID' => ( int )$id,
             'SMART_ATTR' => htmlentities($data[ 'attribute' ]),
@@ -201,12 +204,12 @@ function content_disks_smart()
             'SMART_THRESHOLD' => htmlentities($data[ 'threshold' ]),
             'SMART_FAILED' => htmlentities($data[ 'failed' ]),
             'SMART_RAW' => htmlentities($data[ 'raw' ])
-            );
+            ];
         }
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'SMART',
     'PAGE_TITLE' => 'SMART monitor',
     'TABLE_SMART_DISKLIST' => $disklist,
@@ -231,10 +234,16 @@ function content_disks_smart()
     'SORT_LIFETIME' => $sortsuffix[ 'lifetime' ],
     'ADVICE_LCC_RATE' => $lccrate,
     'QUERY_DISK' => $query,
-    );
+    ];
 }
 
-function sort_disks( $a, $b ) 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
+function sort_disks( $a, $b )
 {
     global $sort, $invertedsort, $smart;
 

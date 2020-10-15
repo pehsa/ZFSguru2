@@ -4,9 +4,9 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'Manage' => 'services.php?manage',
-);
+];
 
 // add extra tabs for services with panel interfaces
 activate_library('service');

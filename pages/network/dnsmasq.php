@@ -1,17 +1,20 @@
 <?php
 
-function content_panel_dnsmasq() 
+/**
+ * @return array
+ */
+function content_panel_dnsmasq()
 {
     // tabbar
     $tab = @$_GET[ 'tab' ];
     // tabbar
-    $tabbar = array(
+    $tabbar = [
     'dnsmasq' => 'DNSmasq',
     'dns' => 'DNS',
     'dhcp' => 'DHCP',
     'tftp' => 'TFTP',
     'pxe' => 'PXE',
-    );
+    ];
     $tabbar_url = 'services.php?panel=dnsmasq';
     foreach ( $tabbar as $tag => $name ) {
         if (@isset($_GET[ $tag ]) ) {
@@ -26,24 +29,24 @@ function content_panel_dnsmasq()
     $dnsmasq = dnsmasq_readconfig();
 
     // tables
-    $table[ 'dns' ][ 'string' ] = array();
-    $table[ 'dns' ][ 'switch' ] = array();
-    $table[ 'dhcp' ][ 'string' ] = array();
-    $table[ 'dhcp' ][ 'switch' ] = array();
-    $table[ 'tftp' ][ 'string' ] = array();
-    $table[ 'tftp' ][ 'switch' ] = array();
+    $table[ 'dns' ][ 'string' ] = [];
+    $table[ 'dns' ][ 'switch' ] = [];
+    $table[ 'dhcp' ][ 'string' ] = [];
+    $table[ 'dhcp' ][ 'switch' ] = [];
+    $table[ 'tftp' ][ 'string' ] = [];
+    $table[ 'tftp' ][ 'switch' ] = [];
 
     // populate tables
     foreach ( $dnsmasq[ 'configvars' ] as $servicetype => $servicedata ) {
         foreach ( $servicedata as $datatype => $dataarray ) {
             if (is_array($dataarray) ) {
                 foreach ( $dataarray as $configvar ) {
-                    $table[ $servicetype ][ $datatype ][ $configvar ] = array(
+                    $table[ $servicetype ][ $datatype ][ $configvar ] = [
                     strtoupper($servicetype) . '_' . strtoupper($datatype) . '_NAME' =>
                     htmlentities($configvar),
                     strtoupper($servicetype) . '_' . strtoupper($datatype) . '_VALUE' =>
                     @htmlentities($dnsmasq[ $servicetype ][ $datatype ][ $configvar ]),
-                    );
+                    ];
                 }
             }
         }
@@ -52,13 +55,13 @@ function content_panel_dnsmasq()
     // table: network interfaces for dhcp configuration
     activate_library('network');
     $netif = network_interfaces();
-    $table_dhcp_if = array();
+    $table_dhcp_if = [];
     foreach ( $netif as $ifname => $ifdata ) {
-        if (strpos($ifname, 'lo') !== 0) {
+        if (strncmp($ifname, 'lo', 2) !== 0) {
             $maskhex = @$ifdata[ 'inet' ][ 0 ][ 'netmask' ];
             $mask = '';
             if ($maskhex ) {
-                $iparr = array();
+                $iparr = [];
                 for ( $i = 2; $i < 10; $i += 2 ) {
                     $iparr[] = hexdec(
                         $maskhex {
@@ -76,21 +79,21 @@ function content_panel_dnsmasq()
             //error($mask);
             //   $netmask = long2ip(-1 << (32 - (int)$int));
 
-            $table_dhcp_if[] = array(
+            $table_dhcp_if[] = [
             'DHCP_IF_NAME' => htmlentities($ifname),
             'DHCP_IF_INET4' => @$ifdata[ 'ip' ],
             'DHCP_IF_INET6' => @$ifdata[ 'inet6' ][ 0 ][ 'ip' ],
             'DHCP_IF_MASK4' => $mask,
             'DHCP_IF_MASK6' => @$ifdata[ 'inet6' ][ 0 ][ 'prefixlen' ],
             'DHCP_IF_CONNECTED' => '',
-            );
+            ];
         }
     }
     //viewarray($netif);
     //viewarray($table_dhcp_if);
 
     // export tags
-    return array(
+    return [
     'PAGE_TITLE' => 'DNSmasq',
     'PAGE_ACTIVETAB' => 'DNSmasq',
     'PAGE_TABBAR' => $tabbar,
@@ -108,13 +111,18 @@ function content_panel_dnsmasq()
     'CLASS_TAB_DHCP' => $class_tabbar[ 'dhcp' ],
     'CLASS_TAB_TFTP' => $class_tabbar[ 'tftp' ],
     'CLASS_TAB_PXE' => $class_tabbar[ 'pxe' ],
-    );
+    ];
 }
 
+/**
+ * @param false $raw
+ *
+ * @return array
+ */
 function dnsmasq_readconfig( $raw = false )
 {
     // fetch DNSmasq configuration file
-    $config = array();
+    $config = [];
     $filepath = '/usr/local/etc/dnsmasq.conf';
     $contents = @file_get_contents($filepath);
     if ($raw ) {
@@ -138,7 +146,7 @@ function dnsmasq_readconfig( $raw = false )
     $config[ 'configvars' ] = $dnsmasq;
 
     // migrate into single configuration array
-    $allthree = array( 'dns', 'dhcp', 'tftp' );
+    $allthree = ['dns', 'dhcp', 'tftp'];
     foreach ( $allthree as $servicetype ) {
         foreach ( $matches1[ 1 ] as $id => $varname ) {
             if (@in_array($varname, $dnsmasq[$servicetype]['string'], true)) {
@@ -161,16 +169,22 @@ function dnsmasq_writeconfig()
     error('todo!');
 }
 
+/**
+ * @return array
+ */
 function dnsmasq_pxeprofiles()
 {
-    return array();
+    return [];
 }
 
+/**
+ * @return array[]
+ */
 function dnsmasq_configvars()
 {
-    $dns = array(
+    $dns = [
     'activation' => 'port',
-    'string' => array(
+    'string' => [
     'port',
     'resolv-file',
     'server',
@@ -185,8 +199,8 @@ function dnsmasq_configvars()
     'no-dhcp-interface',
     'addn-hosts',
     'domain',
-    ),
-    'switch' => array(
+    ],
+    'switch' => [
     'domain-needed',
     'bogus-priv',
     'filterwin2k',
@@ -196,11 +210,11 @@ function dnsmasq_configvars()
     'bind-interfaces',
     'no-hosts',
     'expand-hosts',
-    ),
-    );
-    $dhcp = array(
+    ],
+    ];
+    $dhcp = [
     'activation' => 'dhcp-range',
-    'string' => array(
+    'string' => [
     'dhcp-range',
     'dhcp-host',
     'dhcp-ignore',
@@ -213,26 +227,22 @@ function dnsmasq_configvars()
     'dhcp-match',
     'pxe-prompt',
     'pxe-service',
-    ),
-    'switch' => array(
+    ],
+    'switch' => [
     'enable-ra',
     'read-ethers',
-    ),
-    );
-    $tftp = array(
+    ],
+    ];
+    $tftp = [
     'activation' => 'enable-tftp',
-    'string' => array(
+    'string' => [
     'tftp-root',
-    ),
-    'switch' => array(
+    ],
+    'switch' => [
     'enable-tftp',
     'tftp-secure',
     'tftp-no-blocksize',
-    ),
-    );
-    return array(
-    'dns' => $dns,
-    'dhcp' => $dhcp,
-    'tftp' => $tftp,
-    );
+    ],
+    ];
+    return compact('dns', 'dhcp', 'tftp');
 }

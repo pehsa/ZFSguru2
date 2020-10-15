@@ -6,15 +6,15 @@ function submit_executecommand()
     activate_library('super');
 
     // craft command array from POST data
-    $command_arr = array();
+    $command_arr = [];
     foreach ( $_POST as $name => $value ) {
-        if ((strpos($name, 'zfs_command_') === 0) && $value != '') {
+        if ((strncmp($name, 'zfs_command_', 12) === 0) && $value != '') {
             $command_arr[] = $value;
         }
     }
 
     // execute commands
-    $results = array();
+    $results = [];
     foreach ( $command_arr as $id => $command ) {
         $results[ $id ] = super_execute($command);
     }
@@ -30,7 +30,7 @@ function submit_executecommand()
             );
             page_feedback(
                 'command output:<br />'
-                . nl2br(htmlentities($result[ 'output_str' ])), 'c_notice' 
+                . nl2br(htmlentities($result[ 'output_str' ]))
             );
         }
     }

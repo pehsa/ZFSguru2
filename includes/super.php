@@ -2,6 +2,13 @@
 
 /* privileged super user functions */
 
+/**
+ * @param       $command
+ * @param false $raw_output
+ * @param bool  $redirect_output
+ *
+ * @return array
+ */
 function super_execute( $command, $raw_output = false, $redirect_output = true )
 {
     // sanity
@@ -17,11 +24,11 @@ function super_execute( $command, $raw_output = false, $redirect_output = true )
         }
 
         $result_str = implode(chr(10), $result);
-        return array(
+        return [
         'rv' => $rv,
         'output_arr' => $result,
         'output_str' => $result_str
-        );
+        ];
     }
 
     // raw output
@@ -34,6 +41,12 @@ function super_execute( $command, $raw_output = false, $redirect_output = true )
     return $rv;
 }
 
+/**
+ * @param        $script_name
+ * @param string $parameters
+ *
+ * @return array
+ */
 function super_script( $script_name, $parameters = '' )
 {
     global $guru;

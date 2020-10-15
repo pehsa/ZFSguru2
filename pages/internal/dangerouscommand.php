@@ -1,28 +1,33 @@
 <?php
 
-function content_internal_dangerouscommand( $data ) 
+/**
+ * @param $data
+ *
+ * @return array
+ */
+function content_internal_dangerouscommand( $data )
 {
     global $guru;
 
     // command array
     if (@is_string($data[ 'commands' ]) ) {
-        $command_arr = array( $data[ 'commands' ] );
+        $command_arr = [$data[ 'commands' ]];
     } elseif (@is_array($data[ 'commands' ]) ) {
         $command_arr = $data[ 'commands' ];
     } else {
-        $command_arr = array();
+        $command_arr = [];
     }
 
     // command string
     $command_str = @implode(chr(10), $command_arr);
 
     // command list
-    $commandlist = array();
+    $commandlist = [];
     foreach ( $command_arr as $id => $command ) {
-        $commandlist[] = array(
+        $commandlist[] = [
         'CMD_ID' => htmlentities($id),
         'CMD' => htmlentities($command)
-        );
+        ];
     }
 
     // command count
@@ -35,7 +40,7 @@ function content_internal_dangerouscommand( $data )
     if (@$guru[ 'preferences' ][ 'command_confirm' ] === false ) {
         // command confirmation disabled; execute commands right now
         activate_library('super');
-        $results = array();
+        $results = [];
         foreach ( $command_arr as $id => $command ) {
             $results[ $id ] = super_execute($command);
         }
@@ -51,7 +56,7 @@ function content_internal_dangerouscommand( $data )
                 );
                 page_feedback(
                     'command output:<br />'
-                    . nl2br(htmlentities($result[ 'output_str' ])), 'c_notice' 
+                    . nl2br(htmlentities($result[ 'output_str' ]))
                 );
             }
         }
@@ -68,11 +73,11 @@ function content_internal_dangerouscommand( $data )
     }
 
     // export new tags
-    return array(
+    return [
     'PAGE_TITLE' => 'Dangerous command execution',
     'TABLE_COMMANDLIST' => $commandlist,
     'COMMAND_STR' => $command_str,
     'COMMAND_COUNT' => $commandcount,
     'REDIRECT_URL' => @$data[ 'redirect_url' ]
-    );
+    ];
 }

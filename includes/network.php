@@ -1,16 +1,19 @@
 <?php
 
+/**
+ * @return array
+ */
 function network_interfaces()
 {
     // fetch dmesg.boot
     $dmesg = file_get_contents('/var/run/dmesg.boot');
-    $dmesg .= chr(10) .shell_exec("dmesg");
+    $dmesg .= chr(10) .shell_exec('dmesg');
 
     // fetch ifconfig raw output
     exec('/sbin/ifconfig', $ifconfig);
 
     // first split raw output into chunks (one chunk per interface)
-    $chunks = array();
+    $chunks = [];
     $ifconfig_str = '';
     if (@is_array($ifconfig) ) {
         foreach ( $ifconfig as $line ) {
@@ -30,7 +33,7 @@ function network_interfaces()
     }
 
     // process chunks into detailed arrays
-    $detailed = array();
+    $detailed = [];
     foreach ( $chunks as $ifname => $ifdata ) {
         // process flags= line
         $preg1 = '/^flags\=(\d+)\<([a-zA-Z0-9,_]+)\> metric (\d+) mtu (\d+)/';
@@ -57,14 +60,14 @@ function network_interfaces()
         preg_match_all($preg4, $ifdata, $matches4);
 
         // construct inet array
-        $inet = array();
+        $inet = [];
         if (is_array($matches4[ 1 ]) ) {
             foreach ( $matches4[ 1 ] as $id => $ipaddress ) {
-                $inet[] = array(
+                $inet[] = [
                 'ip' => $ipaddress,
                 'netmask' => @$matches4[ 3 ][ $id ],
                 'broadcast' => @$matches4[ 5 ][ $id ]
-                );
+                ];
             }
         }
 
@@ -73,14 +76,14 @@ function network_interfaces()
         preg_match_all($preg5, $ifdata, $matches5);
 
         // construct inet6 array
-        $inet6 = array();
+        $inet6 = [];
         if (is_array($matches5[ 1 ]) ) {
             foreach ( $matches5[ 1 ] as $id => $ipaddress ) {
-                $inet6[] = array(
+                $inet6[] = [
                 'ip' => $ipaddress,
                 'prefixlen' => @$matches5[ 2 ][ $id ],
                 'scopeid' => @trim($matches5[ 4 ][ $id ])
-                );
+                ];
             }
         }
 
@@ -116,23 +119,23 @@ function network_interfaces()
         $ident = @$matches8[ 1 ];
 
         // add interface to detailed array
-        $detailed[ $ifname ] = array(
-        'ifname' => $ifname,
-        'ident' => $ident,
-        'flags' => $flags,
-        'flags_str' => $flags_str,
-        'metric' => $metric,
-        'mtu' => $mtu,
-        'options' => $options,
-        'options_str' => $options_str,
-        'ether' => $ether,
-        'inet' => $inet,
-        'inet6' => $inet6,
-        'ip' => $ip,
-        'media' => $media,
-        'linkspeed' => $linkspeed,
-        'duplex' => $duplex,
-        'status' => $status
+        $detailed[ $ifname ] = compact(
+            'ifname',
+            'ident',
+            'flags',
+            'flags_str',
+            'metric',
+            'mtu',
+            'options',
+            'options_str',
+            'ether',
+            'inet',
+            'inet6',
+            'ip',
+            'media',
+            'linkspeed',
+            'duplex',
+            'status'
         );
     }
 
@@ -140,9 +143,14 @@ function network_interfaces()
     return $detailed;
 }
 
+/**
+ * @param $ifname
+ *
+ * @return string
+ */
 function network_checkinterface( $ifname )
 {
-    if (strpos($ifname, 'lo') === 0) {
+    if (strncmp($ifname, 'lo', 2) === 0) {
         return 'loopback';
     }
     $interfaces = network_interfaces();
@@ -153,11 +161,14 @@ function network_checkinterface( $ifname )
     return 'wired';
 }
 
-function network_sockstat() 
+/**
+ * @return array
+ */
+function network_sockstat()
 {
     exec('/usr/bin/sockstat -4l', $output);
-    $sockstat = array();
-    $desc = array();
+    $sockstat = [];
+    $desc = [];
     $i = -1;
     if (is_array($output) ) {
         foreach ( $output as $line ) {
@@ -179,7 +190,10 @@ function network_sockstat()
     return $sockstat;
 }
 
-function network_firewall_newconfig( $config ) 
+/**
+ * @param $config
+ */
+function network_firewall_newconfig( $config )
 {
     // required library
     activate_library('super');
@@ -189,7 +203,7 @@ function network_firewall_newconfig( $config )
 
     // create temporary file
     $timestamp = time();
-    $cmd = array(
+    $cmd = [
     '/bin/mkdir -p /etc/backup',
     '/usr/bin/touch /etc/pf.conf',
     '/bin/cp -p /etc/pf.conf /etc/backup/pf.conf-' . $timestamp,
@@ -197,7 +211,7 @@ function network_firewall_newconfig( $config )
     '/usr/bin/touch /tmp/zfsguru-pf.conf',
     '/usr/sbin/chown 888:888 /tmp/zfsguru-pf.conf',
     '/bin/chmod 644 /tmp/zfsguru-pf.conf',
-    );
+    ];
     foreach ( $cmd as $cmdline ) {
         $r = super_execute($cmdline);
         if ($r[ 'rv' ] != 0 ) {
@@ -222,6 +236,9 @@ function network_firewall_newconfig( $config )
     }
 }
 
+/**
+ * @return bool
+ */
 function network_firewall_activate()
 {
     // required library
@@ -239,6 +256,11 @@ function network_firewall_activate()
     return ( $r[ 'rv' ] == 0 );
 }
 
+/**
+ * @param int $errorline
+ *
+ * @return bool
+ */
 function network_firewall_checkconfig( & $errorline = 0 )
 {
     // required library

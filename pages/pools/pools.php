@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_pools() 
+/**
+ * @return array
+ */
+function content_pools_pools()
 {
     // required libraries
     activate_library('zfs');
@@ -13,33 +16,34 @@ function content_pools_pools()
     $class_importable = 'hidden';
 
     // table: import pool
-    $table_importpool = array();
+    $table_importpool = [];
     if (@isset($_POST[ 'import_pool' ])OR @isset($_POST[ 'import_pool_deleted' ]) ) {
         $importdestroyed = @isset($_POST[ 'import_pool_deleted' ]);
         if ($importdestroyed ) {
             $importables = zfs_pool_import_list(true);
         } else {
-            $importables = zfs_pool_import_list(false);
+            $importables = zfs_pool_import_list();
         }
         if (count($importables) > 0 ) {
             $class_importable = 'normal';
             $i = 0;
             if (@is_array($importables) ) {
                 foreach ( $importables as $importable ) {
-                    $table_importpool[] = array(
+                    $table_importpool[] = [
                     'IMPORT_TYPE' => ( $importdestroyed ) ? 'destroyed' : 'hidden',
                     'IMPORT_ID' => $importable[ 'id' ],
                     'IMPORT_IMG' => ( $importable[ 'canimport' ] ) ? 'ok' : 'warn',
                     'IMPORT_POOLNAME' => htmlentities($importable[ 'pool' ]),
                     'IMPORT_POOLDATA' => htmlentities($importable[ 'rawoutput' ]),
                     'IMPORT_BOUNDARY' => ( ++$i < count($importables) ) ? 'normal' : 'hidden'
-                    );
+                    ];
                 }
             }
         } else {
             $class_noimportables = 'normal';
-            $table_importpool[] = array(
-            'IMPORT_POOLDATA' => 'No importable pools have been found.' );
+            $table_importpool[] = [
+            'IMPORT_POOLDATA' => 'No importable pools have been found.'
+            ];
         }
     }
 
@@ -48,7 +52,7 @@ function content_pools_pools()
     $poolcountstr = ( $poolcount == 1 ) ? '' : 's';
 
     // export tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Pool status',
     'PAGE_TITLE' => 'Pool status',
     'TABLE_POOLLIST' => $table_poollist,
@@ -57,24 +61,27 @@ function content_pools_pools()
     'CLASS_NOIMPORTABLES' => $class_noimportables,
     'POOL_COUNT' => $poolcount,
     'POOL_COUNT_STRING' => $poolcountstr
-    );
+    ];
 }
 
-function table_pools_poollist() 
+/**
+ * @return array
+ */
+function table_pools_poollist()
 {
     // required libraries
     activate_library('zfs');
 
     // process table poollist
-    $poollist = array();
+    $poollist = [];
     $zpools = zfs_pool_list();
     if (!is_array($zpools) ) {
-        $zpools = array();
+        $zpools = [];
     }
     foreach ( $zpools as $poolname => $pooldata ) {
         $class = ( @$_GET[ 'query' ] == $poolname ) ? 'activerow' : 'normal';
         $poolspa = zfs_pool_version($poolname);
-        $zpool_status = shell_exec("zpool status \$poolname");
+        $zpool_status = shell_exec('zpool status $poolname');
         if (strpos($zpool_status, 'raidz3') !== false ) {
             $redundancy = 'RAID7 (triple parity)';
         } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -105,7 +112,7 @@ function table_pools_poollist()
                 $class = 'warningrow pool_degraded';
             }
         }
-        $poollist[] = array(
+        $poollist[] = [
         'POOLLIST_CLASS' => $class,
         'POOLLIST_POOLNAME' => htmlentities(trim($poolname)),
         'POOLLIST_SPA' => $poolspa,
@@ -116,7 +123,7 @@ function table_pools_poollist()
         'POOLLIST_STATUS' => $pooldata[ 'status' ],
         'POOLLIST_STATUSCLASS' => $statusclass,
         'POOLLIST_POOLNAME_URLENC' => htmlentities(trim($poolname))
-        );
+        ];
     }
     return $poollist;
 }
@@ -132,10 +139,10 @@ function submit_pools_importpool()
     // scan POST variables for hidden or destroyed pool import buttons
     $result = false;
     foreach ( $_POST as $var => $value ) {
-        if (strpos($var, 'import_hidden_') === 0) {
+        if (strncmp($var, 'import_hidden_', 14) === 0) {
             $poolid = substr($var, strlen('import_hidden_'));
-            $result = zfs_pool_import($poolid, false);
-        } elseif (strpos($var, 'import_destroyed_') === 0) {
+            $result = zfs_pool_import($poolid);
+        } elseif (strncmp($var, 'import_destroyed_', 17) === 0) {
             $poolid = substr($var, strlen('import_destroyed_'));
             $result = zfs_pool_import($poolid, true);
         }

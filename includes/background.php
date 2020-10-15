@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @param $tag
+ * @param $data
+ */
 function background_register( $tag, $data )
 {
     global $guru;
@@ -109,13 +113,9 @@ function background_register( $tag, $data )
     }
 
     // write storage data
-    $storage = ( @is_array($data[ 'storage' ]) ) ? $data[ 'storage' ] : array();
+    $storage = ( @is_array($data[ 'storage' ]) ) ? $data[ 'storage' ] : [];
     $storage[ 'commands' ] = $data[ 'commands' ];
-    $storage[ 'options' ] = array(
-    'execution' => $execution,
-    'super' => $super,
-    'combinedoutput' => $combinedoutput,
-    );
+    $storage[ 'options' ] = compact('execution', 'super', 'combinedoutput');
     if (!file_put_contents($file_storage, serialize($storage)) ) {
         error('could not write storage file: ' . htmlentities($file_storage));
     }
@@ -129,6 +129,11 @@ function background_register( $tag, $data )
     }
 }
 
+/**
+ * @param $tag
+ *
+ * @return array
+ */
 function background_query( $tag )
 {
     global $guru;
@@ -146,17 +151,17 @@ function background_query( $tag )
     // read storage array
     $storage = @unserialize(file_get_contents($file_storage));
     if (!is_array($storage) ) {
-        $storage = array();
+        $storage = [];
     }
 
     // default query array
-    $query = array(
+    $query = [
     'exists' => false,
     'running' => false,
     'error' => false,
-    'ctag' => array(),
+    'ctag' => [],
     'storage' => $storage,
-    );
+    ];
 
     // verify directory and master/storage files exist and commands are provided
     if (!is_dir($dir) ) {
@@ -183,7 +188,7 @@ function background_query( $tag )
         $file_rv = $dir . '/rv-' . $suffix;
 
         // read files and store in ctag array
-        $query[ 'ctag' ][ $ctag ] = array(
+        $query[ 'ctag' ][ $ctag ] = [
         'stdout' => ( file_exists($file_stdout) ) ?
         trim(file_get_contents($file_stdout)) : '',
         'stderr' => ( file_exists($file_stderr) ) ?
@@ -192,7 +197,7 @@ function background_query( $tag )
         trim(file_get_contents($file_output)) : '',
         'rv' => ( file_exists($file_rv) ) ?
         trim(file_get_contents($file_rv)) : '',
-        );
+        ];
         if (( int )$query[ 'ctag' ][ $ctag ][ 'rv' ] != 0 ) {
             $query[ 'error' ] = true;
         }
@@ -214,12 +219,22 @@ function background_query( $tag )
     return $query;
 }
 
+/**
+ * @param $tag
+ *
+ * @return bool
+ */
 function background_isrunning( $tag )
 {
     $query = background_query($tag);
     return ( @$query[ 'running' ] === true );
 }
 
+/**
+ * @param $tag
+ *
+ * @return bool
+ */
 function background_remove( $tag )
 {
     global $guru;

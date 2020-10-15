@@ -1,10 +1,13 @@
 <?php
 
-function content_status_cpu() 
+/**
+ * @return array
+ */
+function content_status_cpu()
 {
 
     // calculate CPU usage
-    $cmd = trim(shell_exec("/usr/bin/uptime"));
+    $cmd = trim(shell_exec('/usr/bin/uptime'));
     $tmp = substr($cmd, strpos($cmd, 'up ') + 3);
     $uptime = substr($tmp, 0, strpos($tmp, ','));
     $loadavg = trim(substr($cmd, strrpos($cmd, ':') + 1));
@@ -20,9 +23,9 @@ function content_status_cpu()
     page_refreshinterval($refresh_sec);
 
     // export new tags
-    return array(
+    return [
     'STATUS_CPUUSAGE' => $cpuusage,
     'STATUS_TOPOUTPUT' => $topoutput,
     'STATUS_REFRESH_SEC' => $refresh_sec
-    );
+    ];
 }

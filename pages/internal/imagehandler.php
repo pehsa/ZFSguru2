@@ -6,7 +6,7 @@ function internal_serviceicon()
     $dirs = common_dirs();
     $svcname = str_replace('..', '', $_GET[ 'serviceicon' ]);
     $iconpath = $dirs[ 'services' ] . '/' . $svcname . '/service_icon.';
-    $extensions = array( 'bmp', 'gif', 'png', 'jpg', 'jpeg', 'tiff' );
+    $extensions = ['bmp', 'gif', 'png', 'jpg', 'jpeg', 'tiff'];
     foreach ( $extensions as $extension ) {
         if (file_exists($iconpath . $extension) ) {
             internal_sendimage($iconpath . $extension);
@@ -23,7 +23,7 @@ function internal_servicebigicon()
     $dirs = common_dirs();
     $svcname = str_replace('..', '', $_GET[ 'servicebigicon' ]);
     $iconpath = $dirs[ 'services' ] . '/' . $svcname . '/service_bigicon.';
-    $extensions = array( 'bmp', 'gif', 'png', 'jpg', 'jpeg', 'tiff' );
+    $extensions = ['bmp', 'gif', 'png', 'jpg', 'jpeg', 'tiff'];
     foreach ( $extensions as $extension ) {
         if (file_exists($iconpath . $extension) ) {
             internal_sendimage($iconpath . $extension);
@@ -34,7 +34,10 @@ function internal_servicebigicon()
     internal_sendimage($icondefault);
 }
 
-function internal_sendimage( $imagepath ) 
+/**
+ * @param $imagepath
+ */
+function internal_sendimage( $imagepath )
 {
     // disable ZLIB output compression
     if (ini_get('zlib.output_compression') ) {
@@ -61,12 +64,12 @@ function internal_sendimage( $imagepath )
     $mdate = gmdate($dateformat, $mtime) . ' GMT';
     $edate = gmdate($dateformat, $expiredate) . ' GMT';
     // set HTTP headers
-    header('Content-Type: image/' . $extension, true);
-    header('Content-Length: ' . filesize($realpath), true);
-    header('Cache-Control: max-age=' . $cachetime, true);
-    header('Expires: ' . $edate, true);
-    header('Last-Modified: ' . $mdate, true);
-    header('Pragma: ', true);
+    header('Content-Type: image/' . $extension);
+    header('Content-Length: ' . filesize($realpath));
+    header('Cache-Control: max-age=' . $cachetime);
+    header('Expires: ' . $edate);
+    header('Last-Modified: ' . $mdate);
+    header('Pragma: ');
     // check user-supplied If-Modified-Since header
     if ((@strlen($_SERVER['HTTP_IF_MODIFIED_SINCE']) > 0) && @$_SERVER['HTTP_IF_MODIFIED_SINCE'] == $mdate) {
         header('Status: 304 Not Modified: ' . $mdate, true, 304);

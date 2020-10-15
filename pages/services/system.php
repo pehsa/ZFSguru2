@@ -1,6 +1,9 @@
 <?php
 
-function content_services_system() 
+/**
+ * @return array
+ */
+function content_services_system()
 {
     global $guru;
 
@@ -15,7 +18,7 @@ function content_services_system()
     $query = @$_GET[ 'query' ];
 
     // servicelist table
-    $iservicelist = array();
+    $iservicelist = [];
     foreach ( $iservices as $iservice => $data ) {
         $activerow = ( $query == $iservice ) ? 'activerow' : 'normal';
 
@@ -60,18 +63,18 @@ function content_services_system()
         $class_autostart_p = ( $autostart === null ) ? 'normal' : 'hidden';
 
         // service name as text or link
-        $serviceredir = array(
+        $serviceredir = [
         'openssh' => 'access.php?ssh',
         'samba' => 'access.php?shares',
         'nfs' => 'access.php?nfs',
         'pf' => 'network.php?firewall',
-        );
+        ];
         $class_svctext = ( !@isset($serviceredir[ $iservice ]) ) ? 'normal' : 'hidden';
         $class_svclink = ( @isset($serviceredir[ $iservice ]) ) ? 'normal' : 'hidden';
         $service_url = @$serviceredir[ $iservice ];
 
         // add row to servicelist table
-        $iservicelist[] = @array(
+        $iservicelist[] = @[
         'CLASS_ACTIVEROW' => $activerow,
         'CLASS_SVCTEXT' => $class_svctext,
         'CLASS_SVCLINK' => $class_svclink,
@@ -88,7 +91,7 @@ function content_services_system()
         'CLASS_AUTOSTART_Y' => $class_autostart_y,
         'CLASS_AUTOSTART_N' => $class_autostart_n,
         'CLASS_AUTOSTART_P' => $class_autostart_p
-        );
+        ];
     }
 
     // hide noservices div when services are present
@@ -97,7 +100,7 @@ function content_services_system()
     $class_qservice = ($query != '') ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Manage',
     'PAGE_TITLE' => 'System services',
     'TABLE_SERVICELIST' => @$iservicelist,
@@ -106,7 +109,7 @@ function content_services_system()
     'CLASS_SERVICES' => $class_services,
     'CLASS_NOSERVICES' => $class_noservices,
     'CLASS_QSERVICE' => $class_qservice
-    );
+    ];
 }
 
 function submit_services_system() 
@@ -126,7 +129,7 @@ function submit_services_system()
     // scan each POST variable
     foreach ( $_POST as $name => $value ) {
 
-        if (strpos($name, 'svc_start_') === 0) {
+        if (strncmp($name, 'svc_start_', 10) === 0) {
             // start service
             $svc = trim(substr($name, strlen('svc_start_')));
             $svc = substr($svc, 0, -2);
@@ -149,7 +152,7 @@ function submit_services_system()
             }
         }
 
-        if (strpos($name, 'svc_stop_') === 0) {
+        if (strncmp($name, 'svc_stop_', 9) === 0) {
             // stop service
             $svc = trim(substr($name, strlen('svc_stop_')));
             $svc = substr($svc, 0, -2);
@@ -168,7 +171,7 @@ function submit_services_system()
             }
         }
 
-        if (strpos($name, 'svc_restart_') === 0) {
+        if (strncmp($name, 'svc_restart_', 12) === 0) {
             // restart service
             $svc = trim(substr($name, strlen('svc_restart_')));
             $svc = substr($svc, 0, -2);
@@ -197,11 +200,11 @@ function submit_services_system()
             }
         }
 
-        if (strpos($name, 'svc_autostart_y_') === 0) {
+        if (strncmp($name, 'svc_autostart_y_', 16) === 0) {
             // automatically start service upon (re)boot
             $svc = trim(substr($name, strlen('svc_autostart_y_')));
             $svc = substr($svc, 0, -2);
-            $result = internalservice_autostart($svc, true);
+            $result = internalservice_autostart($svc);
             if (!$result ) {
                 friendlyerror(
                     'could not enable automatic start of service <b>'
@@ -210,7 +213,7 @@ function submit_services_system()
             }
         }
 
-        if (strpos($name, 'svc_autostart_n_') === 0) {
+        if (strncmp($name, 'svc_autostart_n_', 16) === 0) {
             // do NOT automatically start service upon (re)boot
             $svc = trim(substr($name, strlen('svc_autostart_n_')));
             $svc = substr($svc, 0, -2);

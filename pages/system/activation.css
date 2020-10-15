@@ -10,7 +10,7 @@ div.datasent {
 	background-image: -webkit-linear-gradient(#eeb, #ffe);
 	background-image: -o-linear-gradient(#eeb, #ffe);
 	background-image: -ms-linear-gradient(#eeb, #ffe);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeebb', endColorstr='#ffffee');
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeebb', endColorstr='#ffffee');
 	background-image: linear-gradient(#eeb, #ffe);
 }
 div.datasent ul {
@@ -32,6 +32,6 @@ div.datasent pre {
 	background-image: -webkit-linear-gradient(#eef, #bbe);
 	background-image: -o-linear-gradient(#eef, #bbe);
 	background-image: -ms-linear-gradient(#eef, #bbe);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeff', endColorstr='#bbbbee');
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeff', endColorstr='#bbbbee');
 	background-image: linear-gradient(#eef, #bbe);
 }

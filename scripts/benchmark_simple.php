@@ -12,7 +12,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 // default variables
-$chartdefault = array(
+$chartdefault = [
     'test_seq' => true,
     'test_rio' => false,
     'testsize_gib' => 100,
@@ -24,14 +24,15 @@ $chartdefault = array(
     'rio_alignment' => 4096,
     'rio_queuedepth' => 32,
     'sectorsize_override' => 0,
-    'secure_erase' => false );
+    'secure_erase' => false
+];
 
 // command line parameters
 $diskname = @$argv[ 1 ];
 $mediasize = @$argv[ 2 ];
 
 // internal variables
-$benchmark = array();
+$benchmark = [];
 $dd_preg = '/^[0-9]+ bytes transferred in [0-9\.]+ secs '
     . '\(([0-9]+) bytes\/sec\)$/m';
 $rt_preg = '/^Requests per second\: ([0-9]+)$/m';
@@ -50,7 +51,7 @@ if (true ) {
     $alignment = 4096;
 
     // scores array
-    $scores = array();
+    $scores = [];
 
     // run benchmarks and store result in $scores array
     for ( $i = 0; $i < 100; $i++ ) {
@@ -60,17 +61,17 @@ if (true ) {
 
         $ddread = 'dd if=/dev/' . $diskname . ' of=/dev/null iseek=' . $alignedoffset
         . ' bs=' . $blocksize . ' count=' .$blockcount. ' 2>&1';
-        $output = array();
+        $output = [];
         exec($ddread, $output);
         // process result
         if (strpos(@$output[ 2 ], 'bytes transferred in') === false ) {
             break;
         }
         preg_match('/^\d+.*\((\d+) bytes\/sec/', $output[ 2 ], $matches);
-        if (!is_numeric(@$matches[ 1 ]) ) {
-            zfsguru_benchmark_error('no score detected in dd output');
-        } else {
+        if (is_numeric(@$matches[1])) {
             $score = ( int )$matches[ 1 ];
+        } else {
+            zfsguru_benchmark_error('no score detected in dd output');
         }
         $scores[ $i ] = round(( double )$score / ( 1024 * 1024 ), 1);
         // create chart while benchmark is running
@@ -88,6 +89,11 @@ if (true ) {
 
 // simple benchmark functions
 
+/**
+ * @param false $finalscore
+ *
+ * @return false
+ */
 function zfsguru_benchmark_createchart( $finalscore = false )
 {
     global $diskname, $mediasize, $scores;
@@ -126,28 +132,28 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     $resolution_x = 50;
     $resolution_y = 50;
     $pitch_box = 12;
-    $margin = array( 'left' => 10, 'top' => 10, 'right' => 20, 'bottom' => 10 );
-    $frame = array();
-    $frame[ 'start' ] = array( 'x' => 20, 'y' => '20' );
-    $frame[ 'end' ] = array(
+    $margin = ['left' => 10, 'top' => 10, 'right' => 20, 'bottom' => 10];
+    $frame = [];
+    $frame[ 'start' ] = ['x' => 20, 'y' => '20'];
+    $frame[ 'end' ] = [
     'x' => ( $frame[ 'start' ][ 'x' ] + ( $units_x * $resolution_x ) ),
     'y' => ( $frame[ 'start' ][ 'y' ] + ( $units_y * $resolution_y ) )
-    );
+    ];
     $font = 'files/liberationsans.ttf';
     $width = $frame[ 'end' ][ 'x' ] + $margin[ 'right' ];
     $height = $frame[ 'end' ][ 'y' ] + $margin[ 'bottom' ] + 22;
 
     // scorepx
-    $scorepx = array();
+    $scorepx = [];
     $maxpx = ( $units_y * $resolution_y );
     $maxpxfactor = 1;
     $scorefactor = 500 / 100;
     foreach ( $scores as $id => $score ) {
-        $scorepx[ $id ] = array(
+        $scorepx[ $id ] = [
         'x' => ( int )( $frame[ 'start' ][ 'x' ] + ( $id * $scorefactor ) ),
         'y' => ( int )( $frame[ 'start' ][ 'y' ] + ( $maxpx - ( ( $score / $maxscore ) * $maxpx ) ) ),
         'sc' => ( int )$score
-        );
+        ];
     }
 
     // create image
@@ -158,7 +164,7 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     }
 
     // set colors
-    $colors = array(
+    $colors = [
     'bg' => imagecolorallocate($image, 250, 250, 250),
     'title' => imagecolorallocate($image, 100, 100, 100),
     'txt' => imagecolorallocate($image, 100, 100, 100),
@@ -175,7 +181,7 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     'RAIDZ2' => imagecolorallocate($image, 133, 55, 171),
     'RAIDZ+0' => imagecolorallocate($image, 100, 255, 171),
     'RAIDZ2+0' => imagecolorallocate($image, 20, 255, 171)
-    );
+    ];
 
     // begin working on image
     @imageantialias($image, true);
@@ -230,8 +236,8 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     }
 
     // draw vertical units
-    $start = array( 'x' => 2, 'y' => 305 );
-    $step = array( 'x' => 0, 'y' => ( -1 * $resolution_y ) );
+    $start = ['x' => 2, 'y' => 305];
+    $step = ['x' => 0, 'y' => ( -1 * $resolution_y )];
     $increment = 1;
     for ($i = 0; $i <= $units_y; $i += $increment) {
         imagettftext(
@@ -269,13 +275,17 @@ function zfsguru_benchmark_createchart( $finalscore = false )
     }
 
     // write png file to disk
-    $filename = trim(shell_exec("realpath .")) . '/benchmarks/simplebench_' . $diskname . '.png';
+    $filename = trim(shell_exec('realpath .')) . '/benchmarks/simplebench_' . $diskname . '.png';
     imagepng($image, $filename);
     @imagedestroy($image);
 }
 
 // helper functions
 
+/**
+ * @param     $tag
+ * @param int $rv
+ */
 function zfsguru_benchmark_error( $tag, $rv = -1 )
 {
     global $poolname;

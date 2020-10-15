@@ -1,6 +1,9 @@
 <?php
 
-function content_network_ports() 
+/**
+ * @return array
+ */
+function content_network_ports()
 {
     // required library
     activate_library('network');
@@ -14,17 +17,22 @@ function content_network_ports()
     // class
     $class_noports = ( empty($table_networkports) ) ? 'normal' : 'hidden';
 
-    return array(
+    return [
     'PAGE_TITLE' => 'Network ports',
     'PAGE_ACTIVETAB' => 'Ports',
     'TABLE_NETWORK_PORTS' => $table_networkports,
     'CLASS_NOPORTS' => $class_noports,
-    );
+    ];
 }
 
-function table_networkports( $sockstat ) 
+/**
+ * @param $sockstat
+ *
+ * @return array
+ */
+function table_networkports( $sockstat )
 {
-    $table = array();
+    $table = [];
     foreach ( $sockstat as $id => $row ) {
         foreach ( $row as $name => $value ) {
             $table[ $id ][ 'NP_' . strtoupper($name) ] = htmlentities($value);

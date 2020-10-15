@@ -13,29 +13,34 @@ function drag(e) {
 	e.dataTransfer.setData('source', dragSource);
 
 	// page: Samba shares
-	if (action === 'standarduser') {
-		e.dataTransfer.setData('type', 'standarduser');
-		e.dataTransfer.setData('name', dragUser);
-	} else if (action === 'useringroupx') {
-		e.dataTransfer.setData('type', 'useringroup');
-		e.dataTransfer.setData('name', dragUser);
-	} else if (action === 'sambagroupxx') {
-		e.dataTransfer.setData('type', 'sambagroup');
-		e.dataTransfer.setData('name', dragUser);
-	} else if (action === 'sambaguestxx') {
-		e.dataTransfer.setData('type', 'sambaguest');
-		e.dataTransfer.setData('name', dragUser);
-	}
-	// page: Samba users
-	else if (action === 'sambauserxxx') {
-		// save user and group of dragged object
-		e.dataTransfer.setData('user', dragUser);
-		e.dataTransfer.setData('group', target.parentNode.id.substr(13));
-	} else if (action === 'sambaimagexx') {
-		alert('UNUSED');
-		// save user and group of dragged object
-		e.dataTransfer.setData('user', dragUser);
-		e.dataTransfer.setData('group', target.parentNode.parentNode.id.substr(13));
+	switch (action) {
+		case 'standarduser':
+			e.dataTransfer.setData('type', 'standarduser');
+			e.dataTransfer.setData('name', dragUser);
+			break;
+		case 'useringroupx':
+			e.dataTransfer.setData('type', 'useringroup');
+			e.dataTransfer.setData('name', dragUser);
+			break;
+		case 'sambagroupxx':
+			e.dataTransfer.setData('type', 'sambagroup');
+			e.dataTransfer.setData('name', dragUser);
+			break;
+		case 'sambaguestxx':
+			e.dataTransfer.setData('type', 'sambaguest');
+			e.dataTransfer.setData('name', dragUser);
+			break;
+		case 'sambauserxxx':
+			// save user and group of dragged object
+			e.dataTransfer.setData('user', dragUser);
+			e.dataTransfer.setData('group', target.parentNode.id.substr(13));
+			break;
+		case 'sambaimagexx':
+			alert('UNUSED');
+			// save user and group of dragged object
+			e.dataTransfer.setData('user', dragUser);
+			e.dataTransfer.setData('group', target.parentNode.parentNode.id.substr(13));
+			break;
 	}
 }
 

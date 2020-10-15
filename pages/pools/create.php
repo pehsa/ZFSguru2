@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_create() 
+/**
+ * @return array
+ */
+function content_pools_create()
 {
     global $guru;
 
@@ -51,7 +54,7 @@ function content_pools_create()
     $memberdisks = html_memberdisks();
 
     // new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Create',
     'PAGE_TITLE' => 'Create new pool',
     'RADIO_MODERNZFS' => $radio_modernzfs,
@@ -59,7 +62,7 @@ function content_pools_create()
     'POOL_ZPLLIST' => $poolzpl,
     'POOL_SPALIST' => $poolspa,
     'POOL_MEMBERDISKS' => $memberdisks
-    );
+    ];
 }
 
 function submit_pools_createpool() 
@@ -127,7 +130,7 @@ function submit_pools_createpool()
     $options_str .= '-O atime=off ';
 
     // large blocks feature (recordsize > 128K)
-    if (in_array($recordsize, array( '256K', '512K', '1024K' )) ) {
+    if (in_array($recordsize, ['256K', '512K', '1024K']) ) {
         if ($spa == 5000 ) {
             $options_str .= '-o feature@large_blocks=enabled -O recordsize='
             . $recordsize . ' ';
@@ -179,7 +182,7 @@ function submit_pools_createpool()
         OR $redundancy === 'mirror3'
         OR $redundancy === 'mirror4'
     ) {
-        $member_arr = array();
+        $member_arr = [];
         $member_str = '';
         for ( $i = 2; $i <= 10; $i++ ) {
             if ($redundancy == 'mirror' . $i ) {
@@ -215,7 +218,7 @@ function submit_pools_createpool()
     }
 
     // command array
-    $commands = array();
+    $commands = [];
 
     // force specific ashift setting to be used during pool creation
     if (is_numeric($sectorsize) ) {

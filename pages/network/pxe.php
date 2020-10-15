@@ -1,6 +1,9 @@
 <?php
 
-function content_network_pxe() 
+/**
+ * @return array
+ */
+function content_network_pxe()
 {
     // required library
     activate_library('dnsmasq');
@@ -12,8 +15,8 @@ function content_network_pxe()
     $dnsmasq = dnsmasq_readconfig();
 
     // tables
-    $table[ 'tftp' ][ 'string' ] = array();
-    $table[ 'tftp' ][ 'switch' ] = array();
+    $table[ 'tftp' ][ 'string' ] = [];
+    $table[ 'tftp' ][ 'switch' ] = [];
 
     // populate tables
     $servicetype = 'tftp';
@@ -21,22 +24,22 @@ function content_network_pxe()
         foreach ( $dnsmasq[ $servicetype ] as $datatype => $dataarray ) {
             if (is_array($dataarray) ) {
                 foreach ( $dataarray as $configvar ) {
-                    $table[ $servicetype ][ $datatype ][ $configvar ] = array(
+                    $table[ $servicetype ][ $datatype ][ $configvar ] = [
                     strtoupper($servicetype) . '_' . strtoupper($datatype) . '_NAME' =>
                     htmlentities($configvar),
                     strtoupper($servicetype) . '_' . strtoupper($datatype) . '_VALUE' =>
                     @htmlentities($dnsmasq[ $servicetype ][ $datatype ][ $configvar ]),
-                    );
+                    ];
                 }
             }
         }
     }
 
     // export tags
-    return array(
+    return [
     'PAGE_TITLE' => 'PXE',
     'PAGE_ACTIVETAB' => 'PXE',
     'TABLE_TFTP_STRING' => $table[ 'tftp' ][ 'string' ],
     'TABLE_TFTP_SWITCH' => $table[ 'tftp' ][ 'switch' ],
-    );
+    ];
 }

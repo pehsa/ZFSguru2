@@ -1,16 +1,19 @@
 <?php
 
-function content_files_permissions() 
+/**
+ * @return array
+ */
+function content_files_permissions()
 {
     // required library
     activate_library('system');
     activate_library('zfs');
 
     // tabbar
-    $tabbar = array(
+    $tabbar = [
     'ownership' => 'Ownership',
     'chmod' => 'Advanced'
-    );
+    ];
     $tabbar_url = 'files.php?permissions';
     $tabbar_tab = 'ownership';
     foreach ( $tabbar as $tab => $name ) {
@@ -44,7 +47,7 @@ function content_files_permissions()
     // filesystem list (only filesystems no volumes or snapshots)
     $fslist = zfs_filesystem_list(false, '-t filesystem');
     if (!is_array($fslist) ) {
-        $fslist = array();
+        $fslist = [];
     }
 
     // hide system filesystems
@@ -59,7 +62,7 @@ function content_files_permissions()
     }
 
     // table ownership
-    $table_ownership = array();
+    $table_ownership = [];
     foreach ( $fslist as $fsname => $fsdata ) {
         // retrieve mountpoint and skip this filesystem when no mountpoint is found
         $mountpoint = @$prop[ $fsname ][ 'mountpoint' ][ 'value' ];
@@ -85,7 +88,7 @@ function content_files_permissions()
             $grouplist .= '   <option value="' . $groupdata[ 'groupname' ] . '">'
             . htmlentities($groupdata[ 'groupname' ]) . '</option>' . chr(10);
         }
-        $table_ownership[] = array(
+        $table_ownership[] = [
         'OWN_FS' => htmlentities($fsname),
         'OWN_MP' => htmlentities($mountpoint),
         'OWN_OWNER' => $owner,
@@ -93,7 +96,7 @@ function content_files_permissions()
         'OWN_PERMS' => $perms,
         'USERLIST' => $userlist,
         'GROUPLIST' => $grouplist
-        );
+        ];
     }
 
     // classes
@@ -103,7 +106,7 @@ function content_files_permissions()
     $class_hidesystem = ( !$hidesystem ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Permissions',
     'PAGE_TITLE' => 'Permissions',
     'PAGE_TABBAR' => $tabbar,
@@ -114,7 +117,7 @@ function content_files_permissions()
     'CLASS_CHMOD' => $class_chmod,
     'CLASS_DISPLAYSYSTEM' => $class_displaysystem,
     'CLASS_HIDESYSTEM' => $class_hidesystem
-    );
+    ];
 }
 
 function submit_permissions_ownership() 
@@ -127,7 +130,7 @@ function submit_permissions_ownership()
 
     // change ownership
     $tag = 'ownership';
-    $commands = array();
+    $commands = [];
     if (@isset($_POST[ 'submit_ownership' ]) ) {
         foreach ( $resetfs as $fsname => $fsmountpoint ) {
             if (@isset($_POST[ $tag . '_change_' . $fsname ]) ) {
@@ -162,7 +165,7 @@ function submit_permissions_ownership()
     } else {
         page_feedback(
             'nothing done. Remember: you must select the checkboxes to '
-            . 'change ownership of a filesystem', 'c_notice' 
+            . 'change ownership of a filesystem'
         );
     }
 
@@ -181,7 +184,7 @@ function submit_permissions_advanced()
     // change permissions (advanced tab)
     $tag = 'advanced';
     $action = @$_POST[ $tag . '_action' ];
-    $commands = array();
+    $commands = [];
     if (@isset($_POST[ 'submit_' . $tag ]) ) {
         foreach ( $resetfs as $fsname => $fsmountpoint ) {
             if (@isset($_POST[ $tag . '_change_' . $fsname ]) ) {
@@ -216,7 +219,7 @@ function submit_permissions_advanced()
     } else {
         page_feedback(
             'nothing done. Remember: you must select the checkboxes to '
-            . 'change ownership of a filesystem', 'c_notice' 
+            . 'change ownership of a filesystem'
         );
     }
 
@@ -224,7 +227,12 @@ function submit_permissions_advanced()
     redirect_url($url);
 }
 
-function processfilesystemsubmit( $tag ) 
+/**
+ * @param $tag
+ *
+ * @return array
+ */
+function processfilesystemsubmit( $tag )
 {
     // required library
     activate_library('zfs');
@@ -233,7 +241,7 @@ function processfilesystemsubmit( $tag )
     $prop = zfs_filesystem_properties(false, 'mountpoint');
 
     // reset filesystem array
-    $resetfs = array();
+    $resetfs = [];
     foreach ( $_POST as $name => $value ) {
         if (($value != '') && strpos($name, $tag.'_change_') === 0) {
             $resetfs[ substr($name, strlen($tag . '_change_')) ] =

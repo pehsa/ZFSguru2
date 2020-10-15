@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_disks() 
+/**
+ * @return array
+ */
+function content_disks_disks()
 {
     global $sort, $invertedsort, $labels, $dmesg, $gpart;
 
@@ -22,7 +25,7 @@ function content_disks_disks()
     $sort = @$_GET[ 'sort' ];
     $invertedsort = @isset($_GET[ 'inverted' ]);
     $sorted = $disks;
-    $sortsuffix = array();
+    $sortsuffix = [];
     if ($sort != '') {
         uasort($sorted, 'sort_disks');
     }
@@ -32,13 +35,13 @@ function content_disks_disks()
 
     // store disk labels to identify a label conflict where two disks share 1 label
     $labelconflict = false;
-    $labelconflicts = array();
+    $labelconflicts = [];
     $nodevnode = false;
     $nolabeldev = false;
-    $nolabeldev_arr = array();
+    $nolabeldev_arr = [];
 
     // list each disk (partition)
-    $physdisks = array();
+    $physdisks = [];
     if (@is_array($sorted) ) {
         foreach ( $sorted as $diskname => $data ) {
             // detect disk type
@@ -113,7 +116,7 @@ function content_disks_disks()
             }
 
             // add new row to table array
-            $physdisks[] = array(
+            $physdisks[] = [
             'CLASS_ACTIVEROW' => $class_activerow,
             'CLASS_HDD' => $class_hdd,
             'CLASS_SSD' => $class_ssd,
@@ -128,7 +131,7 @@ function content_disks_disks()
             'DISK_SIZE_BINARY' => @sizebinary($data[ 'mediasize' ], 1),
             'DISK_SIZE_SECTOR' => $sectorsize,
             'DISK_IDENTIFY' => @$dmesg[ $diskname ]
-            );
+            ];
         }
     }
 
@@ -167,7 +170,7 @@ function content_disks_disks()
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'Formatting',
     'PAGE_ACTIVETAB' => 'Formatting',
     'TABLE_PHYSDISKS' => $physdisks,
@@ -188,10 +191,16 @@ function content_disks_disks()
     'FORMAT_GEOMCHECKED' => @$geomchecked,
     'FORMAT_GPTLABEL' => @$gptlabel,
     'FORMAT_GEOMLABEL' => @$geomlabel
-    );
+    ];
 }
 
-function sort_disks( $a, $b ) 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
+function sort_disks( $a, $b )
 {
     global $sort, $invertedsort, $labels, $dmesg, $gpart;
     $attr = false;
@@ -397,7 +406,7 @@ function submit_disks_formatdisk()
             $pmbr = '/boot/pmbr';
             page_feedback(
                 'could not use <b>pmbr</b> from webinterface - '
-                . 'using system image version', 'c_notice' 
+                . 'using system image version'
             );
         }
         if (file_exists($fd . 'gptzfsboot') ) {
@@ -406,7 +415,7 @@ function submit_disks_formatdisk()
             $gptzfsboot = '/boot/gptzfsboot';
             page_feedback(
                 'could not use <b>gptzfsboot</b> from webinterface'
-                . ' - using system image version', 'c_notice' 
+                . ' - using system image version'
             );
         }
 
@@ -439,15 +448,15 @@ function submit_disks_massprocess()
     $action = @$_POST[ 'massprocess_action' ];
 
     // construct array of disks selected
-    $disks = array();
+    $disks = [];
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'selectdisk_') === 0) {
+        if (strncmp($name, 'selectdisk_', 11) === 0) {
             $disks[] = substr($name, strlen('selectdisk_'));
         }
     }
 
     // commands array
-    $commands = array();
+    $commands = [];
 
     // determine action to perform
     if ($action === 'formatgpt' ) {
@@ -462,7 +471,7 @@ function submit_disks_massprocess()
             $pmbr = '/boot/pmbr';
             page_feedback(
                 'could not use <b>pmbr</b> from webinterface - '
-                . 'using system image version', 'c_notice' 
+                . 'using system image version'
             );
         }
         if (file_exists($fd . 'gptzfsboot') ) {
@@ -471,7 +480,7 @@ function submit_disks_massprocess()
             $gptzfsboot = '/boot/gptzfsboot';
             page_feedback(
                 'could not use <b>gptzfsboot</b> from webinterface'
-                . ' - using system image version', 'c_notice' 
+                . ' - using system image version'
             );
         }
 
@@ -532,7 +541,7 @@ function submit_disks_massprocess()
             $pmbr = '/boot/pmbr';
             page_feedback(
                 'could not use <b>pmbr</b> from webinterface - '
-                . 'using system image version', 'c_notice' 
+                . 'using system image version'
             );
         }
         if (file_exists($fd . 'gptzfsboot') ) {
@@ -541,7 +550,7 @@ function submit_disks_massprocess()
             $zfsboot = '/boot/zfsboot';
             page_feedback(
                 'could not use <b>zfsboot</b> from webinterface'
-                . ' - using system image version', 'c_notice' 
+                . ' - using system image version'
             );
         }
 
@@ -607,7 +616,7 @@ function submit_disks_massprocess()
     if (count($commands) > 0 ) {
         dangerouscommand($commands, $url);
     } else {
-        page_feedback('nothing done', 'c_notice');
+        page_feedback('nothing done');
     }
     redirect_url($url);
 }

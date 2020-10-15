@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @return array
+ */
 function content_network_dns()
 {
     // required library
@@ -9,8 +12,8 @@ function content_network_dns()
     $dnsmasq = dnsmasq_readconfig();
 
     // tables
-    $table['dns']['string'] = array();
-    $table['dns']['switch'] = array();
+    $table['dns']['string'] = [];
+    $table['dns']['switch'] = [];
 
     // populate tables
     $servicetype = 'dns';
@@ -18,23 +21,23 @@ function content_network_dns()
         foreach ($dnsmasq[$servicetype] as $datatype => $dataarray) {
             if (is_array($dataarray)) {
                 foreach ($dataarray as $configvar) {
-                    $table[$servicetype][$datatype][$configvar] = array(
+                    $table[$servicetype][$datatype][$configvar] = [
                     strtoupper($servicetype).'_'.strtoupper($datatype).'_NAME' => 
                     htmlentities($configvar),
                     strtoupper($servicetype).'_'.strtoupper($datatype).'_VALUE' => 
                     @htmlentities($dnsmasq[$servicetype][$datatype][$configvar]),
-                    );
+                    ];
                 }
             }
         }
     }
 
     // export tags
-    return array(
+    return [
     'PAGE_TITLE'        => 'DNS',
     'PAGE_ACTIVETAB'    => 'DNS',
     'TABLE_DNS_STRING'    => $table['dns']['string'],
     'TABLE_DNS_SWITCH'    => $table['dns']['switch'],
-    );
+    ];
 }
 

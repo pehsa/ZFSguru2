@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @param $disk_name
+ *
+ * @return false
+ */
 function disk_info( $disk_name )
 {
     // diskinfo unfortunately requires super-user privileges
@@ -18,12 +23,17 @@ function disk_info( $disk_name )
     return false;
 }
 
+/**
+ * @param false $disk_name
+ *
+ * @return array[]|mixed|void
+ */
 function disk_smartinfo( $disk_name = false )
 {
     global $guru;
 
     // threshold settings (generate warnings beyond these values)
-    $threshold = array(
+    $threshold = [
     'temp_crit' => 55,
     'temp_high' => 45,
     'pcycle' => 10000,
@@ -32,7 +42,7 @@ function disk_smartinfo( $disk_name = false )
     'cable' => 100,
     'sect_pas' => 100,
     'sect_active' => 1
-    );
+    ];
     $_SESSION[ 'smart' ][ 'threshold' ] = $threshold;
     if ($disk_name == '') {
         return;
@@ -45,7 +55,7 @@ function disk_smartinfo( $disk_name = false )
     $dev = '/dev/' . $disk_name;
 
     // passthrough modes
-    $passthrough = array(
+    $passthrough = [
     '3ware,0',
     'areca,0',
     'ata',
@@ -57,7 +67,7 @@ function disk_smartinfo( $disk_name = false )
     'usbcypress',
     'usbjmicron',
     'usbsunplus'
-    );
+    ];
 
     // activate SMART on disk
     super_execute('/usr/local/sbin/smartctl -s on ' . $dev);
@@ -77,20 +87,20 @@ function disk_smartinfo( $disk_name = false )
 
         if (!$success ) {
             // bail out due to error, but save this in SESSION cache
-            @$_SESSION[ 'smart' ][ $disk_name ] = array(
+            @$_SESSION[ 'smart' ][ $disk_name ] = [
             'timestamp' => time(),
             'status' => 'SMART incapable',
             'temp_c' => 'no sensor',
             'class_status' => 'smart_status_incapable',
             'class_temp' => 'smart_temp_nosensor',
             'class_badsectors' => 'smart_badsectors_incapable'
-            );
+            ];
             return @$_SESSION[ 'smart' ][ $disk_name ];
         }
     }
 
     // extract SMART data from raw output
-    $smart = array( 'data' => array() );
+    $smart = ['data' => []];
     $str = $result[ 'output_str' ];
     $preg = '/^[\s]*([0-9]+)[\s]+([a-zA-Z_-]+)[\s]+(0x[0-9a-f]+)[\s]+([0-9]+)[\s]+'
     . '([0-9]+)[\s]+([0-9]+)[\s]+([a-zA-Z_-]+)[\s]+([a-zA-Z_-]+)[\s]+'
@@ -98,12 +108,14 @@ function disk_smartinfo( $disk_name = false )
     preg_match_all($preg, $str, $matches);
     if (@is_array($matches[ 1 ]) ) {
         foreach ( $matches[ 1 ] as $nr => $id ) {
-            $smart[ 'data' ][ ( int )$id ] = @array( 'id' => $matches[ 1 ][ $nr ],
+            $smart[ 'data' ][ ( int )$id ] = @[
+                'id' => $matches[ 1 ][ $nr ],
                 'attribute' => $matches[ 2 ][ $nr ], 'flag' => $matches[ 3 ][ $nr ],
                 'value' => $matches[ 4 ][ $nr ], 'worst' => $matches[ 5 ][ $nr ],
                 'threshold' => $matches[ 6 ][ $nr ], 'type' => $matches[ 7 ][ $nr ],
                 'updated' => $matches[ 8 ][ $nr ], 'failed' => $matches[ 9 ][ $nr ],
-                'raw' => $matches[ 10 ][ $nr ] );
+                'raw' => $matches[ 10 ][ $nr ]
+            ];
         }
     }
 
@@ -219,7 +231,7 @@ function disk_smartinfo( $disk_name = false )
     }
 
     // begin building quick array
-    $smart[ 'quick' ] = @array(
+    $smart[ 'quick' ] = @[
     'timestamp' => time(),
     'status' => $status,
     'power_on' => $power_on,
@@ -238,13 +250,18 @@ function disk_smartinfo( $disk_name = false )
     'class_cableerrors' => $class_cableerrors,
     'class_badsectors' => $class_badsectors,
     'class_lifetime' => $class_lifetime
-    );
+    ];
 
     // cache quick array to $_SESSION array
     @$_SESSION[ 'smart' ][ $disk_name ] = $smart[ 'quick' ];
     return $smart;
 }
 
+/**
+ * @param false $physdisks
+ *
+ * @return array
+ */
 function disk_detect_dmesg( $physdisks = false )
 {
     // required libraries
@@ -260,9 +277,9 @@ function disk_detect_dmesg( $physdisks = false )
     $memdisks = disk_detect_memorydisk();
 
     // now scan the dmesg file per physical disk we know
-    $dmesg_arr = array();
+    $dmesg_arr = [];
     foreach ( $physdisks as $diskname => $diskdata ) {
-        if (strpos($diskname, 'md') === 0) {
+        if (strncmp($diskname, 'md', 2) === 0) {
             // memory disk
             $backing = ( @$memdisks[ ( int )substr($diskname, 2) ][ 'backing' ] ) ?
             $memdisks[ ( int )substr($diskname, 2) ][ 'backing' ] : 'unknown';
@@ -282,10 +299,15 @@ function disk_detect_dmesg( $physdisks = false )
     return $dmesg_arr;
 }
 
+/**
+ * @param false $diskname
+ *
+ * @return array
+ */
 function disk_detect_physical( $diskname = false )
 {
     // scan for these types of devices (/dev/XXX[number])
-    $disk_drivers = array(
+    $disk_drivers = [
     'aacd',
     'ad',
     'ada',
@@ -301,13 +323,13 @@ function disk_detect_physical( $diskname = false )
     'twed',
     'vdbd',
     'vtbd',
-    );
+    ];
 
     // fetch active device nodes
     exec('/bin/ls -1 /dev', $devices);
 
     // now produce an array with disks that match a driver
-    $disks = array();
+    $disks = [];
     foreach ( $devices as $device ) {
         foreach ( $disk_drivers as $driver ) {
             if (preg_match('/^(' . $driver . ')[0-9]+$/', $device) ) {
@@ -320,7 +342,7 @@ function disk_detect_physical( $diskname = false )
 
     // now check if it's a real disk by determining its sector size
     // it should be 512 bytes or a multiple of that
-    $validdisks = array();
+    $validdisks = [];
     foreach ( $disks as $diskid => $disk ) {
         if ($diskname AND( $disk != $diskname ) ) {
             continue;
@@ -337,6 +359,11 @@ function disk_detect_physical( $diskname = false )
     return $validdisks;
 }
 
+/**
+ * @param false $md_number
+ *
+ * @return array
+ */
 function disk_detect_memorydisk( $md_number = false )
 {
     // required libraries
@@ -350,24 +377,27 @@ function disk_detect_memorydisk( $md_number = false )
     }
 
     // assemble memory disk array to be returned
-    $md = array();
+    $md = [];
     foreach ( $mdconfig[ 'output_arr' ] as $id => $mddata ) {
         $split = preg_split('/\s+/m', $mddata);
         if (is_numeric($split[ 0 ]) ) {
-            $md[ ( int )$split[ 0 ] ] = @array(
+            $md[ ( int )$split[ 0 ] ] = @[
             'diskname' => 'md' . ( int )$split[ 0 ],
             'backing' => $split[ 1 ],
             'size' => $split[ 2 ],
             'file' => $split[ 3 ]
-            );
+            ];
         }
     }
     return $md;
 }
 
+/**
+ * @return array
+ */
 function disk_detect_label()
 {
-    $label = array();
+    $label = [];
     exec('/sbin/glabel status', $glabel_status);
     foreach ( $glabel_status as $line ) {
         if (preg_match('/label\/(.*)$/m', $line, $glabel_preg) ) {
@@ -385,15 +415,20 @@ function disk_detect_label()
     return $label;
 }
 
+/**
+ * @param $diskname
+ *
+ * @return string
+ */
 function disk_detect_type( $diskname )
 {
     // memory disk
-    if (strpos($diskname, 'md') === 0) {
+    if (strncmp($diskname, 'md', 2) === 0) {
         return 'memdisk';
     }
 
     // SSD (non-rotating media)
-    $camcontrol_cmd = shell_exec("/sbin/camcontrol identify \$diskname");
+    $camcontrol_cmd = shell_exec('/sbin/camcontrol identify $diskname');
     if (strpos($camcontrol_cmd, 'non-rotating') !== false ) {
         return 'ssd';
     }
@@ -408,6 +443,12 @@ function disk_detect_type( $diskname )
     return 'hdd';
 }
 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
 function sort_providers( $a, $b )
 {
     if (@$a[ 'start' ] < @$b[ 'start' ]) {
@@ -421,10 +462,15 @@ function sort_providers( $a, $b )
     return 0;
 }
 
+/**
+ * @param string $device
+ *
+ * @return array|false
+ */
 function disk_detect_gpart( $device = '' )
 {
     // start with empty gpart array
-    $gpart = array();
+    $gpart = [];
     // execute "gpart list" to get information about all partitions
     exec('/sbin/gpart list ' . $device, $raw_output);
     // split the information in chunks to deal with
@@ -442,10 +488,10 @@ function disk_detect_gpart( $device = '' )
             continue;
         }
         // split data with simple string search
-        if (strpos($split[ $i ], 'Providers:' . chr(10)) === false ) {
-            $general = substr($split[ $i ], 0, strpos($split[ $i ], 'Consumers:' . chr(10)));
-        } else {
+        if (strpos($split[$i], 'Providers:'.chr(10)) !== false) {
             $general = substr($split[ $i ], 0, strpos($split[ $i ], 'Providers:' . chr(10)));
+        } else {
+            $general = substr($split[ $i ], 0, strpos($split[ $i ], 'Consumers:' . chr(10)));
         }
         $providers = substr($split[ $i ], strpos($split[ $i ], 'Providers:' . chr(10)));
         $providers = substr($providers, 0, strpos($providers, 'Consumers:' . chr(10)));
@@ -515,6 +561,9 @@ function disk_detect_gpart( $device = '' )
     return $gpart;
 }
 
+/**
+ * @return array|false
+ */
 function disk_detect_gnop()
 {
     // find all device entires in /dev ending with .nop
@@ -523,7 +572,7 @@ function disk_detect_gnop()
         return false;
     }
     // return array of gnop devices with diskinfo array attached
-    $gnop = array();
+    $gnop = [];
     foreach ( $output as $nopdevice ) {
         $nop = str_replace('.nop', '', substr($nopdevice, strlen('/dev/')));
         $diskinfo = disk_info($nopdevice);
@@ -532,6 +581,11 @@ function disk_detect_gnop()
     return $gnop;
 }
 
+/**
+ * @param $disk
+ *
+ * @return array|false
+ */
 function disk_identify( $disk )
 {
     // needs increased privileges
@@ -551,7 +605,7 @@ function disk_identify( $disk )
     }
 
     // create ident array and assign first chunk of bigsplit to it
-    $ident = array( 'pass' => $bigsplit[ 0 ] );
+    $ident = ['pass' => $bigsplit[ 0 ]];
 
     // main data (second chunk)
     preg_match_all('/^(.*)\s\s+(.*)$/Um', $bigsplit[ 1 ], $secondsplit);
@@ -570,12 +624,12 @@ function disk_identify( $disk )
     if (is_array($thirdsplit[ 4 ]) ) {
         foreach ( $thirdsplit[ 1 ] as $id => $property ) {
             if ($id > 0 ) {
-                $ident[ 'detail' ][ trim($property) ] = @array(
+                $ident[ 'detail' ][ trim($property) ] = @[
                     'support' => $thirdsplit[ 3 ][ $id ],
                     'enabled' => $thirdsplit[ 4 ][ $id ],
                     'value' => $thirdsplit[ 5 ][ $id ],
                     'vendor' => $thirdsplit[ 6 ][ $id ],
-                    );
+                ];
             }
         }
     }
@@ -584,6 +638,12 @@ function disk_identify( $disk )
     return $ident;
 }
 
+/**
+ * @param       $disk
+ * @param false $freespacethreshold
+ *
+ * @return array|array[]|false
+ */
 function disk_partitionmap( $disk, $freespacethreshold = false )
 {
     global $guru;
@@ -613,14 +673,15 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
     $freespacethres = $freespacethreshold / $sectorsize;
 
     // partition map
-    $pmap = array();
+    $pmap = [];
 
     // unpartitioned disk
     if (!is_array($part) ) {
         // check for geom label
         $labels = disk_detect_label();
         if (@isset($labels[ $disk ]) ) {
-            return array( array(
+            return [
+                [
             'label' => $labels[ $disk ],
             'type' => 'geom',
             'start' => 0,
@@ -628,34 +689,37 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
             'size' => $mediasize - $sectorsize,
             'size_sect' => @( $mediasize / $sectorsize ) - 1,
             'pct' => 100
-            ) );
+                ]
+            ];
         }
         // no geom label found; normal unpartitioned disk
-        return array( array(
+        return [
+            [
         'type' => 'unpartitioned',
         'start' => 0,
         'end' => @( $mediasize / $sectorsize ),
         'size' => $mediasize,
         'size_sect' => @( $mediasize / $sectorsize ),
         'pct' => 100
-        ) );
+            ]
+        ];
     }
 
     // add free space preceeding any partition
     $gap = ( int )@$part[ 'providers_id' ][ 0 ][ 'start' ] - $first;
     if ($gap >= $freespacethres ) {
-        $pmap[] = array(
+        $pmap[] = [
         'type' => 'free',
         'start' => $part[ 'general' ][ 'first' ],
         'end' => ( ( int )$part[ 'providers_id' ][ 0 ][ 'start' ] - 1 ),
         'size' => $gap * $sectorsize,
         'size_sect' => $gap,
         'pct' => round(( $gap / $last ) * 100, 1)
-        );
+        ];
     }
 
     // set partition types
-    $ptypes = array(
+    $ptypes = [
     '!1' => 'fat12',
     '!12' => 'fat32',
     '!14' => 'fat16',
@@ -665,7 +729,7 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
     '!166' => 'openbsd',
     '!169' => 'netbsd',
     '!191' => 'solaris',
-    );
+    ];
 
     // add partitions to array including the gaps of free space between them
     if (is_array($part[ 'providers_id' ])AND( count($part[ 'providers_id' ]) > 0 ) ) {
@@ -680,7 +744,7 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
             }
 
             // add partition to array
-            $pmap[] = @array(
+            $pmap[] = @[
             'label' => $pdata[ 'label' ],
             'type' => $ptype,
             'rawtype' => $pdata[ 'rawtype' ],
@@ -691,18 +755,18 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
             'size' => $pdata[ 'length' ],
             'size_sect' => ( $pdata[ 'end' ] - $pdata[ 'start' ] ) + 1,
             'pct' => round(( $pdata[ 'length' ] / $mediasize ) * 100, 1)
-            );
+            ];
             // scan for next partition to determine free space
             $gap = @$part[ 'providers_id' ][ $id + 1 ][ 'start' ] - ( $pdata[ 'end' ] + 1 );
             if ($gap >= $freespacethres ) {
-                $pmap[] = array(
+                $pmap[] = [
                 'type' => 'free',
                 'start' => $pdata[ 'end' ] + 1,
                 'end' => ( ( int )$part[ 'providers_id' ][ $id + 1 ][ 'start' ] - 1 ),
                 'size' => $gap * $sectorsize,
                 'size_sect' => $gap,
                 'pct' => round(( $gap / $last ) * 100, 1)
-                );
+                ];
             }
         }
     }
@@ -712,27 +776,29 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
     if (is_array($lastpart) ) {
         $gap = $last - ( int )@$lastpart[ 'end' ];
         if ($gap >= $freespacethres ) {
-            $pmap[] = array(
+            $pmap[] = [
             'type' => 'free',
             'start' => ( int )@$lastpart[ 'end' ] + 1,
             'end' => $part[ 'general' ][ 'last' ],
             'size' => $gap * $sectorsize,
             'size_sect' => $gap,
             'pct' => round(( $gap / $last ) * 100, 1)
-            );
+            ];
         }
     }
 
     // determine whether no partitions exist at all
     if (empty($pmap) ) {
-        $pmap = array( array(
+        $pmap = [
+            [
         'type' => 'free',
         'start' => $first,
         'end' => $last,
         'size' => ( ( $last - $first ) + 1 ) * $sectorsize,
         'size_sect' => ( $last - $first ) + 1,
         'pct' => 100
-        ) );
+            ]
+        ];
     }
 
     // return partition map array
@@ -742,14 +808,19 @@ function disk_partitionmap( $disk, $freespacethreshold = false )
 
 /* ACTIVE functions (dangerous) */
 
+/**
+ * @param $disk
+ *
+ * @return bool
+ */
 function disk_spindown( $disk )
 {
     // increased privileges
     activate_library('super');
     // use different command for ATA/AHCI disks than for SCSI/SAS disks
-    if (strpos($disk, 'ad') === 0) {
+    if (strncmp($disk, 'ad', 2) === 0) {
         $camcommand = 'standby';
-    } elseif (strpos($disk, 'da') === 0) {
+    } elseif (strncmp($disk, 'da', 2) === 0) {
         $camcommand = 'stop';
     } else {
         return false;
@@ -760,6 +831,11 @@ function disk_spindown( $disk )
     return $result['rv'] == 0;
 }
 
+/**
+ * @param $disk
+ *
+ * @return bool
+ */
 function disk_spinup( $disk )
 {
     // increased privileges
@@ -770,6 +846,11 @@ function disk_spinup( $disk )
     return $result['rv'] == 0;
 }
 
+/**
+ * @param $disk
+ *
+ * @return bool
+ */
 function disk_isspinning( $disk )
 {
     global $guru;
@@ -791,6 +872,12 @@ function disk_isspinning( $disk )
     return strpos($r['output_str'], 'Device is in STANDBY mode, exit') === false;
 }
 
+/**
+ * @param $disk
+ * @param $apm_level
+ *
+ * @return bool
+ */
 function disk_set_apm( $disk, $apm_level )
 {
     // increased privileges

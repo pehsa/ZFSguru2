@@ -1,6 +1,9 @@
 <?php
 
-function content_system_activation() 
+/**
+ * @return array
+ */
+function content_system_activation()
 {
     global $guru, $tabs;
 
@@ -55,18 +58,18 @@ function content_system_activation()
 
     // restore activation data from delayed activation or remote info
     if (@strlen($delayed[ 'activation_type' ]) > 0 ) {
-        $type = array( ( int )$delayed[ 'activation_type' ] => 'checked="checked"' );
+        $type = [( int )$delayed[ 'activation_type' ] => 'checked="checked"'];
     } elseif (@$info[ 'type' ] == 2 ) {
-        $type = array( 2 => 'checked="checked"' );
+        $type = [2 => 'checked="checked"'];
     } else {
-        $type = array( 1 => 'checked="checked"' );
+        $type = [1 => 'checked="checked"'];
     }
     if (@strlen($delayed[ 'early_feedback' ]) > 0 ) {
-        $feedback = array( ( int )$delayed[ 'early_feedback' ] => 'checked="checked"' );
+        $feedback = [( int )$delayed[ 'early_feedback' ] => 'checked="checked"'];
     } elseif (@is_int($info[ 'feedback' ]) ) {
-        $feedback = array( ( int )$info[ 'feedback' ] => 'checked="checked"' );
+        $feedback = [( int )$info[ 'feedback' ] => 'checked="checked"'];
     } else {
-        $feedback = array( 1 => 'checked="checked"' );
+        $feedback = [1 => 'checked="checked"'];
     }
     if (@$delayed['feedback_text'] != '') {
         $feedback_txt = @$delayed[ 'feedback_text' ];
@@ -77,7 +80,7 @@ function content_system_activation()
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'Activation',
     'PAGE_ACTIVETAB' => 'Activation',
     'CLASS_ACTIVATED' => $class_activated,
@@ -98,7 +101,7 @@ function content_system_activation()
     'ACT_FEEDBACK_3' => $feedback[ 3 ],
     'ACT_FEEDBACK_4' => $feedback[ 4 ],
     'ACT_FEEDBACK_TXT' => $feedback_txt
-    );
+    ];
 }
 
 function submit_activate() 
@@ -109,7 +112,7 @@ function submit_activate()
         // destroy late activation data
         activate_library('persistent');
         persistent_remove('activation_delayed');
-        page_feedback('delayed activation data removed!', 'c_notice');
+        page_feedback('delayed activation data removed!');
     } elseif (@isset($_POST[ 'activation4' ]) ) {
         // level 4 activation (upgrade from type A2 to A1)
         activate_library('activation');

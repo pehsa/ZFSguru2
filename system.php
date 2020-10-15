@@ -4,7 +4,7 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'Preferences' => 'system.php?pref',
     'Booting' => 'system.php?booting',
     'Install' => 'system.php?install',
@@ -12,7 +12,7 @@ $tabs = array(
     'Command line' => 'system.php?cli',
     'Update' => 'system.php?update',
     'Shutdown' => 'system.php?shutdown'
-);
+];
 
 // hide certain tabs when not enabled
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {

@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_benchmark() 
+/**
+ * @return array
+ */
+function content_pools_benchmark()
 {
     global $tags;
 
@@ -11,12 +14,12 @@ function content_pools_benchmark()
     $pools = zfs_pool_list();
 
     // poollist
-    $poollist = array();
+    $poollist = [];
     foreach ( $pools as $poolname => $data ) {
         if (( $data[ 'status' ] === 'ONLINE' )||( $data[ 'status' ] === 'DEGRADED' ) ) {
-            $poollist[] = array(
+            $poollist[] = [
                 'POOLNAME' => $poolname
-            );
+            ];
         }
     }
 
@@ -25,15 +28,18 @@ function content_pools_benchmark()
     'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Benchmark',
     'PAGE_TITLE' => 'Benchmark',
     'TABLE_POOLLIST' => $poollist,
     'CLASS_BENCHMARK' => $class_bench,
-    );
+    ];
 }
 
-function submit_pools_benchmark() 
+/**
+ * @return string[]
+ */
+function submit_pools_benchmark()
 {
     global $guru;
 
@@ -88,7 +94,7 @@ function submit_pools_benchmark()
     $testfile = $mountpoint . '/' . $testfilename;
 
     // create score arrays
-    $score = array();
+    $score = [];
 
     if (@$_POST[ 'cb_normal' ] === 'on' ) {
         // dd write
@@ -167,14 +173,14 @@ function submit_pools_benchmark()
     super_execute('/sbin/zfs destroy ' . $testfilesystem);
 
     // process scores
-    $finalscore = array();
+    $finalscore = [];
     foreach ( $score as $testname => $testdata ) {
         ksort($testdata);
         $score[ $testname ] = $testdata;
     }
     foreach ( $score as $testname => $testdata ) {
         foreach ( $testdata as $rw => $testoutput ) {
-            $speed = array();
+            $speed = [];
             preg_match('/\((\d+) bytes\/sec\)$/', $testoutput, $speed);
             if (@isset($speed[ 1 ]) ) {
                 $finalscore[ $testname ][ $rw ] = $speed[ 1 ];
@@ -202,7 +208,7 @@ function submit_pools_benchmark()
     }
 
     // return output
-    return array(
+    return [
     'POOLS_BENCHMARKOUTPUT' => $outputstr
-    );
+    ];
 }

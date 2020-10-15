@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_query() 
+/**
+ * @return array
+ */
+function content_pools_query()
 {
     // required libraries
     activate_library('html');
@@ -10,15 +13,15 @@ function content_pools_query()
     page_register_stylesheet('pages/pools/pools.css');
 
     // process table poollist
-    $poollist = array();
+    $poollist = [];
     $zpools = zfs_pool_list();
     if (!is_array($zpools) ) {
-        $zpools = array();
+        $zpools = [];
     }
     foreach ( $zpools as $poolname => $pooldata ) {
         $class = ( @$_GET[ 'query' ] == $poolname ) ? 'activerow' : 'normal';
         $poolspa = zfs_pool_version($poolname);
-        $zpool_status = shell_exec("zpool status \$poolname");
+        $zpool_status = shell_exec('zpool status $poolname');
         if (strpos($zpool_status, 'raidz3') !== false ) {
             $redundancy = 'RAID7 (triple parity)';
         } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -45,7 +48,7 @@ function content_pools_query()
                 $class = 'warningrow pool_degraded';
             }
         }
-        $poollist[] = array(
+        $poollist[] = [
         'POOLLIST_CLASS' => $class,
         'POOLLIST_POOLNAME' => htmlentities(trim($poolname)),
         'POOLLIST_SPA' => $poolspa,
@@ -56,7 +59,7 @@ function content_pools_query()
         'POOLLIST_STATUS' => $pooldata[ 'status' ],
         'POOLLIST_STATUSCLASS' => $statusclass,
         'POOLLIST_POOLNAME_URLENC' => htmlentities(trim($poolname))
-        );
+        ];
     }
 
     // pool count
@@ -75,14 +78,14 @@ function content_pools_query()
     $memberdisks_select = html_memberdisks_select();
 
     // make some data bold by adding HTML tags
-    $regexp = array(
+    $regexp = [
     '/([0-9]{1,4}(\.[0-9]{1,2})?[KMGT]\/s),/',
     '/ ([0-9]+\.[0-9]+%) done/'
-    );
-    $repl = array(
+    ];
+    $repl = [
     '<b>$1</b>,',
     ' <b>$1</b> done'
-    );
+    ];
     $pool[ 'scrub' ] = preg_replace($regexp, $repl, $pool[ 'scrub' ]);
 
     // suppress warning about upgrading pool
@@ -99,34 +102,34 @@ function content_pools_query()
     }
 
     // pool details
-    $pooldetails = array();
-    $detailvars = array(
+    $pooldetails = [];
+    $detailvars = [
     'Status' => 'state',
     'Description' => 'status',
     'Action' => 'action',
     'See' => 'see',
     'Scrub' => 'scrub',
     'Config' => 'config'
-    );
+    ];
     $statusclass = poolquery_statusclass(@$pool[ 'state' ]);
     foreach ( $detailvars as $name => $var ) {
         if (@$pool[$var] != '') {
-            $pooldetails[ $name ] = array(
+            $pooldetails[ $name ] = [
                 'POOLDETAILS_CLASS' => ( $var === 'state' ) ? $statusclass : 'normal',
                 'POOLDETAILS_NAME' => $name,
                 'POOLDETAILS_VALUE' => ( $var === 'scrub' ) ? nl2br($pool[ $var ]) : $pool[ $var ],
-            );
+            ];
         }
     }
 
     // ashift value
     if (( int )$ashift > 0 ) {
         $ashift_sectorsize = 2 ** $ashift;
-        $pooldetails[] = array(
+        $pooldetails[] = [
         'POOLDETAILS_NAME' => 'Ashift',
         'POOLDETAILS_VALUE' => 'pool is optimized for '
         . sizebinary($ashift_sectorsize) . ' sector disks (ashift=' . $ashift . ')'
-        );
+        ];
     }
 
     // scrub status
@@ -139,7 +142,7 @@ function content_pools_query()
     }
 
     // process members table
-    $memberdisks = array();
+    $memberdisks = [];
     if (is_array($pool[ 'members' ]) ) {
         foreach ( $pool[ 'members' ] as $id => $member ) {
             $special = ( bool )@$memberdetails[ $id ][ 'special' ];
@@ -210,7 +213,7 @@ function content_pools_query()
 
             // detect disk type
             $disktype = disk_detect_type($member[ 'name' ]);
-            $specialtypes = array( 'mirror', 'raidz', 'cache', 'log', 'spare' );
+            $specialtypes = ['mirror', 'raidz', 'cache', 'log', 'spare'];
             foreach ( $specialtypes as $stype ) {
                 if ($special AND( strpos($member[ 'name' ], $stype) !== false ) ) {
                     $disktype = $stype;
@@ -240,7 +243,7 @@ function content_pools_query()
             $class_state = poolquery_statusclass(@$member[ 'state' ]);
 
             // all data ready, add a new row to the memberdisks table
-            $memberdisks[] = array(
+            $memberdisks[] = [
             'CLASS_HDD' => $class_hdd,
             'CLASS_SSD' => $class_ssd,
             'CLASS_FLASH' => $class_flash,
@@ -270,7 +273,7 @@ function content_pools_query()
             'MEMBER_REPLACE' => $mem[ 'replace' ],
             'MEMBER_CLEAR' => $mem[ 'clear' ],
             'MEMBER_REMOVE' => $mem[ 'remove' ]
-            );
+            ];
         }
     }
 
@@ -279,14 +282,14 @@ function content_pools_query()
     $class_corrupted = 'hidden';
     $class_corruptmore = ( !@isset($_GET[ 'corruptedfiles' ]) ) ? 'normal' : 'hidden';
     $class_corruptless = ( @isset($_GET[ 'corruptedfiles' ]) ) ? 'normal' : 'hidden';
-    $table_corrupted = array();
+    $table_corrupted = [];
     $corrupt_count = @count($pool[ 'errors' ]);
     if (@count($pool[ 'errors' ]) > 0 ) {
         $class_corrupted = 'normal';
         foreach ( $pool[ 'errors' ] as $corruptedfile ) {
-            $table_corrupted[] = array(
+            $table_corrupted[] = [
             'CORRUPT_FILENAME' => $corruptedfile
-            );
+            ];
         }
         if ($class_corruptmore === 'normal' ) {
             $table_corrupted = array_splice($table_corrupted, 0, 3);
@@ -294,11 +297,11 @@ function content_pools_query()
     }
 
     // pool feature flags
-    $table_features = array();
+    $table_features = [];
     $featureflags = zfs_pool_features($querypool);
     if (@is_array($featureflags[ $querypool ]) ) {
         foreach ( $featureflags[ $querypool ] as $flag ) {
-            $table_features[] = array(
+            $table_features[] = [
                 'FEAT_CLASS' => ( $flag[ 'status' ] === 'disabled' ) ? 'normal' : 'hidden',
                 'FEAT_NAME' => htmlentities($flag[ 'name' ]),
                 'FEAT_DESC' => htmlentities($flag[ 'desc' ]),
@@ -306,12 +309,12 @@ function content_pools_query()
                 'FEAT_ACTIVE' => ( $flag[ 'status' ] === 'active' ) ? 'normal' : 'hidden',
                 'FEAT_DISABLED' => ( $flag[ 'status' ] === 'disabled' ) ? 'normal' : 'hidden',
                 'FEAT_STATUS' => ucfirst($flag[ 'status' ]),
-            );
+            ];
         }
     }
 
     // pool history
-    $poolhistory = array();
+    $poolhistory = [];
     $historyall = @isset($_GET[ 'history' ]);
     $historymore = 'hidden';
     $historyless = 'hidden';
@@ -325,17 +328,17 @@ function content_pools_query()
         $historyless = ( $historyall ) ? 'normal' : 'hidden';
         foreach ( $history as $data ) {
             if (( ++$historycount <= $maxhistory_items )OR $historyall ) {
-                $poolhistory[] = array(
+                $poolhistory[] = [
                 'HISTORY_DATE' => $data[ 'date' ],
                 'HISTORY_TIME' => $data[ 'time' ],
                 'HISTORY_EVENT' => $data[ 'event' ]
-                );
+                ];
             }
         }
     }
 
     // export tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Pool status',
     'PAGE_TITLE' => 'Pool ' . $querypool,
     'TABLE_POOL_LIST' => $poollist,
@@ -363,9 +366,14 @@ function content_pools_query()
     'QUERY_SCRUBNAME' => $scrubname,
     'QUERY_ASHIFT' => $ashift,
     'CORRUPT_COUNT' => $corrupt_count
-    );
+    ];
 }
 
+/**
+ * @param $status
+ *
+ * @return string
+ */
 function poolquery_statusclass( $status )
 {
     if ($status === 'ONLINE' ) {
@@ -402,7 +410,7 @@ function submit_pools_vdev()
 
     // scan for vdev operations
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'member_action_') === 0) {
+        if (strncmp($name, 'member_action_', 14) === 0) {
             $vdev = substr($name, strlen('member_action_'));
             $action = $value;
             if ($action === 'offline' ) {
@@ -465,7 +473,7 @@ function submit_pools_features()
     // scan POST data for button clicked
     $feature = false;
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'enablefeat_') === 0) {
+        if (strncmp($name, 'enablefeat_', 11) === 0) {
             $feature = substr($name, strlen('enablefeat_'));
         }
     }
@@ -501,7 +509,7 @@ function submit_pools_operations()
         $nr_upgrade = 0;
 
         // spaversions table
-        $table_spaversions = array();
+        $table_spaversions = [];
         foreach ( $poolversions as $nr => $desc ) {
             // handle v5000 separately
             if ($nr > 28 ) {
@@ -516,7 +524,7 @@ function submit_pools_operations()
             $selected = ( $nr == $zfsver[ 'spa' ] ) ? 'checked' : '';
             $current = ( $nr == $poolversion ) ? 'normal' : 'hidden';
             $systemlow = ( $nr > $zfsver[ 'spa' ] ) ? 'normal' : 'hidden';
-            $table_spaversions[] = array(
+            $table_spaversions[] = [
             'SPA_SELECT' => $selected,
             'SPA_VER' => $nr,
             'SPA_DESC' => $desc,
@@ -524,7 +532,7 @@ function submit_pools_operations()
             'SPA_UPGRADE' => $upgrade,
             'SPA_CURRENT' => $current,
             'SPA_SYSTEMLOW' => ( $nr > $zfsver[ 'spa' ] ) ? 'normal' : 'hidden'
-            );
+            ];
         }
 
         // upgrade classes
@@ -546,14 +554,14 @@ function submit_pools_operations()
         $v5000_nosupport = ( $zfsver[ 'spa' ] < 5000 ) ? 'normal' : 'hidden';
 
         // inject tags and handle page
-        page_injecttag(array( 'POOLNAME' => $poolname ));
-        page_injecttag(array( 'POOLVERSION' => $poolversion ));
-        page_injecttag(array( 'TABLE_SPAVERSIONS' => $table_spaversions ));
-        page_injecttag(array( 'CLASS_CANUPGRADE' => $canupgrade ));
-        page_injecttag(array( 'V5000_UPGRADE' => $v5000_upgrade ));
-        page_injecttag(array( 'V5000_SELECT' => $v5000_select ));
-        page_injecttag(array( 'V5000_CURRENT' => $v5000_current ));
-        page_injecttag(array( 'V5000_NOSUPPORT' => $v5000_nosupport ));
+        page_injecttag(['POOLNAME' => $poolname]);
+        page_injecttag(['POOLVERSION' => $poolversion]);
+        page_injecttag(['TABLE_SPAVERSIONS' => $table_spaversions]);
+        page_injecttag(['CLASS_CANUPGRADE' => $canupgrade]);
+        page_injecttag(['V5000_UPGRADE' => $v5000_upgrade]);
+        page_injecttag(['V5000_SELECT' => $v5000_select]);
+        page_injecttag(['V5000_CURRENT' => $v5000_current]);
+        page_injecttag(['V5000_NOSUPPORT' => $v5000_nosupport]);
 
         $content = content_handle('pools', 'upgrade', false, true);
         page_handle($content);
@@ -561,7 +569,7 @@ function submit_pools_operations()
     }
 
     if (@isset($_POST[ 'rename_pool' ])) {
-        page_injecttag(array( 'POOLNAME' => $poolname ));
+        page_injecttag(['POOLNAME' => $poolname]);
         $content = content_handle('pools', 'rename', false, true);
         page_handle($content);
         die();
@@ -577,7 +585,7 @@ function submit_pools_operations()
         // get list of filesystems (may return false if pool is faulted)
         $fslist = zfs_filesystem_list($poolname, '-r -t filesystem');
         if ($fslist == false ) {
-            $fslist = array();
+            $fslist = [];
             page_feedback(
                 'this pool does not have any active filesystems - '
                 . 'unable to scan for active Samba shares!', 'a_warning'
@@ -596,17 +604,17 @@ function submit_pools_operations()
         if ($sharesremoved > 1 ) {
             page_feedback(
                 'removed <b>' .$sharesremoved. ' Samba shares</b> that were'
-                . ' attached to the filesystems you are about to destroy', 'c_notice'
+                . ' attached to the filesystems you are about to destroy'
             );
         } elseif ($sharesremoved == 1 ) {
             page_feedback(
                 'removed <b>one Samba share</b> that was attached to one of '
-                . 'the filesystems you are about to destroy', 'c_notice'
+                . 'the filesystems you are about to destroy'
             );
         }
 
         // start command array
-        $command = array();
+        $command = [];
 
         // scan for swap volumes and deactivate them prior to destroying them
         $vollist = zfs_filesystem_list($poolname, '-r -t volume');
@@ -627,14 +635,13 @@ function submit_pools_operations()
         // display message if swap volumes detected
         if (count($command) == 1 ) {
             page_feedback(
-                'if you continue, one SWAP volume will be deactivated',
-                'c_notice'
+                'if you continue, one SWAP volume will be deactivated'
             );
         }
         if (count($command) > 1 ) {
             page_feedback(
                 'if you continue, ' . count($command) . ' SWAP volumes will be '
-                . 'deactivated', 'c_notice'
+                . 'deactivated'
             );
         }
 
@@ -693,7 +700,7 @@ function submit_pools_rename()
     }
 
     // defer to dangerous command
-    $commands = array();
+    $commands = [];
     $commands[] = '/sbin/zpool export ' . $poolname;
     $commands[] = '/sbin/zpool import ' . $poolname . ' ' . $newname;
     dangerouscommand($commands, $url);
@@ -721,7 +728,7 @@ function submit_pools_clearcorruption()
     }
 
     // start assembling commands for file deletion
-    $commands = array();
+    $commands = [];
     foreach ( $status[ 'errors' ] as $corruptedfile ) {
         $commands[] = '/bin/rm ' . escapeshellarg($corruptedfile);
     }
@@ -737,7 +744,7 @@ function submit_pools_clearcorruption()
     );
     page_feedback(
         'remember that you may have to remove snapshots as well '
-        . 'if any affected file is referenced by a snapshot.', 'c_notice' 
+        . 'if any affected file is referenced by a snapshot.'
     );
 
     // defer to dangerous command function

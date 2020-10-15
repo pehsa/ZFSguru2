@@ -1,6 +1,6 @@
 table.installbutton {
 	width: 100%;
-	background: white;
+	background: #ffffff;
 	text-align: center;
 	border-top: 2px solid #622;
 	border-bottom: 2px solid #622;
@@ -41,7 +41,7 @@ input.installbutton:active {
 	color: #f00;
 }
 div.install-latin {
-	color: grey;
+	color: #808080;
 	text-align: center;
 	font-style: italic;
 }

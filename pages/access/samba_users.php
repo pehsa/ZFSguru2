@@ -1,6 +1,9 @@
 <?php
 
-function content_access_samba_users() 
+/**
+ * @return array
+ */
+function content_access_samba_users()
 {
     // include javascript + stylesheet
     page_register_stylesheet('pages/access/widget_userdrag.css');
@@ -10,7 +13,10 @@ function content_access_samba_users()
     return content_access_samba_users_tags();
 }
 
-function content_access_samba_users_tags() 
+/**
+ * @return array
+ */
+function content_access_samba_users_tags()
 {
     // required library
     activate_library('samba');
@@ -42,25 +48,30 @@ function content_access_samba_users_tags()
     $table_samba_groups = table_samba_groups($grouplist);
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_TITLE' => 'Samba users',
     'PAGE_ACTIVETAB' => 'Users',
     'TABLE_SAMBA_GROUPS' => $table_samba_groups,
     'SAMBA_USERIDLIST' => $samba_useridlist,
     'SAMBA_USERLIST' => $samba_userlist,
-    );
+    ];
 }
 
-function table_samba_groups( $grouplist ) 
+/**
+ * @param $grouplist
+ *
+ * @return array
+ */
+function table_samba_groups( $grouplist )
 {
-    $table_sambagroups = array();
+    $table_sambagroups = [];
     foreach ( $grouplist as $groupname => $users ) {
-        $table_users = array();
+        $table_users = [];
         foreach ( $users as $user ) {
-            $table_users[] = array(
+            $table_users[] = [
             'SAMBAUSER_USERNAME' => htmlentities($user),
             'SAMBAUSER_USERUCFIRST' => htmlentities(ucfirst($user))
-            );
+            ];
         }
         $class_hasusers = ( !empty($table_users) ) ? 'normal' : 'hidden';
         $stdgroup = ( $groupname === 'share' );
@@ -70,7 +81,7 @@ function table_samba_groups( $grouplist )
         htmlentities(ucfirst($groupname));
         $specialgroup = ( $stdgroup ) ? 'normal' : 'hidden';
         $suffix = ( $stdgroup ) ? '_special' : '';
-        $table_sambagroups[] = array(
+        $table_sambagroups[] = [
         'TABLE_SAMBA_USERS' => $table_users,
         'CLASS_SAMBAGROUP_HASUSERS' => $class_hasusers,
         'SAMBAGROUP_GROUPNAME' => htmlentities($groupname),
@@ -78,7 +89,7 @@ function table_samba_groups( $grouplist )
         'SAMBAGROUP_DISPLAY_USERS' => $display_users,
         'SAMBAGROUP_SPECIAL' => $specialgroup,
         'SAMBAGROUP_SUFFIX' => $suffix
-        );
+        ];
     }
     return $table_sambagroups;
 }
@@ -149,10 +160,10 @@ function submit_access_samba_users_adduser()
         redirect_url($redir);
     }
     if ($newuser != $postuser ) {
-        page_feedback('modified chosen username to <b>' . $newuser . '</b>', 'c_notice');
+        page_feedback('modified chosen username to <b>' . $newuser . '</b>');
     }
     // check whether chosen reserved name
-    $reserveduserslist = array( 'guest', 'share', 'everyone' );
+    $reserveduserslist = ['guest', 'share', 'everyone'];
     if (in_array($newuser, $reserveduserslist, true)) {
         friendlyerror(
             'you have chosen a reserved name, please choose a different'
@@ -193,10 +204,10 @@ function submit_access_samba_users_adduser()
     }
     // activate user for use with samba
     $result = samba_setpassword($newuser, $postpasswd);
-    if (!$result ) {
-        friendlyerror('failed creating new user account', $redir);
-    } else {
+    if ($result) {
         redirect_url($redir);
+    } else {
+        friendlyerror('failed creating new user account', $redir);
     }
 }
 
@@ -264,12 +275,11 @@ function submit_access_samba_users_addgroup()
     }
     if ($newgroup != $postgroup ) {
         page_feedback(
-            'modified chosen groupname to <b>' . $newgroup . '</b>',
-            'c_notice' 
+            'modified chosen groupname to <b>' . $newgroup . '</b>'
         );
     }
     // check whether chosen reserved name
-    $reservedgrouplist = array( 'share', 'standard', 'everyone' );
+    $reservedgrouplist = ['share', 'standard', 'everyone'];
     if (in_array($newgroup, $reservedgrouplist, true)) {
         friendlyerror(
             'you have chosen a reserved name, please choose a different'
@@ -306,7 +316,7 @@ function submit_access_samba_users_deletegroup()
 
     // scan each POST variable for deletegroup name with group suffix
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'samba_deletegroup_') === 0) {
+        if (strncmp($name, 'samba_deletegroup_', 18) === 0) {
             $groupname = substr($name, strlen('samba_deletegroup_'));
             if (substr($name, -2) === '_x' ) {
                 $groupname = substr($groupname, 0, -2);

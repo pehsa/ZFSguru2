@@ -1,6 +1,9 @@
 <?php
 
-function content_system_install_step1() 
+/**
+ * @return array
+ */
+function content_system_install_step1()
 {
     global $guru;
 
@@ -56,7 +59,7 @@ function content_system_install_step1()
     $class_unmountcd = ( $media_mounted ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Install',
     'PAGE_TITLE' => 'Install (step 1)',
     'TABLE_INSTALL_SYSTEMVERSIONS' => $systemversions,
@@ -73,10 +76,16 @@ function content_system_install_step1()
     'INSTALL_CURRENT_SHA512' => $currentver[ 'sha512' ],
     'INSTALL_PLATFORM' => $platform,
     'INSTALL_OBSOLETECOUNT' => $obsolete,
-    );
+    ];
 }
 
-function sort_system( $a, $b ) 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
+function sort_system( $a, $b )
 {
     $platform = common_systemplatform();
     if ($a[ $platform ][ 'date' ] > $b[ $platform ][ 'date' ] ) {
@@ -86,6 +95,17 @@ function sort_system( $a, $b )
     return 1;
 }
 
+/**
+ * @param $system
+ * @param $locate
+ * @param $currentver
+ * @param $platform
+ * @param $dip
+ * @param $avail
+ * @param $obsolete
+ *
+ * @return array
+ */
 function table_systemversions(
     $system,
     $locate,
@@ -99,7 +119,7 @@ function table_systemversions(
     $dirs = common_dirs();
 
     // start systemversions table by quering each system version from GuruDB
-    $table = array();
+    $table = [];
     $dip = false;
     $avail = false;
     $obsolete = 0;
@@ -153,7 +173,7 @@ function table_systemversions(
         $namelink = htmlentities($data[ 'name' ]);
         $class_sysver = ( $data[ 'sha512' ] == $currentver[ 'sha512' ] ) ?
         'activerow' : 'normal';
-        $class_branch = ( @in_array($data[ 'branch' ], array( 'release', 'stable' )) ) ?
+        $class_branch = ( @in_array($data[ 'branch' ], ['release', 'stable']) ) ?
         'green' : 'red';
         $zfs_spa = substr($data[ 'zfsversion' ], 0, strpos($data[ 'zfsversion' ], '-'));
         $zfs_zpl = substr($data[ 'zfsversion' ], strpos($data[ 'zfsversion' ], '-') + 1);
@@ -194,7 +214,7 @@ function table_systemversions(
         }
 
         // add row to table array
-        $table[] = array(
+        $table[] = [
         'CLASS_SYSVER' => $class_sysver,
         'CLASS_BRANCH' => $class_branch,
         'CLASS_SIZE' => $class_size,
@@ -208,7 +228,7 @@ function table_systemversions(
         'SYSVER_SIZE_SUFFIX' => $size_suffix,
         'SYSVER_AVAIL' => $availability,
         'SYSVER_NOTES_URL' => $notes
-        );
+        ];
     }
     return $table;
 }
@@ -227,7 +247,7 @@ function submit_system_install_download()
     // system version
     $sysver = '';
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'download_') === 0) {
+        if (strncmp($name, 'download_', 9) === 0) {
             $sysver = @base64_decode(substr($name, strlen('download_')));
         }
     }

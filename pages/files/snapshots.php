@@ -1,11 +1,14 @@
 <?php
 
-function content_files_snapshots() 
+/**
+ * @return array
+ */
+function content_files_snapshots()
 {
     global $sort, $invertedsort;
 
     // snapshot list
-    $snaplist = htmlentities(trim(shell_exec("zfs list -t snapshot")));
+    $snaplist = htmlentities(trim(shell_exec('zfs list -t snapshot')));
 
     // required library
     activate_library('zfs');
@@ -31,8 +34,8 @@ function content_files_snapshots()
     // sorting
     $sort = @$_GET[ 'sort' ];
     $invertedsort = @isset($_GET[ 'inverted' ]);
-    $sorted = ( is_array($snapshots) ) ? $snapshots : array();
-    $sortsuffix = array();
+    $sorted = ( is_array($snapshots) ) ? $snapshots : [];
+    $sortsuffix = [];
     if ($sort != '') {
         uasort($sorted, 'sort_snapshots');
     }
@@ -42,13 +45,13 @@ function content_files_snapshots()
 
     // construct snapshots table
     // TODO: promote and clone options display/hide
-    $table_snapshots = array();
+    $table_snapshots = [];
     foreach ( $sorted as $snapshot ) {
         $snaptotal += convertsuffix(@$snapshot[ 'used' ]);
         $active = ( $query == $snapshot[ 'name' ] ) ? 'activerow' : 'normal';
         $snap_fs = substr($snapshot[ 'name' ], 0, strpos($snapshot[ 'name' ], '@'));
         $snap_name = substr($snapshot[ 'name' ], strpos($snapshot[ 'name' ], '@') + 1);
-        $table_snapshots[] = @array(
+        $table_snapshots[] = @[
         'SNAP_ACTIVE' => $active,
         'SNAP_FS' => htmlentities($snap_fs),
         'SNAP_NAME' => htmlentities($snap_name),
@@ -57,7 +60,7 @@ function content_files_snapshots()
         'SNAP_USED' => $snapshot[ 'used' ],
         'SNAP_REFER' => $snapshot[ 'refer' ],
         'SNAP_PROMOTE' => 'hidden'
-        );
+        ];
     }
 
     // total snapshot usage
@@ -67,7 +70,7 @@ function content_files_snapshots()
     $snap_browsefs = @$prop[ $queryfs ][ 'mountpoint' ][ 'value' ];
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Snapshots',
     'PAGE_TITLE' => 'Snapshots',
     'TABLE_SNAPSHOTS' => $table_snapshots,
@@ -82,12 +85,17 @@ function content_files_snapshots()
     'SNAP_TOTALUSAGE' => $snap_totalusage,
     'SNAP_BROWSEFS' => $snap_browsefs,
     'QUERY_NAME' => $query
-    );
+    ];
 }
 
+/**
+ * @param $size_string
+ *
+ * @return float|int
+ */
 function convertsuffix( $size_string )
 {
-    $sizeunits = array( 'B', 'K', 'M', 'G', 'T', 'E' );
+    $sizeunits = ['B', 'K', 'M', 'G', 'T', 'E'];
     foreach ( $sizeunits as $index => $unit ) {
         if (strpos($size_string, $unit) > 0 ) {
             $indexfactor = 1000 ** $index;
@@ -97,7 +105,13 @@ function convertsuffix( $size_string )
     return 0;
 }
 
-function sort_snapshots( $a, $b ) 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
+function sort_snapshots( $a, $b )
 {
     global $sort, $invertedsort;
     $attr = false;
@@ -141,9 +155,9 @@ function submit_snapshot_operation()
 {
     // variables
     $url = 'files.php?snapshots';
-    $snapshots = array();
+    $snapshots = [];
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'snapshot_') === 0) {
+        if (strncmp($name, 'snapshot_', 9) === 0) {
             $snap = substr($name, strlen('snapshot_'));
             $snapfs = base64_decode(substr($snap, 0, strpos($snap, '@')));
             $snapname = base64_decode(substr($snap, strpos($snap, '@') + 1));
@@ -152,7 +166,7 @@ function submit_snapshot_operation()
     }
 
     // start commands array
-    $commands = array();
+    $commands = [];
 
     // rollback
     if (@isset($_POST[ 'submit_rollback' ]) ) {

@@ -16,19 +16,19 @@ td.smart_diskname {
 /* status */
 
 td.smart_status_healthy {
-	color: darkgreen;
+	color: #006400;
 }
 td.smart_status_inthepast {
-	color: blue;
+	color: #0000ff;
 }
 td.smart_status_warning {
 	color: #f40;
 }
 td.smart_status_failed {
-	color: red;
+	color: #ff0000;
 }
 td.smart_status_incapable {
-	color: grey;
+	color: #808080;
 }
 /* temperature */
 
@@ -43,7 +43,7 @@ td.smart_temp_hot b {
 	color: #f00;
 }
 td.smart_temp_nosensor {
-	color: grey;
+	color: #808080;
 }
 td.smart_temp_nosensor span.smart_temp_deg {
 	display: none;
@@ -52,50 +52,50 @@ td.smart_temp_nosensor span.smart_temp_deg {
 span.smart_temp_deg {
 }
 span.smart_temp_bullet {
-	color: grey;
+	color: #808080;
 }
 /* power cycles */
 
 td.smart_powercycles_low {
 }
 td.smart_powercycles_high {
-	color: red;
+	color: #ff0000;
 }
 /* load cycles */
 
 td.smart_loadcycles_low {
 }
 td.smart_loadcycles_high {
-	color: red;
+	color: #ff0000;
 }
 /* cable errors */
 
 td.smart_cableerrors_none {
-	color: grey;
+	color: #808080;
 }
 td.smart_cableerrors_low {
 	font-weight: bold;
 }
 td.smart_cableerrors_high {
-	color: red;
+	color: #ff0000;
 	font-weight: bold;
 }
 /* bad sectors */
 
 td.smart_badsectors_none {
-	color: grey;
+	color: #808080;
 }
 td.smart_badsectors_passive {
 }
 td.smart_badsectors_passive span.smart_badsectors_passive {
-	color: black;
+	color: #000000;
 }
 td.smart_badsectors_pending {
-	color: red;
+	color: #ff0000;
 	font-weight: bold;
 }
 td.smart_badsectors_pending span.smart_badsectors_active {
-	color: red;
+	color: #ff0000;
 	font-weight: bold;
 }
 td.smart_badsectors_incapable {
@@ -105,17 +105,17 @@ td.smart_badsectors_incapable span {
 	visibility: hidden;
 }
 span.smart_badsectors_active {
-	color: grey;
+	color: #808080;
 }
 span.smart_badsectors_passive {
-	color: grey;
+	color: #808080;
 }
 /* lifetime */
 
 td.smart_lifetime_normal {
 }
 td.smart_lifetime_old {
-	color: red;
+	color: #ff0000;
 }
 /* smart scan button box */
 

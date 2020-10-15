@@ -1,7 +1,7 @@
 p.errorbox {
 }
 span.errorstring {
-	color: red;
+	color: #ff0000;
 	font-weight: bold;
 }
 span.errormessage {

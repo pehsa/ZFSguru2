@@ -17,7 +17,7 @@ td.disk_identstring {
 /* sector size */
 
 td.disk_sector_normal {
-	color: grey;
+	color: #808080;
 }
 /* mass process bottom row */
 

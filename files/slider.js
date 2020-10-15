@@ -47,7 +47,7 @@ function getImageSliderHeight(){
 	if(slider_handle_image_obj.width>0){
 
 	}else{
-		setTimeout('getImageSliderHeight()',50);
+		setTimeout('"use strict";getImageSliderHeight()',50);
 	}
 }
 
@@ -55,11 +55,19 @@ function getImageSliderHeight(){
 function positionSliderImage(e,theIndex)
 {
 
-	if(!theIndex)theIndex = this.getAttribute('sliderIndex');
+	if(!theIndex) {
+		theIndex = this.getAttribute('sliderIndex');
+	}
     let theValue = sliderObjectArray[theIndex]['formTarget'].value;
-    if(!theValue.match(/^[0-9]*$/g))theValue=sliderObjectArray[theIndex]['min'] +'';
-	if(theValue/1>sliderObjectArray[theIndex]['max'])theValue = sliderObjectArray[theIndex]['max'];
-	if(theValue/1<sliderObjectArray[theIndex]['min'])theValue = sliderObjectArray[theIndex]['min'];
+    if(!theValue.match(/^[0-9]*$/g)) {
+		theValue = sliderObjectArray[theIndex]['min'] + '';
+	}
+	if(theValue/1>sliderObjectArray[theIndex]['max']) {
+		theValue = sliderObjectArray[theIndex]['max'];
+	}
+	if(theValue/1<sliderObjectArray[theIndex]['min']) {
+		theValue = sliderObjectArray[theIndex]['min'];
+	}
 	sliderObjectArray[theIndex]['formTarget'].value = theValue;
     const handleImg = document.getElementById('slider_handle' + theIndex);
     const ratio = sliderObjectArray[theIndex]['width'] / (sliderObjectArray[theIndex]['max'] - sliderObjectArray[theIndex]['min']);
@@ -81,7 +89,9 @@ function adjustFormValue(theIndex)
 function initMoveSlider(e)
 {
 
-	if(document.all)e = event;
+	if(document.all) {
+		e = event;
+	}
 	slideInProgress = true;
 	event_start_x = e.clientX;
 	handle_start_x = this.style.left.replace('px','');
@@ -91,11 +101,19 @@ function initMoveSlider(e)
 
 function startMoveSlider(e)
 {
-	if(document.all)e = event;
-	if(!slideInProgress)return;
+	if(document.all) {
+		e = event;
+	}
+	if(!slideInProgress) {
+		return;
+	}
     let leftPos = handle_start_x / 1 + e.clientX - event_start_x;
-    if(leftPos<0)leftPos = 0;
-	if(leftPos>sliderObjectArray[currentSliderIndex]['width'])leftPos = sliderObjectArray[currentSliderIndex]['width'];
+    if(leftPos<0) {
+		leftPos = 0;
+	}
+	if(leftPos>sliderObjectArray[currentSliderIndex]['width']) {
+		leftPos = sliderObjectArray[currentSliderIndex]['width'];
+	}
 	document.getElementById('slider_handle' + currentSliderIndex).style.left = leftPos + 'px';
 	adjustFormValue(currentSliderIndex);
 	if(sliderObjectArray[currentSliderIndex]['onchangeAction']){
@@ -118,7 +136,7 @@ function form_widget_amount_slider(targetElId,formTarget,width,min,max,onchangeA
 		getImageSliderHeight();
 	}
 
-	slider_counter = slider_counter +1;
+	slider_counter += 1;
 	sliderObjectArray[slider_counter] = [];
 	sliderObjectArray[slider_counter] = {"width":width - sliderHandleWidth,"min":min,"max":max,"formTarget":formTarget,"onchangeAction":onchangeAction};
 
@@ -144,7 +162,7 @@ function form_widget_amount_slider(targetElId,formTarget,width,min,max,onchangeA
     const handleImg = document.createElement('IMG');
     handleImg.style.position = 'absolute';
 	handleImg.style.left = '0px';
-	handleImg.style.zIndex = 5;
+	handleImg.style.zIndex = '5';
 	handleImg.src = slider_handle_image_obj.src;
 	handleImg.id = 'slider_handle' + slider_counter;
 	handleImg.onmousedown = initMoveSlider;

@@ -4,13 +4,13 @@
 require 'includes/main.php';
 
 // generate tabs
-$tabs = array(
+$tabs = [
     'Filesystems' => 'files.php',
     'File browser' => 'files.php?browse',
     'Snapshots' => 'files.php?snapshots',
     'Volumes' => 'files.php?zvol',
     'Permissions' => 'files.php?permissions'
-);
+];
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {
     unset($tabs[ 'ZVOLs' ]);
 }

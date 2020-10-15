@@ -1,6 +1,9 @@
 <?php
 
-function content_files_zvol() 
+/**
+ * @return array
+ */
+function content_files_zvol()
 {
     // required library
     activate_library('html');
@@ -45,7 +48,7 @@ function content_files_zvol()
     // swap non-active
     $isswap_nonactive = 'hidden';
     if ($isswap === 'normal' ) {
-        $swapctl = shell_exec("/sbin/swapctl -l");
+        $swapctl = shell_exec('/sbin/swapctl -l');
         if (strpos($swapctl, $queryzvol) === false ) {
             $isswap_nonactive = 'normal';
         }
@@ -63,13 +66,13 @@ function content_files_zvol()
     }
 
     // craft zvol table
-    $volumes = array();
+    $volumes = [];
     foreach ( $zvols as $zvolname => $zvol ) {
         $prov = ( @$prop[ $zvolname ][ 'refreservation' ][ 'value' ] === 'none' ) ?
         '<b>thin</b>' : 'full';
         $activerow = ( $zvolname == $queryzvol AND $zvolname ) ?
         'class="activerow"' : '';
-        $volumes[] = array(
+        $volumes[] = [
         'ZVOL_ACTIVEROW' => $activerow,
         'ZVOL_NAME' => $zvolname,
         'ZVOL_SIZEBINARY' => sizebinary($zvol[ 'diskinfo' ][ 'mediasize' ]),
@@ -78,11 +81,11 @@ function content_files_zvol()
         'ZVOL_USED' => htmlentities($zvol[ 'used' ]),
         'ZVOL_PROVISIONING' => $prov,
         'ZVOL_SIZESECTOR' => ( int )$zvol[ 'diskinfo' ][ 'sectorsize' ],
-        );
+        ];
     }
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Volumes',
     'PAGE_TITLE' => 'ZFS Volumes',
     'TABLE_ZVOL_VOLUMES' => $volumes,
@@ -97,7 +100,7 @@ function content_files_zvol()
     'ZVOL_QUERYSIZE' => $querysize,
     'ZVOL_QUERYBLOCKSIZE' => $queryblocksize,
     'ZVOL_QUERYRESIZE' => $queryresize
-    );
+    ];
 }
 
 function submit_zvol_create() 
@@ -141,7 +144,7 @@ function submit_zvol_create()
     }
 
     // command array
-    $commands = array();
+    $commands = [];
     $commands[] = '/sbin/zfs create ' . $sparse . '-b ' . $blocksize . ' '
     . $sync . $swap . '-V ' . $size_gib . 'g ' . $path;
 
@@ -185,9 +188,10 @@ function submit_zvol_operations()
         dangerouscommand('/sbin/zfs set volsize=' . $volsize_gib . 'g ' . $volname, $url2);
     } elseif (@isset($_POST[ 'enableswap_zvol' ]) ) {
         dangerouscommand(
-            array(
+            [
             '/sbin/zfs set org.freebsd:swap=on ' . $volname,
-            '/sbin/swapon /dev/zvol/' . $volname ), $url2 
+            '/sbin/swapon /dev/zvol/' . $volname
+            ], $url2
         );
     } elseif (@isset($_POST[ 'disableswap_zvol' ]) ) {
         // disable swapctl and defer to dangerouscommand function
@@ -208,6 +212,6 @@ function submit_zvol_operations()
     }
 
     // default redirect
-    page_feedback('nothing done', 'c_notice');
+    page_feedback('nothing done');
     redirect_url($url2);
 }

@@ -96,19 +96,19 @@ display:none !important;
 
 .red
 {
-color:red;
+color: #ff0000;
 text-shadow:1px 1px #f99, -1px -1px #fdd;
 }
 
 .green
 {
-color:green;
+color: #008000;
 text-shadow:1px 1px #9f9, -1px -1px #dfd;
 }
 
 .blue
 {
-color:blue;
+color: #0000ff;
 }
 
 .white
@@ -123,7 +123,7 @@ color:#000;
 
 .grey
 {
-color:grey;
+color: #808080;
 }
 
 .transparent
@@ -787,13 +787,13 @@ font-style:italic;
 span.service_running
 {
 font-weight:bold;
-color:green;
+color: #008000;
 }
 
 span.service_stopped
 {
 font-weight:bold;
-color:red;
+color: #ff0000;
 }
 
 span.minortext

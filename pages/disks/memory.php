@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_memory() 
+/**
+ * @return array
+ */
+function content_disks_memory()
 {
     global $tags;
 
@@ -18,14 +21,14 @@ function content_disks_memory()
     $querydisk = @$_GET[ 'query' ];
 
     // memory disk array
-    $mdarr = array();
+    $mdarr = [];
 
     // list each disk (partition)
-    $physdisks = array();
+    $physdisks = [];
     if (@is_array($disks) ) {
         foreach ( $disks as $diskname => $data ) {
             // skip if not a memory disk
-            if (strpos($diskname, 'md') !== 0) {
+            if (strncmp($diskname, 'md', 2) !== 0) {
                 continue;
             }
 
@@ -65,7 +68,7 @@ function content_disks_memory()
             }
 
             // add new row to table array
-            $physdisks[] = array(
+            $physdisks[] = [
             'CLASS_ACTIVEROW' => $class_activerow,
             'DISK_NAME' => htmlentities($diskname),
             'DISK_LABEL' => $labelstr,
@@ -74,20 +77,20 @@ function content_disks_memory()
             'DISK_CLASS_SECTOR' => $sectorclass,
             'DISK_SIZE_SECTOR' => $sectorsize,
             'DISK_BACKING' => @$dmesg[ $diskname ]
-            );
+            ];
         }
     }
 
     // number of memory disks
     $diskcount = @( int )count($mdarr);
     // memory disk unit table
-    $table_mdunits = array();
+    $table_mdunits = [];
     for ( $i = 1; $i < 256; $i++ ) {
         if (!@isset($mdarr[ $i ]) ) {
-            $table_mdunits[] = array(
+            $table_mdunits[] = [
                 'MD_UNIT_NAME' => $i,
                 'MD_UNIT_VALUE' => $i
-            );
+            ];
         }
     }
 
@@ -116,7 +119,7 @@ function content_disks_memory()
     $class_nomemdisks = ( empty($physdisks) ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Memory disks',
     'PAGE_TITLE' => 'Memory disks',
     'TABLE_MEMDISKS' => $physdisks,
@@ -130,10 +133,13 @@ function content_disks_memory()
     'FORMAT_GEOMCHECKED' => @$geomchecked,
     'FORMAT_GPTLABEL' => @$gptlabel,
     'FORMAT_GEOMLABEL' => @$geomlabel
-    );
+    ];
 }
 
-function submit_disks_memory() 
+/**
+ * @return array
+ */
+function submit_disks_memory()
 {
     // required library
     activate_library('disk');
@@ -143,18 +149,18 @@ function submit_disks_memory()
 
     // destroy memory disk
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'md_destroy_md') === 0) {
+        if (strncmp($name, 'md_destroy_md', 13) === 0) {
             $mdunit = substr($name, strlen('md_destroy_md'));
             $data = disk_detect_memorydisk($mdunit);
             if (@$data[ $mdunit ][ 'backing' ] === 'vnode' ) {
                 // handle vnode (file backed) memory disks differently
                 $file = $data[ $mdunit ][ 'file' ];
                 if (file_exists($file) ) {
-                    return array(
+                    return [
                     'CLASS_VNODE_DESTROY' => 'normal',
                     'VNODE_MDUNIT' => $mdunit,
                     'VNODE_FILE' => htmlentities($file)
-                    );
+                    ];
                 }
                 // nonexistent file
                 page_feedback(
@@ -179,10 +185,10 @@ function submit_disks_memory()
         }
         // remove file
         if (file_exists($file) ) {
-            $commands = array(
+            $commands = [
             '/sbin/mdconfig -d -u ' .$mdunit,
             '/bin/rm -f ' . $file
-            );
+            ];
             dangerouscommand($commands, $url);
         } else {
             error('file ' . $file . ' does not exists - cannot destroy vnode backed md');

@@ -1,6 +1,9 @@
 <?php
 
-function content_system_install_step2() 
+/**
+ * @return array
+ */
+function content_system_install_step2()
 {
     // required library
     activate_library('disk');
@@ -21,7 +24,7 @@ function content_system_install_step2()
     $labels = disk_detect_label();
 
     // raw disks
-    $rawdisks = array();
+    $rawdisks = [];
 
     // tables
     $table_zfspools = table_zfspools($zfspools);
@@ -29,11 +32,11 @@ function content_system_install_step2()
     // TODO: gpt and raw devices
     // $table_gptdevices = table_gptdevices($gpart);
     // $table_rawdisks = table_rawdisks($rawdisks);
-    $table_gptdevices = array();
-    $table_rawdisks = array();
+    $table_gptdevices = [];
+    $table_rawdisks = [];
 
     // export new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Install',
     'PAGE_TITLE' => 'Install (step 2)',
     'TABLE_INSTALL_ZFSPOOLS' => $table_zfspools,
@@ -41,47 +44,62 @@ function content_system_install_step2()
     'TABLE_INSTALL_RAWDISKS' => $table_rawdisks,
     'INSTALL_VERSION' => $version,
     'INSTALL_SOURCE' => $source,
-    );
+    ];
 }
 
-function table_zfspools( $poollist ) 
+/**
+ * @param $poollist
+ *
+ * @return array
+ */
+function table_zfspools( $poollist )
 {
-    $array = array();
+    $array = [];
     foreach ( $poollist as $poolname => $pool ) {
-        if (in_array($pool[ 'status' ], array( 'ONLINE', 'DEGRADED' )) ) {
-            $array[] = array(
+        if (in_array($pool[ 'status' ], ['ONLINE', 'DEGRADED']) ) {
+            $array[] = [
                 'ZFSPOOL_NAME' => htmlentities($poolname),
                 'ZFSPOOL_FREE' => htmlentities($pool[ 'free' ]),
-            );
+            ];
         }
     }
     return $array;
 }
 
-function table_gptdevices( $gpart ) 
+/**
+ * @param $gpart
+ *
+ * @return array
+ */
+function table_gptdevices( $gpart )
 {
-    $array = array();
+    $array = [];
     foreach ( $gpart as $rawdisk => $gptdisk ) {
         if (@is_array($gptdisk[ 'multilabel' ]) ) {
             foreach ( $gptdisk[ 'multilabel' ] as $gptlabel => $disknode ) {
-                $array[] = array(
+                $array[] = [
                     'GPTDEV_NAME' => htmlentities($gptlabel),
                     'GPTDEV_FREE' => sizebinary(( int )@$gptdisk[ 'providers' ][ $disknode ][ 'length' ], 1),
-                    );
+                ];
             }
         }
     }
     return $array;
 }
 
-function table_rawdisks( $rawdisks ) 
+/**
+ * @param $rawdisks
+ *
+ * @return array
+ */
+function table_rawdisks( $rawdisks )
 {
-    $array = array();
+    $array = [];
     foreach ( $rawdisks as $rawdisk ) {
-        $array[] = array(
+        $array[] = [
         'RAWDISK_NAME' => htmlentities($rawdisk[ 'name' ]),
         'RAWDISK_FREE' => htmlentities($rawdisk[ 'free' ]),
-        );
+        ];
     }
     return $array;
 }
@@ -92,7 +110,7 @@ function submit_install_disablebootfs()
     $poolname = false;
     // scan POST vars for poolname
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'disablebootfs_') === 0) {
+        if (strncmp($name, 'disablebootfs_', 14) === 0) {
             $poolname = trim(substr($name, strlen('disablebootfs_')));
         }
     }

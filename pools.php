@@ -4,7 +4,7 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'Pool status' => 'pools.php',
     'Create' => 'pools.php?create',
     'Expansion' => 'pools.php?expansion',
@@ -12,7 +12,7 @@ $tabs = array(
     'Log devices' => 'pools.php?slog',
     'Hot spares' => 'pools.php?spare',
     'Benchmark' => 'pools.php?benchmark'
-);
+];
 if (@$guru[ 'preferences' ][ 'advanced_mode' ] !== true ) {
     unset($tabs[ 'Log devices' ], $tabs[ 'Hot spares' ]);
 }

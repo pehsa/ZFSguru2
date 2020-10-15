@@ -1,6 +1,9 @@
 <?php
 
-function content_system_update() 
+/**
+ * @return array
+ */
+function content_system_update()
 {
     global $guru;
 
@@ -30,7 +33,7 @@ function content_system_update()
     $class_eu_unknown = ( $euversion == false ) ? 'normal' : 'hidden';
 
     // craft new tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Update',
     'PAGE_TITLE' => 'Update',
     'TABLE_WEBIVERSIONS' => $table_webiversions,
@@ -41,10 +44,16 @@ function content_system_update()
     'CURRENT_VERSION' => $guru[ 'product_version_string' ],
     'EU_VERSION' => htmlentities($euversion),
     'EU_B64' => htmlentities(base64_encode($euversion)),
-    );
+    ];
 }
 
-function sort_webinterfaces( $a, $b ) 
+/**
+ * @param $a
+ * @param $b
+ *
+ * @return int
+ */
+function sort_webinterfaces( $a, $b )
 {
     if ($a[ 'date' ] > $b[ 'date' ] ) {
         return -1;
@@ -53,25 +62,38 @@ function sort_webinterfaces( $a, $b )
     return 1;
 }
 
-function table_webiversions( $interfaces, $currentversion, $dateformat ) 
+/**
+ * @param $interfaces
+ * @param $currentversion
+ * @param $dateformat
+ *
+ * @return array
+ */
+function table_webiversions( $interfaces, $currentversion, $dateformat )
 {
-    $table = array();
+    $table = [];
     uasort($interfaces, 'sort_webinterfaces');
     $interfaces = array_slice($interfaces, 0, 10, true);
     foreach ( $interfaces as $ifversion => $interface ) {
-        $table[] = array(
+        $table[] = [
         'CLASS_WEBI' => ( $ifversion == $currentversion ) ? 'activerow' : 'normal',
         'CLASS_BRANCH' => ( $interface[ 'branch' ] === 'stable' ) ? 'green' : 'red',
         'WEBI_VERSION' => htmlentities($ifversion),
         'WEBI_B64' => htmlentities(base64_encode($ifversion)),
         'WEBI_BRANCH' => htmlentities($interface[ 'branch' ]),
         'WEBI_DATE' => date($dateformat, $interface[ 'date' ]),
-        );
+        ];
     }
     return $table;
 }
 
-function easyupdateversion( $interfaces, $currentversion ) 
+/**
+ * @param $interfaces
+ * @param $currentversion
+ *
+ * @return false|int|string
+ */
+function easyupdateversion( $interfaces, $currentversion )
 {
     // detect currently running branch and upgrade obsolete to stable branch
     $branch = false;
@@ -112,7 +134,7 @@ function submit_system_update()
 
     // update webGUI by server download
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'updatewebi_') === 0) {
+        if (strncmp($name, 'updatewebi_', 11) === 0) {
             // search for update version (button the user clicked)
             $version = @base64_decode(substr($name, strlen('updatewebi_')));
             if (!@isset($interfaces[ $version ][ 'filename' ]) ) {

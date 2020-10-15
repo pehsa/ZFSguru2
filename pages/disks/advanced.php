@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_advanced() 
+/**
+ * @return array
+ */
+function content_disks_advanced()
 {
     // required library
     activate_library('disk');
@@ -57,8 +60,8 @@ function content_disks_advanced()
             $class_apm_disabled = ( $cap[ 'detail' ][ 'advanced power management' ][ 'enabled' ] !==
             'yes' ) ? 'normal' : 'hidden';
             // table apm_settinglist
-            $table_apm_settinglist = array();
-            $apm_settings = array(
+            $table_apm_settinglist = [];
+            $apm_settings = [
             '255' => 'Disable',
             '1' => '1 (maximum power savings with spindown)',
             '32' => '32 (high power savings with spindown)',
@@ -67,20 +70,20 @@ function content_disks_advanced()
             '127' => '127 (lowest power savings with spindown)',
             '128' => '128 (maximum power savings without spindown)',
             '254' => '254 (maximum performance without spindown)'
-            );
+            ];
             foreach ( $apm_settings as $id => $text ) {
                 if ($apm_dec == $id ) {
-                    $table_apm_settinglist[] = array(
+                    $table_apm_settinglist[] = [
                     'APM_ACTIVE' => 'selected="selected"',
                     'APM_ID' => ( int )$id,
                     'APM_NAME' => htmlentities($text)
-                    );
+                    ];
                 } else {
-                    $table_apm_settinglist[] = array(
+                    $table_apm_settinglist[] = [
                     'APM_ACTIVE' => '',
                     'APM_ID' => ( int )$id,
                     'APM_NAME' => htmlentities($text)
-                    );
+                    ];
                 }
             }
         } else {
@@ -88,7 +91,7 @@ function content_disks_advanced()
         }
 
         // information list for queried disk
-        $infolist = array();
+        $infolist = [];
         if (is_array(@$cap[ 'main' ]) ) {
             foreach ( @$cap[ 'main' ] as $property => $value ) {
                 // add 'rpm' suffix to the "media RPM" property value
@@ -96,15 +99,15 @@ function content_disks_advanced()
                     $value .= 'rpm';
                 }
                 // add new row
-                $infolist[] = array(
+                $infolist[] = [
                 'INFO_PROPERTY' => htmlentities(ucwords($property)),
                 'INFO_VALUE' => htmlentities($value)
-                );
+                ];
             }
         }
 
         // capability information for queried disk
-        $caplist = array();
+        $caplist = [];
         if (is_array(@$cap[ 'detail' ]) ) {
             foreach ( @$cap[ 'detail' ] as $feature => $data ) {
                 // support
@@ -138,7 +141,7 @@ function content_disks_advanced()
                     $enabled_no = 'hidden';
                 }
 
-                $caplist[] = array(
+                $caplist[] = [
                 'CAP_FEATURE' => htmlentities(ucwords($feature)),
                 'CAP_SUPPORT' => $support,
                 'CAP_SUPPORT_YES' => $support_yes,
@@ -148,13 +151,13 @@ function content_disks_advanced()
                 'CAP_ENABLED_NO' => $enabled_no,
                 'CAP_VALUE' => htmlentities($data[ 'value' ]),
                 'CAP_VENDOR' => htmlentities($data[ 'vendor' ])
-                );
+                ];
             }
         }
     }
 
     // disk power setting table
-    $powertable = array();
+    $powertable = [];
     foreach ( @$disks as $diskname => $diskdata ) {
         // detect disk type
         $disktype = disk_detect_type($diskname);
@@ -193,7 +196,7 @@ function content_disks_advanced()
         $aam_setting = '<span class="minortext">unknown</span>';
 
         // add row to array
-        $powertable[] = array(
+        $powertable[] = [
         'CLASS_ACTIVEROW' => $class_activerow,
         'CLASS_HDD' => $class_hdd,
         'CLASS_SSD' => $class_ssd,
@@ -209,7 +212,7 @@ function content_disks_advanced()
         'POWER_SPINNING' => $spinning_text,
         'POWER_APM' => $apm_setting,
         'POWER_AAM' => $aam_setting
-        );
+        ];
     }
 
     // classes
@@ -219,7 +222,7 @@ function content_disks_advanced()
     $class_nodetails = ( $query AND $cap ) ? 'hidden' : 'normal';
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Advanced',
     'PAGE_TITLE' => 'Advanced disk settings',
     'TABLE_POWERLIST' => $powertable,
@@ -235,15 +238,20 @@ function content_disks_advanced()
     'CLASS_APM_DISABLED' => $class_apm_disabled,
     'APM_CURRENT' => $apm_current,
     'QUERY_DISK' => $query
-    );
+    ];
 }
 
-function decode_raw_apmsetting( $rawapm ) 
+/**
+ * @param $rawapm
+ *
+ * @return false|float|int
+ */
+function decode_raw_apmsetting( $rawapm )
 {
     if ($rawapm == '') {
         return false;
     }
-    if (strpos($rawapm, '0x') === 0) {
+    if (strncmp($rawapm, '0x', 2) === 0) {
         return @hexdec($rawapm);
     }
     if (( ( $p = strpos($rawapm, '/0x80') ) != false )&&( is_numeric(
@@ -276,7 +284,7 @@ function submit_disks_advanced()
 
     // scan each POST variable
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'spindown_') === 0) {
+        if (strncmp($name, 'spindown_', 9) === 0) {
             // fetch and sanitize disk
             $disk = substr($name, strlen('spindown_'));
             // TODO - SECURITY - sanitize disk
@@ -288,7 +296,7 @@ function submit_disks_advanced()
             } else {
                 friendlywarning('failed spinning down disk ' . $disk, $redir);
             }
-        } elseif (strpos($name, 'spinup_') === 0) {
+        } elseif (strncmp($name, 'spinup_', 7) === 0) {
             // fetch and sanitize disk
             $disk = substr($name, strlen('spinup_'));
             // TODO - SECURITY - sanitize disk

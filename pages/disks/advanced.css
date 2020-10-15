@@ -21,8 +21,8 @@ td.power_diskname {
 /* spinning */
 
 td.power_spinning {
-	color: darkgreen;
+	color: #006400;
 }
 td.power_spindown {
-	color: grey;
+	color: #808080;
 }

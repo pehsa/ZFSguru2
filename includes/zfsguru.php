@@ -2,6 +2,9 @@
 
 /* ZFSguru-specific functionality */
 
+/**
+ * @return false|string
+ */
 function zfsguru_mountlivecd()
 {
     global $guru;
@@ -22,12 +25,12 @@ function zfsguru_mountlivecd()
 
     // commands require elevated privileges
     activate_library('super');
-    $commands = array(
+    $commands = [
     'UMOUNT' => '/sbin/umount ' . escapeshellarg($mountpoint),
     'MKDIR' => '/bin/mkdir -p ' . escapeshellarg($mountpoint),
     'MOUNT' => '/sbin/mount -r -t cd9660 '
     . escapeshellarg($guru[ 'dev_livecd' ]) . ' ' . escapeshellarg($mountpoint),
-    );
+    ];
     foreach ( $commands as $command ) {
         super_execute($command);
     }
@@ -40,18 +43,21 @@ function zfsguru_mountlivecd()
     return false;
 }
 
+/**
+ * @return array
+ */
 function zfsguru_mountusb()
 {
     // requires elevated privileges
     activate_library('super');
 
     // search for available GPT devices
-    $gptdevices = array();
+    $gptdevices = [];
     $ls_gpt = shell_exec('/bin/ls -1 /dev/gpt/');
     $gptnames = explode(chr(10), $ls_gpt);
 
     // try mounting all gpt devices
-    $systemimages = array();
+    $systemimages = [];
     if (is_array($gptnames) ) {
         foreach ( $gptnames as $gptname ) {
             // sanity
@@ -65,13 +71,13 @@ function zfsguru_mountusb()
             $systemimage = $mountpoint . '/system.ufs.uzip';
 
             // mount GPT device
-            $commands = array(
+            $commands = [
             'SYNC' => '/bin/sync',
             'UMOUNT' => '/sbin/umount ' . escapeshellarg($mountpoint),
             'MKDIR' => '/bin/mkdir -p ' . escapeshellarg($mountpoint),
             'MOUNT' => '/sbin/mount -r -t ufs ' . escapeshellarg($devnode)
             . ' ' . escapeshellarg($mountpoint),
-            );
+            ];
             foreach ( $commands as $command ) {
                 super_execute($command);
             }
@@ -112,6 +118,9 @@ function zfsguru_unmountmedia()
     }
 }
 
+/**
+ * @return string[]
+ */
 function zfsguru_init_dirs()
 {
     // requires elevated privileges
@@ -137,11 +146,11 @@ function zfsguru_init_dirs()
             super_execute('/bin/mkdir -p /services');
         }
         // return array with pathnames
-        return array(
+        return [
         'services' => '/services',
         'download' => '/download',
         'temp' => '/tmp',
-        );
+        ];
     }
 
     // Root-on-ZFS distribution; create ZFS filesystems for download and services
@@ -154,7 +163,7 @@ function zfsguru_init_dirs()
 
     // search for zfsguru filesystems
     // note: only required for one sanity check
-    $zfsguru_fs = array();
+    $zfsguru_fs = [];
     if (is_array($fslist) ) {
         foreach ( $fslist as $fsname => $fsdata ) {
             if (preg_match('/^([^\/]+)\/zfsguru$/', $fsname, $matches) ) {
@@ -192,7 +201,7 @@ function zfsguru_init_dirs()
     $fslist = zfs_filesystem_list();
 
     // create filesystems if nonexistent
-    $r = array();
+    $r = [];
     if (!@isset($fslist[ $fs_services ]) ) {
         $r[] = super_execute('/sbin/zfs create ' . $fs_services);
     }
@@ -245,9 +254,7 @@ function zfsguru_init_dirs()
     }
 
     // check if /services is a symbolic link
-    if (!is_link('/services') ) {
-        $r[] = super_execute('/bin/ln -s /' . $fs_services_sys . ' /services');
-    } else {
+    if (is_link('/services')) {
         // check whether link points to $fs_services_sys
         $linkloc = readlink('/services');
         if (($linkloc != '/'.$fs_services_sys) && $linkloc != '/'.$fs_services_sys.'/') {
@@ -255,6 +262,8 @@ function zfsguru_init_dirs()
             $r[] = super_execute('/bin/rm -f /services');
             $r[] = super_execute('/bin/ln -s /' . $fs_services_sys . ' /services');
         }
+    } else {
+        $r[] = super_execute('/bin/ln -s /' . $fs_services_sys . ' /services');
     }
 
     // check if /download is a symbolic link
@@ -281,23 +290,26 @@ function zfsguru_init_dirs()
                 'creation of ZFSguru specific filesystems has failed!',
                 'a_error' 
             );
-            page_feedback('error output: ' . $errortxt, 'c_notice');
+            page_feedback('error output: ' . $errortxt);
         } else {
             page_feedback(
                 'ZFSguru specific filesystems have been created on '
-                . 'pool: <b>' . htmlentities($bootpool) . '</b>', 'c_notice' 
+                . 'pool: <b>' . htmlentities($bootpool) . '</b>'
             );
         }
     }
 
     // return array with pathnames
-    return array(
+    return [
     'services' => '/' . $fs_services_sys,
     'download' => '/' . $fs_download,
     'temp' => '/tmp',
-    );
+    ];
 }
 
+/**
+ * @return array
+ */
 function zfsguru_locatesystem()
 {
     // required library
@@ -316,7 +328,7 @@ function zfsguru_locatesystem()
     clearstatcache();
 
     // populate $locate array with all known system versions and their location
-    $locate = array();
+    $locate = [];
     if (is_array($system) ) {
         foreach ( $system as $sysver => $platforms ) {
             if (!@isset($platforms[ $platform ]) ) {
@@ -353,13 +365,13 @@ function zfsguru_locatesystem()
             $size = @filesize($path);
             $avail = ( @file_exists($path)AND( $size == $sysdata[ 'filesize' ] ) );
             $locate[ 'checksum' ][ $sysdata[ 'sha512' ] ] = $sysver;
-            $locate[ 'name' ][ $sysver ] = array(
+            $locate[ 'name' ][ $sysver ] = [
             'avail' => $avail,
             'path' => $path,
             'source' => $source,
             'size' => $size,
             'sha512' => $sysdata[ 'sha512' ],
-            );
+            ];
         }
     }
 
@@ -368,13 +380,13 @@ function zfsguru_locatesystem()
     if ((strlen($sha512_livecd) == 128) && !in_array($locate['checksum'], $sha512, true) && @is_readable($livecd)) {
         $name = 'LiveCD-unknown';
         $locate[ 'checksum' ][ $sha512_livecd ] = $name;
-        $locate[ 'name' ][ $name ] = array(
+        $locate[ 'name' ][ $name ] = [
         'avail' => true,
         'path' => $livecd,
         'source' => 'livecd',
         'size' => ( int )@filesize($livecd),
         'sha512' => $sha512_livecd,
-        );
+        ];
     }
 
     // look for unknown system versions on USB media
@@ -384,13 +396,13 @@ function zfsguru_locatesystem()
             if ((strlen($sha512_livecd) == 128) && !in_array($sha512_usb, $sha512, true)) {
                 $name = 'USB-unknown-' . ( int )$number;
                 $locate[ 'checksum' ][ $sha512_usb ] = $name;
-                $locate[ 'name' ][ $name ] = array(
+                $locate[ 'name' ][ $name ] = [
                 'avail' => true,
                 'path' => $path,
                 'source' => 'usb',
                 'size' => ( int )@filesize($path),
                 'sha512' => $sha512_usb,
-                );
+                ];
             }
         }
     }
@@ -448,6 +460,13 @@ function zfsguru_locatesystem()
     */
 }
 
+/**
+ * @param       $version
+ * @param       $source
+ * @param false $locate
+ *
+ * @return false|mixed|string
+ */
 function zfsguru_system_sha512( $version, $source, $locate = false )
 {
     // call functions
@@ -497,6 +516,9 @@ function zfsguru_system_sha512( $version, $source, $locate = false )
     return false;
 }
 
+/**
+ * @param $postdata
+ */
 function zfsguru_install( $postdata )
 {
     global $guru;
@@ -519,7 +541,7 @@ function zfsguru_install( $postdata )
     $url_installing = $url_base . '&progress';
 
     // sanity
-    $required_postvars = array( 'version', 'source', 'target', 'dist' );
+    $required_postvars = ['version', 'source', 'target', 'dist'];
     foreach ( $required_postvars as $required_postvar ) {
         if (!@isset($postdata[ $required_postvar ]) ) {
             error('missing required POST variable: ' . htmlentities($required_postvar));
@@ -548,17 +570,25 @@ function zfsguru_install( $postdata )
     // register background job
     background_remove('ZFSguru-install');
     background_register(
-        'ZFSguru-install', array(
+        'ZFSguru-install', [
         'commands' => $commands,
         'super' => true,
         'combinedoutput' => true,
-        ) 
+                         ]
     );
 
     // redirect to progress page
     redirect_url($url_installing);
 }
 
+/**
+ * @param $postdata
+ * @param $version
+ * @param $source
+ * @param $target
+ *
+ * @return array
+ */
 function zfsguru_install_roz( $postdata, $version, $source, $target )
 {
     global $guru;
@@ -589,7 +619,7 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     $conf_tuning = $guru[ 'docroot' ] . '/files/install/zfsguru-tuning';
 
     // other pools (needed to disable bootfs on all but the active boot pool)
-    $otherpools = array();
+    $otherpools = [];
     $zpools = zfs_pool_list();
     foreach ( $zpools as $zpoolname => $zpool ) {
         if (($zpoolname != $poolname) && in_array($zpool['status'], ['ONLINE', 'DEGRADED'])) {
@@ -598,7 +628,7 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     }
 
     // determine extra filesystems to create
-    $zfs_extra_filesystems = array();
+    $zfs_extra_filesystems = [];
     if (strpos($layout, 'usr') !== false ) {
         $zfs_extra_filesystems[] = 'usr';
     }
@@ -635,7 +665,7 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     }
 
     // start commands array
-    $commands = array();
+    $commands = [];
 
     // verify system image
     $commands[ 'VERIFY-1' ] = 'if [ "`/sbin/sha512 -q ' . escapeshellarg($sysloc)
@@ -792,12 +822,18 @@ function zfsguru_install_roz( $postdata, $version, $source, $target )
     return $commands;
 }
 
+/**
+ * @param $postdata
+ */
 function zfsguru_install_ror( $postdata )
 {
     viewarray($postdata);
     die('RoR install');
 }
 
+/**
+ * @param $postdata
+ */
 function zfsguru_install_rom( $postdata )
 {
     viewarray($postdata);
@@ -809,6 +845,12 @@ function zfsguru_install_rom( $postdata )
     $idata[ 'loaderconf' ] = $guru[ 'docroot' ] . '/files/emb_loader.conf';*/
 }
 
+/**
+ * @param $activetask
+ * @param $installtasks
+ *
+ * @return bool|null
+ */
 function zfsguru_install_progress( & $activetask, & $installtasks )
 {
     // required library
@@ -818,7 +860,7 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
     $query = background_query('ZFSguru-install');
 
     // array of description
-    $desc = array(
+    $desc = [
     'INIT' => 'Initialize installation',
     'VERIFY' => 'Verify system image integrity',
     'CREATEFS' => 'Create ZFS filesystems',
@@ -826,10 +868,10 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
     'CONFIGURE' => 'Configure installation',
     'COPYSYS' => 'Copy system image',
     'FINISH' => 'Finish installation',
-    );
+    ];
 
     // list of installation tasks
-    $installtasks = array();
+    $installtasks = [];
     if (@is_array($query[ 'storage' ][ 'commands' ]) ) {
         foreach ( $query[ 'storage' ][ 'commands' ] as $ctag => $cdata ) {
             $prefix = substr($ctag, 0, strpos($ctag, '-'));
@@ -837,10 +879,10 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
                 continue;
             }
             $number = ( int )substr($ctag, strpos($ctag, '-') + 1);
-            $xtra = array(
+            $xtra = [
             'name' => $desc[ $prefix ],
             'command' => $query[ 'storage' ][ 'commands' ][ $ctag ],
-            );
+            ];
             $installtasks[ $prefix ][ $number ] = array_merge($query[ 'ctag' ][ $ctag ], $xtra);
         }
     }
@@ -866,7 +908,7 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
     foreach ($query[ 'storage' ][ 'commands' ] as $tag => $data ) {
         $prefix = ( strpos($tag, '-') !== false ) ?
         substr($tag, 0, strpos($tag, '-')) : $tag;
-        if (!( strlen($query[ 'ctag' ][ $tag ][ 'rv' ]) > 0 ) ) {
+        if (!($query['ctag'][$tag]['rv'] != '') ) {
             $activetask = $desc[ $prefix ];
             break;
         }
@@ -875,6 +917,9 @@ function zfsguru_install_progress( & $activetask, & $installtasks )
     return true;
 }
 
+/**
+ * @param $tarball
+ */
 function zfsguru_update_webinterface( $tarball )
 {
     global $guru;
@@ -909,7 +954,7 @@ function zfsguru_update_webinterface( $tarball )
     );
     page_feedback(
         'please press F5 or click the refresh page icon - otherwise '
-        . 'pages may not be displayed properly', 'c_notice' 
+        . 'pages may not be displayed properly'
     );
     sleep(1);
     redirect_url($url);

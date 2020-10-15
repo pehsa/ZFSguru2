@@ -1,6 +1,9 @@
 <?php
 
-function content_disks_benchmark() 
+/**
+ * @return array
+ */
+function content_disks_benchmark()
 {
     global $guru;
 
@@ -8,10 +11,10 @@ function content_disks_benchmark()
     activate_library('service');
 
     // tabbar
-    $tabbar = array(
+    $tabbar = [
     'simplebench' => 'Simple benchmarking',
     'advancedbench' => 'Advanced benchmarking'
-    );
+    ];
     $tabbar_url = 'disks.php?benchmark';
     $tabbar_tab = 'simplebench';
     foreach ( $tabbar as $tab => $name ) {
@@ -41,7 +44,7 @@ function content_disks_benchmark()
         $lastdate = 0;
         exec('/usr/bin/find ' . $guru[ 'docroot' ] . '/benchmarks/ -type f', $output);
         foreach ( $output as $line ) {
-            if ((strpos(@basename($line), 'simplebench_') === 0) && ($mtime = filemtime(
+            if ((strncmp(@basename($line), 'simplebench_', 12) === 0) && ($mtime = filemtime(
                     $line
                 )) > $lastdate) {
                     $lastdate = $mtime;
@@ -88,7 +91,7 @@ function content_disks_benchmark()
         $disk_bench = @$_GET[ 'simplebench' ];
 
         // disk table
-        $table_disks = array();
+        $table_disks = [];
         foreach ( $physdisks as $disk ) {
             // detect disk type
             $disktype = disk_detect_type($disk[ 'disk_name' ]);
@@ -102,7 +105,7 @@ function content_disks_benchmark()
             $class_usbstick = ( $disktype === 'usbstick' ) ? 'normal' : 'hidden';
             $class_network = ( $disktype === 'network' ) ? 'normal' : 'hidden';
 
-            $table_disks[] = @array(
+            $table_disks[] = @[
             'CLASS_ACTIVEROW' => $class_active,
             'CLASS_HDD' => $class_hdd,
             'CLASS_SSD' => $class_ssd,
@@ -112,7 +115,7 @@ function content_disks_benchmark()
             'CLASS_NETWORK' => $class_network,
             'DISK_NAME' => htmlentities($disk[ 'disk_name' ]),
             'DISK_SIZE' => sizebinary($disk[ 'mediasize' ], 1)
-            );
+            ];
         }
     }
 
@@ -188,7 +191,7 @@ function content_disks_benchmark()
     }
 
     // export new tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Benchmark',
     'PAGE_TITLE' => 'Benchmark',
     'PAGE_TABBAR' => $tabbar,
@@ -213,7 +216,7 @@ function content_disks_benchmark()
     'DISK_BENCH' => $disk_bench,
     'BENCHMARK_OUTPUT' => $benchoutput,
     'BENCHMARK_MEMBERDISKS' => @$memberdisks
-    );
+    ];
 }
 
 function submit_disks_benchmark_simple() 
@@ -227,7 +230,7 @@ function submit_disks_benchmark_simple()
     // disk to benchmark
     $disk = false;
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'simplebench_submit_') === 0) {
+        if (strncmp($name, 'simplebench_submit_', 19) === 0) {
             $disk = substr($name, strlen('simplebench_submit_'));
         }
     }
@@ -250,7 +253,7 @@ function submit_disks_benchmark_simple()
 
     page_feedback(
         'benchmark is running!'
-        . '<br />' . nl2br($result[ 'output_str' ]), 'c_notice' 
+        . '<br />' . nl2br($result[ 'output_str' ])
     );
 
     // redirect back again so user can view the results so far
@@ -274,11 +277,11 @@ function submit_disks_benchmark_start()
     $url = 'disks.php?benchmark&advancedbench';
 
     // construct data array
-    $data = array( 'disks' => array() );
+    $data = ['disks' => []];
     $data[ 'magic_string' ] = $guru[ 'benchmark_magic_string' ];
     $len = strlen('addmember_');
     foreach ( @$_POST as $name => $value ) {
-        if ((strpos($name, 'addmember_') === 0)AND( $value === 'on' ) ) {
+        if ((strncmp($name, 'addmember_', 10) === 0)AND( $value === 'on' ) ) {
             $data[ 'disks' ][] = trim(substr($name, $len));
         }
     }
@@ -334,18 +337,18 @@ function submit_disks_benchmark_start()
     usleep(1000);
 
     // sysinfo
-    $data[ 'sysinfo' ] = array();
+    $data[ 'sysinfo' ] = [];
     $data[ 'sysinfo' ][ 'product_name' ] = $guru[ 'product_name' ];
     $data[ 'sysinfo' ][ 'product_version' ] = $guru[ 'product_version_string' ];
     $data[ 'sysinfo' ][ 'distribution' ] = $currentver[ 'dist' ];
     $data[ 'sysinfo' ][ 'system_version' ] = $currentver[ 'sysver' ];
-    $data[ 'sysinfo' ][ 'cpu_name' ] = trim(shell_exec("sysctl -n hw.model"));
-    $data[ 'sysinfo' ][ 'cpu_count' ] = ( int )(shell_exec("sysctl -n hw.ncpu"));
-    $freq_ghz = ( int )(shell_exec("sysctl -n dev.cpu.0.freq")) / 1000;
+    $data[ 'sysinfo' ][ 'cpu_name' ] = trim(shell_exec('sysctl -n hw.model'));
+    $data[ 'sysinfo' ][ 'cpu_count' ] = ( int )(shell_exec('sysctl -n hw.ncpu'));
+    $freq_ghz = ( int )(shell_exec('sysctl -n dev.cpu.0.freq')) / 1000;
     $data[ 'sysinfo' ][ 'cpu_freq_ghz' ] = @number_format($freq_ghz, 1);
-    $physmem_gib = ( int )(shell_exec("sysctl -n hw.physmem")) / ( 1024 * 1024 * 1024 );
+    $physmem_gib = ( int )(shell_exec('sysctl -n hw.physmem')) / ( 1024 * 1024 * 1024 );
     $data[ 'sysinfo' ][ 'physmem_gib' ] = @number_format($physmem_gib, 1);
-    $kmem_gib = ( int )(shell_exec("sysctl -n vm.kmem_size")) / ( 1024 * 1024 * 1024 );
+    $kmem_gib = ( int )(shell_exec('sysctl -n vm.kmem_size')) / ( 1024 * 1024 * 1024 );
     $data[ 'sysinfo' ][ 'kmem_gib' ] = @number_format($kmem_gib, 1);
     if (@$_SESSION[ 'loaderconf_needreboot' ] === true ) {
         $data[ 'sysinfo' ][ 'contamination' ] = true;
@@ -355,7 +358,7 @@ function submit_disks_benchmark_start()
 
     // serialize and write array to file
     $serial = serialize($data);
-    $filename = trim(shell_exec("realpath .")) . '/benchmarks/startbenchmark.dat';
+    $filename = trim(shell_exec('realpath .')) . '/benchmarks/startbenchmark.dat';
     exec('/bin/rm ' . $filename);
     $result = file_put_contents($filename, $serial, LOCK_EX);
     if ($result === false ) {
@@ -397,7 +400,7 @@ function submit_disks_benchmark_stop()
         $output, $rv 
     );
     if ($rv == 0 ) {
-        $pids = array();
+        $pids = [];
         foreach ( $output as $line ) {
             if (is_numeric(substr($line, 0, strpos($line, ' '))) ) {
                 $pids[] = ( int )substr($line, 0, strpos($line, ' '));

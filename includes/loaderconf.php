@@ -2,97 +2,120 @@
 
 // passive functions
 
+/**
+ * @param false $filepath
+ *
+ * @return array
+ */
 function loaderconf_readsettings( $filepath = false )
 {
     $loaderpath = ( $filepath ) ?: '/boot/loader.conf';
     $loaderconf = @file_get_contents($loaderpath);
-    $loadervars = array(
+    $loadervars = [
     'vm.kmem_size', 'vm.kmem_size_max',
     'vfs.zfs.arc_min', 'vfs.zfs.arc_max',
     'vfs.zfs.arc_meta_limit',
     'vfs.zfs.zfetch.array_rd_sz', 'vfs.zfs.zfetch.block_cap',
     'vfs.zfs.vdev.min_pending', 'vfs.zfs.vdev.max_pending'
-    );
+    ];
     // regexp for active loader variables
-    $preg_loader = array(
+    $preg_loader = [
     1 => '/^[\s]*([a-zA-Z0-9._-]+)[\s]*\=[\s]*\"?([a-zA-Z0-9._-]+)\"?[\s]*$/m',
-    2 => '/^[\s]*\#([a-zA-Z0-9._-]+)[\s]*\=[\s]*\"?([a-zA-Z0-9._-]+)\"?[\s]*$/m' );
+    2 => '/^[\s]*\#([a-zA-Z0-9._-]+)[\s]*\=[\s]*\"?([a-zA-Z0-9._-]+)\"?[\s]*$/m'
+    ];
     preg_match_all($preg_loader[ 1 ], $loaderconf, $active);
     // we also detect 'commented out' variables, prefixed with a #
     preg_match_all($preg_loader[ 2 ], $loaderconf, $commented);
     // start with hardcoded vars
-    $loader = array();
+    $loader = [];
     foreach ( $loadervars as $loadervar ) {
-        $loader[ $loadervar ] = array( 'enabled' => false, 'value' => '' );
+        $loader[ $loadervar ] = ['enabled' => false, 'value' => ''];
     }
     // now process each known loader variable
     foreach ( $commented[ 1 ] as $id => $loadervar ) {
-        $loader[ $loadervar ] = array( 'enabled' => false,
-        'value' => $commented[ 2 ][ $id ] );
+        $loader[ $loadervar ] = [
+            'enabled' => false,
+        'value' => $commented[ 2 ][ $id ]
+        ];
     }
     foreach ( $active[ 1 ] as $id => $loadervar ) {
-        $loader[ $loadervar ] = array( 'enabled' => true,
-        'value' => $active[ 2 ][ $id ] );
+        $loader[ $loadervar ] = [
+            'enabled' => true,
+        'value' => $active[ 2 ][ $id ]
+        ];
     }
     return $loader;
 }
 
+/**
+ * @return array
+ */
 function loaderconf_profiles()
 {
-    return array(
-    'none' => array(
-    'static' => array(
+    return [
+    'none' => [
+    'static' => [
                 'vm.kmem_size' => false,
                 'vfs.zfs.arc_max' => false,
                 'vfs.zfs.arc_min' => false,
                 'vfs.zfs.prefetch_disable' => false,
-    ) ),
-    'minimal' => array(
-    'multiply' => array(
+    ]
+    ],
+    'minimal' => [
+    'multiply' => [
                 'vm.kmem_size' => 1.5,
                 'vfs.zfs.arc_max' => 0.1,
                 'vfs.zfs.arc_min' => 0.1
-    ) ),
-    'conservative' => array(
-    'multiply' => array(
+    ]
+    ],
+    'conservative' => [
+    'multiply' => [
                 'vm.kmem_size' => 1.5,
                 'vfs.zfs.arc_max' => 0.3,
                 'vfs.zfs.arc_min' => 0.2
-    ) ),
-    'balanced' => array(
-    'multiply' => array(
+    ]
+    ],
+    'balanced' => [
+    'multiply' => [
                 'vm.kmem_size' => 1.5,
                 'vfs.zfs.arc_max' => 0.5,
                 'vfs.zfs.arc_min' => 0.2
-    ) ),
-    'performance' => array(
-    'multiply' => array(
+    ]
+    ],
+    'performance' => [
+    'multiply' => [
                 'vm.kmem_size' => 1.5,
                 'vfs.zfs.arc_max' => 0.6,
                 'vfs.zfs.arc_min' => 0.4
-    ),
-    'static' => array(
+    ],
+    'static' => [
                 'vfs.zfs.prefetch_disable' => '0',
-    ) ),
-    'aggressive' => array(
-    'multiply' => array(
+    ]
+    ],
+    'aggressive' => [
+    'multiply' => [
                 'vm.kmem_size' => 1.5,
                 'vfs.zfs.arc_max' => 0.75,
                 'vfs.zfs.arc_min' => 0.5
-    ),
-    'static' => array(
+    ],
+    'static' => [
                 'vfs.zfs.prefetch_disable' => '0',
-    ) ),
-    'i386' => array(
-    'static' => array(
+    ]
+    ],
+    'i386' => [
+    'static' => [
                 'vm.kmem_size' => '512M',
                 'vfs.zfs.arc_max' => '128M',
                 'vfs.zfs.arc_min' => '128M',
                 'vfs.zfs.prefetch_disable' => '1'
-    ) ),
-    );
+    ]
+    ],
+    ];
 }
 
+/**
+ * @return false|int|string
+ */
 function loaderconf_activeprofile()
 {
     // fetch data
@@ -128,6 +151,13 @@ function loaderconf_activeprofile()
  */
 
 
+/**
+ * @param       $profilename
+ * @param false $loadersettings
+ * @param false $loaderconf
+ *
+ * @return array|false
+ */
 function loaderconf_reset( $profilename, $loadersettings = false,
     $loaderconf = false 
 ) {
@@ -189,16 +219,18 @@ function loaderconf_reset( $profilename, $loadersettings = false,
 
     // process factors that multiply with the physical RAM in GiB
     foreach ( $profile[ 'multiply' ] as $loadervar => $factor ) {
-        $loadersettings[ $loadervar ] = array( 'enabled' => true, 'value' =>
-        round($physmem_gib * $factor, 1) . 'g' );
+        $loadersettings[ $loadervar ] = [
+            'enabled' => true, 'value' =>
+        round($physmem_gib * $factor, 1) . 'g'
+        ];
     }
 
     // process static values (false value means disable)
     foreach ( $profile[ 'static' ] as $loadervar => $value ) {
-        if ($value === false ) {
-            $loadersettings[ $loadervar ][ 'enabled' ] = false;
+        if ($value !== false) {
+            $loadersettings[ $loadervar ] = ['enabled' => true, 'value' => $value];
         } else {
-            $loadersettings[ $loadervar ] = array( 'enabled' => true, 'value' => $value );
+            $loadersettings[ $loadervar ][ 'enabled' ] = false;
         }
     }
 
@@ -207,6 +239,12 @@ function loaderconf_reset( $profilename, $loadersettings = false,
     return $loadersettings;
 }
 
+/**
+ * @param       $new_settings
+ * @param false $filepath
+ *
+ * @return bool
+ */
 function loaderconf_update( $new_settings, $filepath = false )
 {
     global $guru;

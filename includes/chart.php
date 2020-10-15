@@ -7,6 +7,12 @@
 
 // functions
 
+/**
+ * @param $chart_name
+ * @param $data
+ *
+ * @return false|resource
+ */
 function zfsguru_createbenchmarkchart( $chart_name, $data )
 {
     // check for GD-lib
@@ -15,7 +21,7 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     }
 
     // set memory limit
-    ini_set("memory_limit", "512M");
+    ini_set('memory_limit', '512M');
 
     // first analyze $benchmark to determine maxscore
     $maxscore = 0;
@@ -56,13 +62,13 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     $resolution_x = 60;
     $resolution_y = 60;
     $pitch_box = 12;
-    $margin = array( 'left' => 10, 'top' => 10, 'right' => 10, 'bottom' => 10 );
-    $frame = array();
-    $frame[ 'start' ] = array( 'x' => 20, 'y' => '20' );
-    $frame[ 'end' ] = array(
+    $margin = ['left' => 10, 'top' => 10, 'right' => 10, 'bottom' => 10];
+    $frame = [];
+    $frame[ 'start' ] = ['x' => 20, 'y' => '20'];
+    $frame[ 'end' ] = [
     'x' => ( $frame[ 'start' ][ 'x' ] + ( $units_x * $resolution_x ) ),
     'y' => ( $frame[ 'start' ][ 'y' ] + ( $units_y * $resolution_y ) )
-    );
+    ];
     $font = 'files/liberationsans.ttf';
     $width = $frame[ 'end' ][ 'x' ] + $margin[ 'right' ];
     $height = $frame[ 'end' ][ 'y' ] + $margin[ 'bottom' ] +
@@ -85,7 +91,7 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     }
 
     // set colors
-    $colors = array(
+    $colors = [
     'bg' => imagecolorallocate($image, 250, 250, 250),
     'title' => imagecolorallocate($image, 100, 100, 100),
     'txt' => imagecolorallocate($image, 100, 100, 100),
@@ -102,7 +108,7 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     'RAIDZ2' => imagecolorallocate($image, 133, 55, 171),
     'RAIDZ+0' => imagecolorallocate($image, 100, 255, 171),
     'RAIDZ2+0' => imagecolorallocate($image, 20, 255, 171)
-    );
+    ];
 
     // begin working on image
     @imageantialias($image, true);
@@ -156,8 +162,8 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     }
 
     // draw vertical units
-    $start = array( 'x' => 2, 'y' => 305 );
-    $step = array( 'x' => 0, 'y' => ( -1 * $resolution_y ) );
+    $start = ['x' => 2, 'y' => 305];
+    $step = ['x' => 0, 'y' => ( -1 * $resolution_y )];
     for ( $i = 0; $i <= $units_y; $i++ ) {
         imagettftext(
             $image, 7, 0, 2,
@@ -251,12 +257,13 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     . $data[ 'sysinfo' ][ 'product_version' ];
     $distribution = $data[ 'sysinfo' ][ 'distribution' ];
     $sysver = $data[ 'sysinfo' ][ 'system_version' ];
-    @$txt = array(
+    @$txt = [
     $productversion . ' running ' . $distribution . ' ' . $sysver,
     'CPU: ' . $cpuname,
     'CPU freq: ' . $cpucount . 'x ' . $cpufreq . ' GHz; KMEM: ' . $kmem . '/' . $physmem . ' GiB',
     'Test settings: ' . @$data[ 'testsettings_str' ],
-    'Tuning: ' . @$data[ 'tuning_str' ] );
+    'Tuning: ' . @$data[ 'tuning_str' ]
+    ];
     // process data
     for ( $i = 0; $i <= count($txt) - 1; $i++ ) {
         imagettftext(
@@ -269,7 +276,16 @@ function zfsguru_createbenchmarkchart( $chart_name, $data )
     return $image;
 }
 
-function imageboldline( $image, $x1, $y1, $x2, $y2, $color, $thickness = 2 ) 
+/**
+ * @param     $image
+ * @param     $x1
+ * @param     $y1
+ * @param     $x2
+ * @param     $y2
+ * @param     $color
+ * @param int $thickness
+ */
+function imageboldline( $image, $x1, $y1, $x2, $y2, $color, $thickness = 2 )
 {
     $x1 -= ( $buf = ceil(( $thickness - 1 ) / 2) );
     $x2 -= $buf;

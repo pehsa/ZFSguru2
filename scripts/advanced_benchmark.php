@@ -12,7 +12,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 // default variables
-$chartdefault = array(
+$chartdefault = [
     'test_seq' => true,
     'test_rio' => false,
     'testsize_gib' => 100,
@@ -24,18 +24,19 @@ $chartdefault = array(
     'rio_alignment' => 4096,
     'rio_queuedepth' => 32,
     'sectorsize_override' => 0,
-    'secure_erase' => false );
+    'secure_erase' => false
+];
 $poolname = 'gurubenchmarkpool';
 $zvolname = 'guruzvoltest';
 
 // internal variables
-$benchmark = array();
-$datfilename = trim(shell_exec("realpath .")) . '/benchmarks/startbenchmark.dat';
+$benchmark = [];
+$datfilename = trim(shell_exec('realpath .')) . '/benchmarks/startbenchmark.dat';
 $expected_magic_string = 'XX00XXBENCHMARKXX00XX';
 $dd_preg = '/^[0-9]+ bytes transferred in [0-9\.]+ secs '
     . '\(([0-9]+) bytes\/sec\)$/m';
 $rt_preg = '/^Requests per second\: ([0-9]+)$/m';
-$ld_preg_arr = array(
+$ld_preg_arr = [
     'KMEM' => '/^[\s]*vm\.kmem_size\="?([^"]*)"?$/m',
     'KMAX' => '/^[\s]*vm\.kmem_size_max\="?([^"]*)"?$/m',
     'AMIN' => '/^[\s]*vfs\.zfs\.arc_min\="?([^"]*)"?$/m',
@@ -50,10 +51,11 @@ $ld_preg_arr = array(
     'VMAX' => '/^[\s]*vfs\.zfs\.vdev\.max_pending\="?([^"]*)"?$/m',
     'VCB' => '/^[\s]*vfs\.zfs\.vdev\.cache\.bshift\="?([^"]*)"?$/m',
     'VCS' => '/^[\s]*vfs\.zfs\.vdev\.cache\.size\="?([^"]*)"?$/m',
-    'VCM' => '/^[\s]*vfs\.zfs\.vdev\.cache\.max\="?([^"]*)"?$/m' );
+    'VCM' => '/^[\s]*vfs\.zfs\.vdev\.cache\.max\="?([^"]*)"?$/m'
+];
 
 // fetch disks from argv
-$disks = array();
+$disks = [];
 if (count($argv) > 1 ) {
     for ($i = 1, $iMax = count($argv); $i <= $iMax; $i++ ) {
         if (@strlen($argv[ $i ]) > 0 ) {
@@ -94,7 +96,7 @@ if ($argv[ 1 ] === 'startbenchmark' ) {
     // syntax: ./benchmark.php <disk1> <disk2> <disk3> <disk4> ...
 
     // get data from argv (command line parameters)
-    $disks = array();
+    $disks = [];
     if (count($argv) > 1 ) {
         for ($i = 1, $iMax = count($argv); $i <= $iMax; $i++ ) {
             if (@strlen($argv[ $i ]) > 0 ) {
@@ -140,16 +142,17 @@ function zfsguru_benchmark_init()
 
     // assign names to each test
     $qd = ( int )@$data[ 'rio_queuedepth' ];
-    $testnames = array(
+    $testnames = [
     'seqread' => 'Sequential Read',
     'seqwrite' => 'Sequential Write',
     'raidtest.read' => 'Random Read (qd=' . $qd . ')',
     'raidtest.write' => 'Random Write (qd=' . $qd . ')',
-    'raidtest.mixed' => 'Random Read+Write (qd=' . $qd . ')' );
+    'raidtest.mixed' => 'Random Read+Write (qd=' . $qd . ')'
+    ];
 
     // craft testsettings string
     $data[ 'testsettings_str' ] = '';
-    $ts_arr = array(
+    $ts_arr = [
     'testsize_gib' => 'TS',
     'testrounds' => 'TR',
     'cooldown' => 'CD',
@@ -159,7 +162,8 @@ function zfsguru_benchmark_init()
     'rio_alignment' => 'AL',
     'rio_queuedepth' => 'QD',
     'sectorsize_override' => 'SECT',
-    'secure_erase' => 'SE' );
+    'secure_erase' => 'SE'
+    ];
     foreach ( $ts_arr as $varname => $tag ) {
         if (@$data[ $varname ] != $chartdefault[ $varname ] ) {
             if (@strlen($data[ $varname ]) > 0 ) {
@@ -200,6 +204,10 @@ function zfsguru_benchmark_init()
     echo( chr(10) );
 }
 
+/**
+ * @param     $tag
+ * @param int $rv
+ */
 function zfsguru_benchmark_error( $tag, $rv = -1 )
 {
     global $poolname;
@@ -212,7 +220,13 @@ function zfsguru_benchmark_error( $tag, $rv = -1 )
     exit($rv);
 }
 
-function zfsguru_benchmark_attach_gnop( $disks, $sectorsize ) 
+/**
+ * @param $disks
+ * @param $sectorsize
+ *
+ * @return array|false
+ */
+function zfsguru_benchmark_attach_gnop( $disks, $sectorsize )
 {
     if (!is_array($disks) ) {
         return false;
@@ -233,7 +247,7 @@ function zfsguru_benchmark_attach_gnop( $disks, $sectorsize )
     }
 
     // now return new array with .nop suffix attached
-    $nopdisks = array();
+    $nopdisks = [];
     foreach ( $disks as $disk ) {
         $nopdisks[] = $disk . '.nop';
     }
@@ -260,6 +274,10 @@ function zfsguru_benchmark_secure_erase()
     }
 }
 
+/**
+ * @param $raid
+ * @param $vdev
+ */
 function zfsguru_benchmark_createpool( $raid, $vdev )
 {
     global $poolname;
@@ -313,6 +331,9 @@ function zfsguru_benchmark_remountpool()
     }
 }
 
+/**
+ * @return array|false
+ */
 function zfsguru_benchmark_sequentialio()
 {
     global $data;
@@ -323,9 +344,12 @@ function zfsguru_benchmark_sequentialio()
     $write = zfsguru_benchmark_sequentialwrite();
     // sequential read
     $read = zfsguru_benchmark_sequentialread();
-    return array( 'read' => $read, 'write' => $write );
+    return compact('read', 'write');
 }
 
+/**
+ * @return mixed
+ */
 function zfsguru_benchmark_sequentialread()
 {
     global $data, $poolname, $dd_preg;
@@ -351,6 +375,9 @@ function zfsguru_benchmark_sequentialread()
     return $readmatch[ 1 ];
 }
 
+/**
+ * @return mixed
+ */
 function zfsguru_benchmark_sequentialwrite()
 {
     global $data, $poolname, $dd_preg;
@@ -373,6 +400,9 @@ function zfsguru_benchmark_sequentialwrite()
     return $writematch[ 1 ];
 }
 
+/**
+ * @return array|false
+ */
 function zfsguru_benchmark_randomio()
 {
     global $data, $poolname, $zvolname, $rt_preg;
@@ -425,10 +455,11 @@ function zfsguru_benchmark_randomio()
 
     // test variables
     $zvoldev = '/dev/zvol/' . $poolname . '/' . $zvolname;
-    $raidtest = array(
+    $raidtest = [
     'benchmarks/raidtest.read',
     'benchmarks/raidtest.write',
-    'benchmarks/raidtest.mixed' );
+    'benchmarks/raidtest.mixed'
+    ];
 
     // create the raidtest files
     foreach ( $raidtest as $rt_file ) {
@@ -449,7 +480,7 @@ function zfsguru_benchmark_randomio()
     }
 
     // start test
-    $rioscores = array();
+    $rioscores = [];
     foreach ( $raidtest as $rtfile ) {
         // cooldown each test
         sleep(( int )$data[ 'cooldown' ]);
@@ -486,6 +517,14 @@ function zfsguru_benchmark_randomio()
     return $rioscores;
 }
 
+/**
+ * @param $raid
+ * @param $vdev
+ * @param $testdisks
+ * @param $datadisks
+ *
+ * @return array|false
+ */
 function zfsguru_benchmark_start($raid, $vdev, $testdisks, $datadisks)
 {
     global $data, $benchmark, $poolname;
@@ -514,7 +553,7 @@ function zfsguru_benchmark_start($raid, $vdev, $testdisks, $datadisks)
     // announce test
     echo( 'Now testing ' . $raidtxt . ' configuration with ' . $testdisks . ' disks: ' );
 
-    $score = array();
+    $score = [];
     for ( $round = 1; $round <= ( int )$data[ 'testrounds' ]; $round++ ) {
         // create pool
         zfsguru_benchmark_createpool($raid, $vdev);
@@ -546,6 +585,11 @@ function zfsguru_benchmark_start($raid, $vdev, $testdisks, $datadisks)
     return $score;
 }
 
+/**
+ * @param $size_bytes
+ *
+ * @return string
+ */
 function humansize_binary( $size_bytes )
 {
     if ($size_bytes < ( 1024 * 10 )) {
@@ -558,17 +602,24 @@ function humansize_binary( $size_bytes )
 
     if ($size_bytes < ( 1024 * 1024 * 1024 * 10 )) {
         return ( int )( $size_bytes / ( 1024 * 1024 ) ) . ' MiB';
-    } elseif ($size_bytes < ( 1024 * 1024 * 1024 * 1024 * 10 ) ) {
-        return ( int )( $size_bytes / ( 1024 * 1024 * 1024 ) ) . ' GiB';
-    } else {
-        return ( int )( $size_bytes / ( 1024 * 1024 * 1024 * 1024 ) ) . ' TiB';
     }
+
+    if ($size_bytes < ( 1024 * 1024 * 1024 * 1024 * 10 )) {
+        return ( int )( $size_bytes / ( 1024 * 1024 * 1024 ) ) . ' GiB';
+    }
+
+    return ( int )( $size_bytes / ( 1024 * 1024 * 1024 * 1024 ) ) . ' TiB';
 }
 
+/**
+ * @param $scores
+ *
+ * @return array
+ */
 function zfsguru_benchmark_averagescores( $scores )
 {
     global $data, $benchmark;
-    $avg = array();
+    $avg = [];
     // calculate sequential I/O average scores
     if (@$data[ 'test_seq' ] ) {
         $totalread = 0;
@@ -600,6 +651,9 @@ function zfsguru_benchmark_averagescores( $scores )
     return $avg;
 }
 
+/**
+ * @param $scores
+ */
 function zfsguru_benchmark_report( $scores )
 {
     global $data, $benchmark;
@@ -641,6 +695,9 @@ function zfsguru_benchmark_report( $scores )
     echo( chr(10) );
 }
 
+/**
+ * @param bool $benchmarkrunning
+ */
 function zfsguru_benchmark_createchart( $benchmarkrunning = true )
 {
     global $data, $benchmark, $chartdefault, $testnames;
@@ -665,10 +722,10 @@ function zfsguru_benchmark_createchart( $benchmarkrunning = true )
         }
         // set correct filename depending on whether benchmark is still running
         if ($benchmarkrunning ) {
-            $filename = trim(shell_exec("realpath .")) . '/benchmarks/running_' . $test . '.png';
+            $filename = trim(shell_exec('realpath .')) . '/benchmarks/running_' . $test . '.png';
         } else {
             // final benchmark score
-            $filename = trim(shell_exec("realpath .")) . '/benchmarks/bench_' . $test . '.png';
+            $filename = trim(shell_exec('realpath .')) . '/benchmarks/bench_' . $test . '.png';
             // also remove temporary benchmarks; we don't need those anymore
             exec('/bin/rm benchmarks/running_* 2>&1');
         }
@@ -678,6 +735,9 @@ function zfsguru_benchmark_createchart( $benchmarkrunning = true )
     }
 }
 
+/**
+ * @param $diskcount
+ */
 function zfsguru_benchmark_processnested( $diskcount )
 {
     global $benchmark, $testnames;
@@ -720,7 +780,7 @@ function zfsguru_benchmark_main()
     global $data, $disks, $testnames, $benchmark;
     $dc = ( int )$data[ 'diskcount' ];
     // split tests in sections: upper and lower; the lower part is done last
-    $sections = array( 16 => 0, 12 => 15, 8 => 11, 4 => 7, 1 => 3 );
+    $sections = [16 => 0, 12 => 15, 8 => 11, 4 => 7, 1 => 3];
 
     // start benchmark spree!
     foreach ( $sections as $start_disks => $end_disks ) {
@@ -869,4 +929,4 @@ zfsguru_benchmark_main();
 zfsguru_benchmark_createchart(false);
 
 // END
-echo "Done";
+echo 'Done';

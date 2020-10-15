@@ -71,6 +71,9 @@ timerend('init');
 
 /* functions */
 
+/**
+ * @return array|mixed
+ */
 function procedure_readpreferences()
 {
     global $guru;
@@ -126,6 +129,11 @@ function procedure_readpreferences()
     return $preferences;
 }
 
+/**
+ * @param $preferences
+ *
+ * @return bool
+ */
 function procedure_writepreferences( $preferences )
 {
     global $guru;
@@ -167,6 +175,12 @@ function procedure_writepreferences( $preferences )
     return true;
 }
 
+/**
+ * @param       $preferences
+ * @param false $ip_auth_only
+ *
+ * @return bool
+ */
 function procedure_authenticate( $preferences, $ip_auth_only = false )
 {
     $result = false;
@@ -178,18 +192,18 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
         $result = true;
     } elseif ($preferences[ 'access_control' ] == 2 ) {
         // check if client comes from LAN
-        if (strpos($client_ip, '10.') === 0) {
+        if (strncmp($client_ip, '10.', 3) === 0) {
             $result = true;
-        } elseif (strpos($client_ip, '192.168.') === 0) {
+        } elseif (strncmp($client_ip, '192.168.', 8) === 0) {
             $result = true;
-        } elseif (strpos($client_ip, '172.') === 0) {
+        } elseif (strncmp($client_ip, '172.', 4) === 0) {
             // between 172.16.x.x and 172.31.x.x
             $secondblock = ( int )@substr($client_ip, strlen('172.'), 2);
             if (( $secondblock >= 16 )AND( $secondblock <= 31 ) ) {
                 $result = true;
             }
         }
-        elseif (strpos($client_ip, '127.0.0.') === 0) {
+        elseif (strncmp($client_ip, '127.0.0.', 8) === 0) {
             $result = true;
         }
     }
@@ -197,7 +211,7 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
         // only allow connections from whitelisted IP addresses
         if (@isset($preferences[ 'access_whitelist' ][ $_SERVER[ 'REMOTE_ADDR' ] ]) ) {
             $result = true;
-        } elseif (strpos($client_ip, '127.0.0.') === 0) {
+        } elseif (strncmp($client_ip, '127.0.0.', 8) === 0) {
             $result = true;
         } else {
             foreach ( @$preferences[ 'access_whitelist' ] as $cidr ) {
@@ -244,6 +258,9 @@ function procedure_authenticate( $preferences, $ip_auth_only = false )
     return true;
 }
 
+/**
+ * @param bool $check_sudo
+ */
 function procedure_sanitize( $check_sudo = true )
 {
     global $guru;
@@ -254,43 +271,60 @@ function procedure_sanitize( $check_sudo = true )
         }
     }
     // test command execution
-    if (trim(shell_exec("echo test")) !== 'test' ) {
+    if (trim(shell_exec('echo test')) !== 'test' ) {
         error('Command execution test failed; aborting');
     }
     // test if we are zfsguru-web user
-    if (trim(shell_exec("whoami")) !== 'zfsguru-web' ) {
+    if (trim(shell_exec('whoami')) !== 'zfsguru-web' ) {
         error('PHP script is not running as the "zfsguru-web" user; aborting');
     }
     // test if we have sudo root access
     if ($check_sudo === true ) {
         $sudo_cmd = '/usr/local/bin/sudo whoami';
-        if (trim(shell_exec("\$sudo_cmd")) !== 'root' ) {
+        if (trim(shell_exec('$sudo_cmd')) !== 'root' ) {
             error('No SUDO access; aborting');
         }
     }
 }
 
+/**
+ * @param $timezone
+ *
+ * @return array
+ */
 function procedure_timezone_map( $timezone )
 {
-    $arr = array( 'tz_php' => $timezone, 'tz_system' => $timezone );
+    $arr = ['tz_php' => $timezone, 'tz_system' => $timezone];
     switch ( $timezone ) {
-    case "UTC":
+    case 'UTC':
         $arr[ 'tz_system' ] = 'Etc/UTC';
         break;
-    case "Australia/ACT":
+    case 'Australia/ACT':
         $arr[ 'tz_system' ] = 'Australia/Sydney';
         break;
     }
     return $arr;
 }
 
-function netMatch( $cidr, $ip ) 
+/**
+ * @param $cidr
+ * @param $ip
+ *
+ * @return bool
+ */
+function netMatch( $cidr, $ip )
 {
     list( $net, $mask ) = explode('/', $cidr);
     return ( ip2long($ip) & ~( ( 1 << ( 32 - $mask ) ) - 1 ) ) == ip2long($net);
 }
 
-function clientInSameSubnet( $client_ip = false, $server_ip = false ) 
+/**
+ * @param false $client_ip
+ * @param false $server_ip
+ *
+ * @return bool
+ */
+function clientInSameSubnet( $client_ip = false, $server_ip = false )
 {
     if (!$client_ip ) {
         $client_ip = $_SERVER[ 'REMOTE_ADDR' ];
@@ -299,14 +333,14 @@ function clientInSameSubnet( $client_ip = false, $server_ip = false )
         $server_ip = $_SERVER[ 'SERVER_ADDR' ];
     }
     // Extract broadcast and netmask from ifconfig
-    if (!( $p = popen("ifconfig", "r") ) ) { return false;
+    if (!( $p = popen('ifconfig', 'r') ) ) { return false;
     }
-    $out = "";
+    $out = '';
     while ( !feof($p) ) {
         $out .= fread($p, 1024);
     }
     fclose($p);
-    $match = "/^.*" . $server_ip;
+    $match = '/^.*'. $server_ip;
     $match .= ".*Bcast:(\d{1,3}\.\d{1,3}i\.\d{1,3}\.\d{1,3}).*";
     $match .= "Mask:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/im";
     if (!preg_match($match, $out, $regs) ) {

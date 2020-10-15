@@ -4,6 +4,9 @@
 
 /* new service code */
 
+/**
+ * @return array|mixed
+ */
 function service_list()
 {
     global $guru;
@@ -24,11 +27,11 @@ function service_list()
     $servicedb = gurudb_service();
 
     // assemble and return services array
-    $services = array();
+    $services = [];
     exec('/bin/ls -1 ' . escapeshellarg($dirs[ 'services' ]), $result, $rv);
     if ($rv != 0 ) {
         // no services, return empty array
-        return array();
+        return [];
     }
     foreach ( $result as $line ) {
         // service path
@@ -120,7 +123,7 @@ function service_list()
         }
 
         // add to services array
-        $services[ $name ] = array(
+        $services[ $name ] = [
         'name' => $name,
         'shortname' => $name,
         'longname' => $longname,
@@ -141,7 +144,7 @@ function service_list()
         'status' => $status,
         //   'size'    => $size,
         'path_panel' => $path_panel
-        );
+        ];
     }
 
     // cache list in guru variable and return value
@@ -150,6 +153,11 @@ function service_list()
     return $services;
 }
 
+/**
+ * @param $svc
+ *
+ * @return string
+ */
 function service_runstatus( $svc )
 {
     // service path
@@ -206,6 +214,12 @@ function service_runstatus( $svc )
     return $status;
 }
 
+/**
+ * @param       $svc
+ * @param false $silent
+ *
+ * @return bool
+ */
 function service_start( $svc, $silent = false )
 {
     // check if already running
@@ -231,6 +245,13 @@ function service_start( $svc, $silent = false )
     return false;
 }
 
+/**
+ * @param     $svc
+ * @param int $timeout_sec
+ * @param int $runagain_sec
+ *
+ * @return bool
+ */
 function service_start_blocking( $svc, $timeout_sec = 15, $runagain_sec = 10 )
 {
     // tunables (sleep is in microseconds; 100 000 = 0.1sec)
@@ -257,6 +278,12 @@ function service_start_blocking( $svc, $timeout_sec = 15, $runagain_sec = 10 )
     }
 }
 
+/**
+ * @param       $svc
+ * @param false $silent
+ *
+ * @return bool
+ */
 function service_stop( $svc, $silent = false )
 {
     // check if already stopped
@@ -282,6 +309,13 @@ function service_stop( $svc, $silent = false )
     return false;
 }
 
+/**
+ * @param     $svc
+ * @param int $timeout_sec
+ * @param int $runagain_sec
+ *
+ * @return bool
+ */
 function service_stop_blocking( $svc, $timeout_sec = 15, $runagain_sec = 6 )
 {
     // tunables (sleep is in microseconds; 100 000 = 0.1sec)
@@ -308,12 +342,23 @@ function service_stop_blocking( $svc, $timeout_sec = 15, $runagain_sec = 6 )
     }
 }
 
+/**
+ * @param      $svc
+ * @param bool $autostart
+ *
+ * @return bool
+ */
 function service_autostart( $svc, $autostart = true )
 {
     $param = ( $autostart ) ? 'REGISTER' : 'UNREGISTER';
     return service_script($svc, 'register', $param);
 }
 
+/**
+ * @param $svc
+ *
+ * @return bool|null
+ */
 function service_queryautostart( $svc )
 {
     // exec('/services/'.$svc.'/service_register.sh QUERY', $output, $rv);
@@ -336,20 +381,29 @@ function service_queryautostart( $svc )
 
     if ($rv == 6 OR $rv === null) {
         return null;
-    } else {
-        page_feedback(
-            'the service_register.sh script returned a strange '
-            . 'return value: ' . $rv, 'a_warning'
-        );
-        return null;
     }
+
+    page_feedback(
+        'the service_register.sh script returned a strange '
+        . 'return value: ' . $rv, 'a_warning'
+    );
+
+    return null;
 }
 
+/**
+ * @param $svc
+ *
+ * @return bool
+ */
 function service_purge( $svc )
 {
     return service_script($svc, 'purge');
 }
 
+/**
+ * @param $svc
+ */
 function service_download( $svc )
 {
     // required library
@@ -374,6 +428,11 @@ function service_download( $svc )
     sleep(1);
 }
 
+/**
+ * @param $svc
+ *
+ * @return bool|int
+ */
 function service_download_progress( $svc )
 {
     // required library
@@ -403,6 +462,9 @@ function service_download_progress( $svc )
     );
 }
 
+/**
+ * @param $svc
+ */
 function service_install( $svc )
 {
     global $guru;
@@ -462,7 +524,7 @@ function service_install( $svc )
     }
 
     // install service on the background
-    $commands = array();
+    $commands = [];
 
     // create directory for service (as root)
     $commands[ 'mkdir' ] = '/bin/mkdir -p ' . escapeshellarg($serviceroot);
@@ -480,14 +542,19 @@ function service_install( $svc )
     // register background job
     $btag = 'service_install_' . $svc;
     background_register(
-        $btag, array(
+        $btag, [
         'commands' => $commands,
         'super' => true,
         'combinedoutput' => true,
-        ) 
+             ]
     );
 }
 
+/**
+ * @param $svc
+ *
+ * @return string
+ */
 function service_install_progress( $svc )
 {
     // required library
@@ -509,6 +576,11 @@ function service_install_progress( $svc )
     return 'finished';
 }
 
+/**
+ * @param $svc
+ *
+ * @return bool
+ */
 function service_install_postprocess( $svc )
 {
     // required libraries
@@ -538,7 +610,7 @@ function service_install_postprocess( $svc )
                 'service ' . htmlentities($svc) . ' could not be installed - '
                 . htmlentities($name) . '-phase failed with code ' . $data[ 'rv' ], 'a_error'
             );
-            page_feedback('output: ' . htmlentities($data[ 'output' ]), 'c_notice');
+            page_feedback('output: ' . htmlentities($data[ 'output' ]));
             return false;
         }
 
@@ -549,7 +621,7 @@ function service_install_postprocess( $svc )
                     .htmlentities($name).'-phase failed with code '.$data['rv'],
                     'a_error'
                 );
-                page_feedback('output: '.htmlentities($data['output']), 'c_notice');
+                page_feedback('output: '.htmlentities($data['output']));
 
                 return false;
             }
@@ -585,7 +657,7 @@ function service_install_postprocess( $svc )
                     'service <b>' . $svc . '</b> failed to install - '
                     . 'installation script returned invalid rv; aborting!', 'a_error'
                 );
-                page_feedback('output: ' . htmlentities($data[ 'output' ]), 'c_notice');
+                page_feedback('output: ' . htmlentities($data[ 'output' ]));
                 return false;
             }
         }
@@ -599,6 +671,11 @@ function service_install_postprocess( $svc )
     return true;
 }
 
+/**
+ * @param $svc
+ *
+ * @return bool
+ */
 function service_uninstall( $svc )
 {
     // required library
@@ -633,6 +710,9 @@ function service_uninstall( $svc )
     return $result and ($result2['rv'] == 0);
 }
 
+/**
+ * @param $svc
+ */
 function service_upgrade( $svc )
 {
     global $guru;
@@ -716,26 +796,21 @@ function service_upgrade( $svc )
     // run install script of new version
     $installscript = $sroot . '/service_install.sh';
     clearstatcache();
-    if (!@file_exists($installscript) ) {
-        page_feedback(
-            'no installation script found when upgrading service',
-            'a_warning' 
-        );
-    } else {
+    if (@file_exists($installscript)) {
         $result2 = super_execute($installscript);
 
         // notify of result
         if ($result2[ 'rv' ] == 1 ) {
             page_feedback(
                 'installation script failed for service '
-                . '<b>' . $svc . '</b>', 'a_failure' 
+                . '<b>' . $svc . '</b>', 'a_failure'
             );
         } elseif ($result2[ 'rv' ] == 2 ) {
             page_feedback('service <b>' . $svc . '</b> upgraded!', 'b_success');
         } elseif ($result2[ 'rv' ] == 3 ) {
             page_feedback(
                 'service <b>' . $svc . '</b> upgraded - '
-                . 'requires a <u>reboot</u> before operation!', 'b_success' 
+                . 'requires a <u>reboot</u> before operation!', 'b_success'
             );
         } elseif ($result2[ 'rv' ] == 4 ) {
             // restart webserver on background
@@ -743,19 +818,32 @@ function service_upgrade( $svc )
             // give feedback of this happening
             page_feedback(
                 'service <b>' . $svc . '</b> installed - requires a <b>restart</b>'
-                . ' of the webserver; restarting now!', 'b_success' 
+                . ' of the webserver; restarting now!', 'b_success'
             );
         }
         else {
             page_feedback(
                 'installation script invalid rv! '
                 . 'Perhaps your web-interface is outdated, or file-permissions are wrong. '
-                . 'Aborting!', 'a_failure' 
+                . 'Aborting!', 'a_failure'
             );
         }
+    } else {
+        page_feedback(
+            'no installation script found when upgrading service',
+            'a_warning'
+        );
     }
 }
 
+/**
+ * @param        $svc
+ * @param        $script
+ * @param string $arg
+ * @param false  $rv
+ *
+ * @return bool
+ */
 function service_script( $svc, $script, $arg = '', & $rv = false )
 {
     global $guru;
@@ -785,13 +873,16 @@ function service_script( $svc, $script, $arg = '', & $rv = false )
 
 /* service panels */
 
+/**
+ * @return array
+ */
 function service_panels()
 {
     // grab services list
     $services = service_list();
 
     // traverse services for panels (require .php file)
-    $panels = array();
+    $panels = [];
     foreach ( $services as $servicename => $data ) {
         if (@is_readable($data[ 'path_panel' ] . '.php') ) {
             $panels[ $data[ 'cat' ] ][ $servicename ] = $data;
@@ -800,7 +891,10 @@ function service_panels()
     return $panels;
 }
 
-function service_panel_handle( $svc ) 
+/**
+ * @param $svc
+ */
+function service_panel_handle( $svc )
 {
     global $tabs;
 
@@ -818,7 +912,7 @@ function service_panel_handle( $svc )
         // create new tab for panel
         $tabs[ $longname ] = 'services.php?panel=' . $svc;
         // activate the new tab
-        page_injecttag(array( 'PAGE_ACTIVETAB' => $longname ));
+        page_injecttag(['PAGE_ACTIVETAB' => $longname]);
         // process panel
         $svcalpha = preg_replace('/[^a-zA-Z0-9]/', '_', $svc);
         $content = content_handle_path($panelpath, 'panel', $svcalpha);
@@ -836,6 +930,12 @@ function service_panel_handle( $svc )
     error('unhandled termination of panel ' . $svc);
 }
 
+/**
+ * @param       $service
+ * @param false $versions
+ *
+ * @return bool
+ */
 function service_checkupgrade( $service, & $versions = false )
 {
     // required library
@@ -843,9 +943,7 @@ function service_checkupgrade( $service, & $versions = false )
 
     // accept $service as array or as string
     if (!is_array($service) ) {
-        if (!is_string($service) ) {
-            error('invalid service name; cannot check for upgrade');
-        } else {
+        if (is_string($service)) {
             // string value; fetch service data
             activate_library('service');
             $servicelist = service_list();
@@ -857,6 +955,8 @@ function service_checkupgrade( $service, & $versions = false )
             }
 
             $service = @$servicelist[ $service ];
+        } else {
+            error('invalid service name; cannot check for upgrade');
         }
     }
 
@@ -864,16 +964,21 @@ function service_checkupgrade( $service, & $versions = false )
     $dist = gurudb_distribution($service[ 'sysver' ], $service[ 'platform' ]);
 
     // store version data and return boolean
-    $versions = array(
+    $versions = [
     'installed' => $service[ 'serial' ],
     'available' => ( int )@$data[ $service[ 'name' ] ][ 'serial' ],
-    );
+    ];
     return ( $versions[ 'installed' ] < $versions[ 'available' ] );
 }
 
 
 /* old service code */
 
+/**
+ * @param $process_name
+ *
+ * @return bool|null
+ */
 function service_isprocessrunning( $process_name )
 {
     if (!$process_name ) {
@@ -881,7 +986,7 @@ function service_isprocessrunning( $process_name )
     }
     $cmd = '/bin/ps auxwww | /usr/bin/grep "' . $process_name
     . '" | /usr/bin/grep -v grep';
-    $process = trim(shell_exec("\$cmd"));
+    $process = trim(shell_exec('$cmd'));
 
     return @strlen($process) > 0;
 }
@@ -889,6 +994,13 @@ function service_isprocessrunning( $process_name )
 
 /* service manage */
 
+/**
+ * @param       $service
+ * @param       $action
+ * @param false $ignore_errors
+ *
+ * @return bool
+ */
 function service_manage_rc( $service, $action, $ignore_errors = false )
 {
     global $guru;
@@ -912,6 +1024,11 @@ function service_manage_rc( $service, $action, $ignore_errors = false )
     }
 }
 
+/**
+ * @param $service
+ *
+ * @return mixed
+ */
 function service_start_rc( $service )
 {
     global $guru;
@@ -923,6 +1040,11 @@ function service_start_rc( $service )
     return $result;
 }
 
+/**
+ * @param $service
+ *
+ * @return mixed
+ */
 function service_restart_rc( $service )
 {
     return service_manage($service, 'restart');
@@ -949,6 +1071,11 @@ function service_restartwebserver()
     }
 }
 
+/**
+ * @param $service
+ *
+ * @return mixed
+ */
 function service_stop_rc( $service )
 {
     global $guru;
@@ -963,6 +1090,12 @@ function service_stop_rc( $service )
 
 /* run control */
 
+/**
+ * @param       $rc
+ * @param false $rcfile
+ *
+ * @return bool|string
+ */
 function service_runcontrol_isenabled( $rc, $rcfile = false )
 {
     // fetch run control configuration
@@ -974,7 +1107,7 @@ function service_runcontrol_isenabled( $rc, $rcfile = false )
     }
 
     // look for non-commented out $rc line
-    if (preg_match($preg, $rcconf, $matches) ) {
+    if (preg_match($preg, $rcconf, $matches)) {
         if (@strtoupper($matches[ 1 ]) === 'YES') {
             return true;
         }
@@ -984,7 +1117,12 @@ function service_runcontrol_isenabled( $rc, $rcfile = false )
         }
 
         return ( string )@$matches[ 1 ];
-    } elseif (!$rcfile ) {
+    }
+
+    if ($rcfile) {
+        // $rcfile specified but nonexistent in that file
+        return false;
+    } else {
         $rcdefaults = file_get_contents('/etc/defaults/rc.conf');
         unset($matches);
         if (preg_match($preg, $rcdefaults, $matches) ) {
@@ -997,16 +1135,17 @@ function service_runcontrol_isenabled( $rc, $rcfile = false )
             }
 
             return ( string )@$matches[ 1 ];
-        } else {
-            return false;
         }
-    }
-    else {
-        // $rcfile specified but nonexistent in that file
+
         return false;
     }
 }
 
+/**
+ * @param $rc
+ *
+ * @return bool
+ */
 function service_runcontrol_enable( $rc )
 {
     global $guru;
@@ -1044,6 +1183,9 @@ function service_runcontrol_enable( $rc )
     super_execute('/bin/chmod 644 /etc/rc.conf');
 }
 
+/**
+ * @param $rc
+ */
 function service_runcontrol_disable( $rc )
 {
     global $guru;

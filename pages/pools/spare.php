@@ -1,6 +1,9 @@
 <?php
 
-function content_pools_spare() 
+/**
+ * @return array
+ */
+function content_pools_spare()
 {
     // required libraries
     activate_library('disk');
@@ -11,13 +14,13 @@ function content_pools_spare()
     $poollist = zfs_pool_list();
 
     // poolstatus
-    $poolstatus = array();
+    $poolstatus = [];
     foreach ( $poollist as $poolname => $data ) {
         $poolstatus[ $poolname ] = zfs_pool_memberdetails(zfs_pool_status($poolname), $poolname);
     }
 
     // prepare hot spares
-    $hotspares = array();
+    $hotspares = [];
     foreach ( $poolstatus as $poolname => $vdevs ) {
         foreach ( $vdevs as $vdev ) {
             if (@$vdev[ 'type' ] === 'hot spares' ) {
@@ -27,15 +30,15 @@ function content_pools_spare()
     }
 
     // table hotspares
-    $table_hotspares = array();
+    $table_hotspares = [];
     foreach ( $hotspares as $poolname => $hotspare ) {
         $diskinfo = disk_info($hotspare);
-        $table_hotspares[] = array(
+        $table_hotspares[] = [
         'SPARE_NAME' => $hotspare,
         'SPARE_SIZE' => sizehuman($diskinfo[ 'mediasize' ], 1),
         'SPARE_SIZB' => sizebinary($diskinfo[ 'mediasize' ], 1),
         'SPARE_POOL' => $poolname,
-        );
+        ];
     }
     // class no hotspares
     $class_nohotspares = ( empty($table_hotspares) ) ? 'normal' : 'hidden';
@@ -44,20 +47,20 @@ function content_pools_spare()
     $devicelist = html_memberdisks_select();
 
     // table pool checkbox
-    $table_poolcheckbox = array();
+    $table_poolcheckbox = [];
     foreach ( $poollist as $poolname => $data ) {
         if ($data[ 'status' ] === 'ONLINE'
             OR $data[ 'status' ] === 'DEGRADED'
         ) {
-            $table_poolcheckbox[] = array(
+            $table_poolcheckbox[] = [
                 'PCB_POOLNAME' => htmlentities($poolname),
                 'PCB_EXTRA' => ''
-            );
+            ];
         } else {
-            $table_poolcheckbox[] = array(
+            $table_poolcheckbox[] = [
                 'PCB_POOLNAME' => htmlentities($poolname),
                 'PCB_EXTRA' => 'disabled="disabled"'
-            );
+            ];
         }
     }
 
@@ -65,14 +68,14 @@ function content_pools_spare()
     $spare_ = '__SPARE__';
 
     // export new tags
-    return array(
+    return [
     'PAGE_TITLE' => 'Hot spares',
     'TABLE_HOTSPARES' => $table_hotspares,
     'TABLE_POOLCHECKBOX' => $table_poolcheckbox,
     'CLASS_NOHOTSPARES' => $class_nohotspares,
     'SPARE_DEVICELIST' => $devicelist,
     'SPARE_' => $spare_
-    );
+    ];
 }
 
 function submit_pools_spare() 
@@ -84,9 +87,9 @@ function submit_pools_spare()
         $device = @$_POST[ 'spare_device' ];
 
         // determine which pools have been submitted
-        $pools = array();
+        $pools = [];
         foreach ( $_POST as $name => $value ) {
-            if (strpos($name, 'spare_pool_') === 0) {
+            if (strncmp($name, 'spare_pool_', 11) === 0) {
                 $pools[] = substr($name, strlen('spare_pool_'));
             }
         }
@@ -103,7 +106,7 @@ function submit_pools_spare()
         }
 
         // create commands
-        $commands = array();
+        $commands = [];
         foreach ( $pools as $poolname ) {
             $commands[] = '/sbin/zpool add ' . $poolname . ' spare ' . $device;
         }

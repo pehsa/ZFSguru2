@@ -1,6 +1,9 @@
 <?php
 
-function content_files_query() 
+/**
+ * @return array
+ */
+function content_files_query()
 {
     // required libraries
     activate_library('samba');
@@ -31,7 +34,7 @@ function content_files_query()
     }
 
     // construct filesystem list table
-    $fslist = array();
+    $fslist = [];
     foreach ( $zfslist as $fsname => $fsdata ) {
         // behavior for system filesystems
         $systemfs = zfs_filesystem_issystemfs($fsname);
@@ -46,10 +49,10 @@ function content_files_query()
         $fsclass = ( $systemfs ) ? 'failurerow filesystem_system ' : '';
         if ($fsname == @$queryfs ) {
             $fsclass = 'activerow filesystem_selected';
-        } elseif (strpos($fsname, '/') === false ) {
-            $fsclass = 'darkrow filesystem_root ';
-        } else {
+        } elseif (strpos($fsname, '/') !== false) {
             $fsclass .= 'normal';
+        } else {
+            $fsclass = 'darkrow filesystem_root ';
         }
 
         // filesystem mountpoint
@@ -74,7 +77,7 @@ function content_files_query()
         $class_fsvolume = ( $volumefs ) ? 'normal' : 'hidden';
 
         // add row to fslist table
-        $fslist[] = array(
+        $fslist[] = [
         'CLASS_FSPOOL' => $class_fspool,
         'CLASS_FSNORMAL' => $class_fsnormal,
         'CLASS_FSSYSTEM' => $class_fssystem,
@@ -85,7 +88,7 @@ function content_files_query()
         'FS_REFER' => $fsdata[ 'refer' ],
         'FS_CLASS' => $fsclass,
         'FS_MOUNTPOINT' => $fsmountpoint
-        );
+        ];
     }
 
     // filesystem selectbox
@@ -96,7 +99,7 @@ function content_files_query()
         if ($basepos = strpos($fsbase, '/') ) {
             $fsbase = @substr($fsbase, 0, $basepos);
         }
-        if (( $fsbase === 'zfsguru' )OR(strpos($fsbase, 'zfsguru-system') === 0)OR( $fsbase === 'SWAP001' ) ) {
+        if (( $fsbase === 'zfsguru' )OR(strncmp($fsbase, 'zfsguru-system', 14) === 0)OR( $fsbase === 'SWAP001' ) ) {
             $querygurufs = true;
         } else {
             $querygurufs = false;
@@ -112,13 +115,13 @@ function content_files_query()
     }
 
     // filesystem query data
-    $zfsinfo = array();
+    $zfsinfo = [];
     if (@strlen($queryfs) > 0 ) {
         // figure out which pool this filesystem belongs to
-        if (strpos($queryfs, '/') === false ) {
-            $poolname = $queryfs;
-        } else {
+        if (strpos($queryfs, '/') !== false) {
             $poolname = substr($queryfs, 0, strpos($queryfs, '/'));
+        } else {
+            $poolname = $queryfs;
         }
 
         // gather pool SPA version and system version
@@ -140,10 +143,10 @@ function content_files_query()
     // process data for queried filesystem
     if (@count($zfsinfo) > 1 ) {
         // calculate all data for queried filesystem
-        if (strpos($queryfs, '/') === false ) {
-            $queryfs_suffix = $queryfs;
-        } else {
+        if (strpos($queryfs, '/') !== false) {
             $queryfs_suffix = substr($queryfs, strrpos($queryfs, '/') + 1);
+        } else {
+            $queryfs_suffix = $queryfs;
         }
         // filesystem properties
         $createpreg = preg_match_all(
@@ -184,7 +187,7 @@ function content_files_query()
         $cb_readonly = ( $readonly === 'on' ) ?
         'checked="checked"' : '';
         // select boxes
-        $compressiontypes = array(
+        $compressiontypes = [
         'off' => 'No compression',
         'lz4' => 'LZ4 (recommended, v5000)',
         'lzjb' => 'LZJB',
@@ -196,24 +199,26 @@ function content_files_query()
         'gzip' => 'GZIP-6 (default gzip)',
         'gzip-7' => 'GZIP-7',
         'gzip-8' => 'GZIP-8',
-        'gzip-9' => 'GZIP-9 (slowest)' );
-        $deduptypes = array(
+        'gzip-9' => 'GZIP-9 (slowest)'
+        ];
+        $deduptypes = [
         'off' => 'No deduplication',
         'on' => 'Fletcher4',
         'verify' => 'Fletcher4 +verify',
         'sha256' => 'SHA256',
-        'sha256,verify' => 'SHA256 +verify' );
-        $copiestypes = array(
+        'sha256,verify' => 'SHA256 +verify'
+        ];
+        $copiestypes = [
         '1' => 'No additional redundancy',
         '2' => 'Two copies of each file',
         '3' => 'Three copies of each file'
-        );
-        $checksumtypes = array(
+        ];
+        $checksumtypes = [
         'off' => 'Disabled (NOT recommended!)',
         'on' => 'Fletcher2 (default)',
         'fletcher4' => 'Fletcher4',
         'sha256' => 'SHA256 (high CPU)'
-        );
+        ];
 
         $compression = @trim($zfsinfo[ 'compression' ][ 'value' ]);
         if ($compression === 'on' ) {
@@ -302,8 +307,8 @@ function content_files_query()
         }
 
         // quota units table
-        $quotaunits = array( 'KiB', 'MiB', 'GiB', 'TiB', 'PiB' );
-        $table_quotaunits = array();
+        $quotaunits = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+        $table_quotaunits = [];
         foreach ( $quotaunits as $quotaunit ) {
             if (strtoupper(
                 $quotaunit {
@@ -311,7 +316,7 @@ function content_files_query()
                 } 
             ) == $quotacurrentunit 
             ) {
-                $table_quotaunits[] = array(
+                $table_quotaunits[] = [
                 'UNIT_SEL' => 'selected="selected"',
                 'UNIT_VALUE' => strtoupper(
                     $quotaunit {
@@ -319,9 +324,9 @@ function content_files_query()
                     } 
                 ),
                 'UNIT_NAME' => $quotaunit
-                );
+                ];
             } else {
-                $table_quotaunits[] = array(
+                $table_quotaunits[] = [
                 'UNIT_SEL' => '',
                 'UNIT_VALUE' => strtoupper(
                     $quotaunit {
@@ -329,7 +334,7 @@ function content_files_query()
                     } 
                 ),
                 'UNIT_NAME' => $quotaunit
-                );
+                ];
             }
         }
 
@@ -453,18 +458,18 @@ function content_files_query()
     'fsbuttonbox-shared' : 'normal';
 
     // pool supported filesystem versions
-    $poolsupported = array(
+    $poolsupported = [
     2 => 1,
     3 => 9,
     4 => 15,
     5 => 24
-    );
+    ];
 
     // upgrade filesystem (current ZPL version)
     $upgrade_version = @$prop[ $queryfs ][ 'version' ][ 'value' ];
 
     // upgrade table
-    $table_upgrade = array();
+    $table_upgrade = [];
     $maxversion = 0;
     foreach ( $poolsupported as $zpl => $spa ) {
         if ($spa <= $pool_spa AND $zpl <= $zfsversion[ 'zpl' ] ) {
@@ -473,10 +478,10 @@ function content_files_query()
     }
     for ( $i = 2; $i <= $maxversion; $i++ ) {
         if ($i > $upgrade_version ) {
-            $table_upgrade[] = array(
+            $table_upgrade[] = [
                 'VER' => $i,
                 'SELECT' => ( $i <= $zfsversion[ 'zpl' ] ) ? 'selected="selected"' : ''
-            );
+            ];
         }
     }
 
@@ -491,7 +496,7 @@ function content_files_query()
 
     // export new tags
     // return as tags
-    return @array(
+    return @[
     'PAGE_ACTIVETAB' => 'Filesystems',
     'PAGE_TITLE' => 'Filesystem ' . $queryfs,
     'FILES_FSSELECTBOX' => $fsselectbox,
@@ -567,7 +572,7 @@ function content_files_query()
     'QUERYFS_VERSION' => $upgrade_version,
     'QUERYFS_QUOTA' => $quota,
     'QUERYFS_QUOTARAW' => $quotaraw,
-    );
+    ];
 }
 
 function submit_filesystem_modify() 
@@ -598,7 +603,7 @@ function submit_filesystem_modify()
         // remove any samba shares on the mountpoint
         samba_removesharepath($fs_mp);
         // start command array
-        $command = array();
+        $command = [];
         // check for SWAP filesystem
         exec('/sbin/swapctl -l', $swapctl_raw);
         $swapctl = @implode(chr(10), $swapctl_raw);
@@ -611,7 +616,7 @@ function submit_filesystem_modify()
         if (count($command) > 0 ) {
             page_feedback(
                 'this volume is in use as SWAP device! '
-                . 'If you continue, the SWAP device will be deactivated first.', 'c_notice' 
+                . 'If you continue, the SWAP device will be deactivated first.'
             );
         }
         // add destroy command
@@ -691,24 +696,26 @@ function submit_filesystem_modify()
     }
     elseif (@isset($_POST[ 'submit_updateproperties' ]) ) {
         // string variables (selectbox or textbox)
-        $stringvars = array( 'mountpoint', 'compression', 'dedup', 'copies',
-        'checksum', 'sync', 'primarycache', 'secondarycache' );
+        $stringvars = [
+            'mountpoint', 'compression', 'dedup', 'copies',
+        'checksum', 'sync', 'primarycache', 'secondarycache'
+        ];
         // skip mountpoint for zvol or legacy filesystem
         if (( $_POST[ 'fs_mountpoint' ] === 'legacy' )OR( $_POST[ 'fs_mountpoint' ] === 'volume' ) ) {
             unset($stringvars[ 0 ]);
         }
         // boolean variables (checkbox)
-        $boolvars = array( 'atime', 'readonly' );
+        $boolvars = ['atime', 'readonly'];
         // check all above variables for submitted information and act accordingly
         foreach ( $stringvars as $var ) {
             if (( @strlen($_POST[ 'fs_' . $var ]) > 0 )AND( @$_POST[ $var ] != $_POST[ 'fs_' . $var ] ) ) {
                 $fspool = @substr($fs, 0, strpos($fs, '/'));
                 if (( $var === 'compression' )AND( $_POST[ $var ] === 'lz4' ) ) {
                     dangerouscommand(
-                        array(
+                        [
                         '/sbin/zpool upgrade ' . $fspool,
                         '/sbin/zfs set ' . $var . '=' . $_POST[ $var ] . ' ' . $fs,
-                        ), $url 
+                        ], $url
                     );
                 } else {
                     dangerouscommand('/sbin/zfs set ' . $var . '=' . $_POST[ $var ] . ' ' . $fs, $url);

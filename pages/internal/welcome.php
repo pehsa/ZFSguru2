@@ -1,6 +1,9 @@
 <?php
 
-function content_internal_welcome() 
+/**
+ * @return array
+ */
+function content_internal_welcome()
 {
     global $guru;
 
@@ -45,7 +48,7 @@ function content_internal_welcome()
     }
 
     // step 2: physical disks
-    $physdisks = array();
+    $physdisks = [];
     if ($class_w2 === 'normal' ) {
         // required library
         activate_library('disk');
@@ -86,7 +89,7 @@ function content_internal_welcome()
                 }
 
                 // add new row to table array
-                $physdisks[] = array(
+                $physdisks[] = [
                 'DISK_ACTIVEROW' => $activerow,
                 'DISK_NAME' => htmlentities($diskname),
                 'DISK_LABEL' => $labelstr,
@@ -95,7 +98,7 @@ function content_internal_welcome()
                 'DISK_CLASS_SECTOR' => $sectorclass,
                 'DISK_SIZE_SECTOR' => $sectorsize,
                 'DISK_IDENTIFY' => @$dmesg[ $diskname ]
-                );
+                ];
             }
         }
     }
@@ -122,7 +125,7 @@ function content_internal_welcome()
         foreach ( $zpools as $poolname => $pooldata ) {
             $activerow = ( @$_GET[ 'query' ] == $poolname ) ? ' class="activerow"' : '';
             $poolspa = zfs_pool_version($poolname);
-            $zpool_status = shell_exec("zpool status \$poolname");
+            $zpool_status = shell_exec('zpool status $poolname');
             if (strpos($zpool_status, 'raidz3') !== false ) {
                 $redundancy = 'RAID7 (triple parity)';
             } elseif (strpos($zpool_status, 'raidz2') !== false ) {
@@ -134,7 +137,7 @@ function content_internal_welcome()
             } else {
                 $redundancy = 'RAID0 (no redundancy)';
             }
-            $poollist[] = array(
+            $poollist[] = [
             'POOLLIST_ACTIVEROW' => $activerow,
             'POOLLIST_POOLNAME' => htmlentities(trim($poolname)),
             'POOLLIST_SPA' => $poolspa,
@@ -144,7 +147,7 @@ function content_internal_welcome()
             'POOLLIST_FREE' => $pooldata[ 'free' ],
             'POOLLIST_STATUS' => $pooldata[ 'status' ],
             'POOLLIST_POOLNAME_URLENC' => htmlentities(trim($poolname))
-            );
+            ];
 
             // check boot status by looking whether at least one member has GPT label
             $poolstatus = zfs_pool_status($poolname);
@@ -206,13 +209,13 @@ function content_internal_welcome()
         $scannedforpools = false;
 
         // import pool table
-        $table_importpool = array();
+        $table_importpool = [];
         if (@isset($_POST[ 'import_pool' ])OR @isset($_POST[ 'import_pool_deleted' ]) ) {
             $importdestroyed = @isset($_POST[ 'import_pool_deleted' ]);
             if ($importdestroyed ) {
                 $importables = zfs_pool_import_list(true);
             } else {
-                $importables = zfs_pool_import_list(false);
+                $importables = zfs_pool_import_list();
             }
             $scannedforpools = true;
             if (is_array($importables)AND count($importables) > 0 ) {
@@ -220,14 +223,14 @@ function content_internal_welcome()
                 $i = 0;
                 if (@is_array($importables) ) {
                     foreach ( $importables as $importable ) {
-                        $table_importpool[] = array(
+                        $table_importpool[] = [
                         'IMPORT_TYPE' => ( $importdestroyed ) ? 'destroyed' : 'hidden',
                         'IMPORT_ID' => $importable[ 'id' ],
                         'IMPORT_IMG' => ( $importable[ 'canimport' ] ) ? 'ok' : 'warn',
                         'IMPORT_POOLNAME' => htmlentities($importable[ 'pool' ]),
                         'IMPORT_POOLDATA' => htmlentities($importable[ 'rawoutput' ]),
                         'IMPORT_BOUNDARY' => ( ++$i < count($importables) ) ? 'normal' : 'hidden'
-                        );
+                        ];
                     }
                 }
             } else {
@@ -287,7 +290,7 @@ function content_internal_welcome()
     }
 
     // export new tags
-    return @array(
+    return @[
     'TABLE_PHYSDISKS' => $physdisks,
     'TABLE_POOLLIST' => $poollist,
     'TABLE_IMPORTPOOL' => $table_importpool,
@@ -329,7 +332,7 @@ function content_internal_welcome()
     'W5_ACTIVATION' => $act,
     'W5_FEEDBACK' => $act_feedback,
     'W5_FEEDBACK_TEXT' => $act_feedback_text
-    );
+    ];
 }
 
 function submit_welcome_submit_0() 
@@ -417,9 +420,9 @@ function submit_welcome_submit_3()
         ( int )$_POST[ 'new_zpool_sectorsize' ] : 512;
 
         // scan for selected whole disks
-        $wholedisks = array();
+        $wholedisks = [];
         foreach ( $_POST as $var => $value ) {
-            if ((strpos($var, 'addwholedisk_') === 0) && $value === 'on') {
+            if ((strncmp($var, 'addwholedisk_', 13) === 0) && $value === 'on') {
                 $wholedisks[] = substr($var, strlen('addwholedisk_'));
             }
         }
@@ -451,7 +454,7 @@ function submit_welcome_submit_3()
         }
 
         // format disks with GPT
-        $member_disks = array();
+        $member_disks = [];
         foreach ( $wholedisks as $disk ) {
             // gather diskinfo
             $diskinfo = disk_info($disk);
@@ -506,7 +509,7 @@ function submit_welcome_submit_3()
                 $pmbr = '/boot/pmbr';
                 page_feedback(
                     'could not use <b>pmbr</b> from webinterface - '
-                    . 'using system image version', 'c_notice' 
+                    . 'using system image version'
                 );
             }
             if (file_exists($fd . 'gptzfsboot') ) {
@@ -515,7 +518,7 @@ function submit_welcome_submit_3()
                 $gptzfsboot = '/boot/gptzfsboot';
                 page_feedback(
                     'could not use <b>gptzfsboot</b> from webinterface'
-                    . ' - using system image version', 'c_notice' 
+                    . ' - using system image version'
                 );
             }
 
@@ -573,7 +576,7 @@ function submit_welcome_submit_3()
         }
 
         // command array
-        $commands = array();
+        $commands = [];
 
         // force specific ashift setting to be used during pool creation
         if (is_numeric($sectorsize) ) {
@@ -623,10 +626,10 @@ function submit_welcome_submit_3()
     // scan POST variables for hidden or destroyed pool import buttons
     $result = false;
     foreach ( $_POST as $var => $value ) {
-        if (strpos($var, 'import_hidden_') === 0) {
+        if (strncmp($var, 'import_hidden_', 14) === 0) {
             $poolid = substr($var, strlen('import_hidden_'));
-            $result = zfs_pool_import($poolid, false);
-        } elseif (strpos($var, 'import_destroyed_') === 0) {
+            $result = zfs_pool_import($poolid);
+        } elseif (strncmp($var, 'import_destroyed_', 17) === 0) {
             $poolid = substr($var, strlen('import_destroyed_'));
             $result = zfs_pool_import($poolid, true);
         }

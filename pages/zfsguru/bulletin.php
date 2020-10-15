@@ -1,6 +1,9 @@
 <?php
 
-function content_zfsguru_bulletin() 
+/**
+ * @return array
+ */
+function content_zfsguru_bulletin()
 {
     // required library
     activate_library('gurudb');
@@ -19,7 +22,7 @@ function content_zfsguru_bulletin()
     $class_modified = ( ( int )@$bulletins[ $bid ][ 'modified' ] > ( int )@$bulletins[ $bid ][ 'created' ] ) ? 'normal' : 'hidden';
 
     // export new tags
-    return array(
+    return [
     'PAGE_TITLE' => 'Bulletin messages',
     'PAGE_ACTIVETAB' => 'Bulletin',
     'TABLE_BULLETINS' => table_bulletins($bulletins),
@@ -31,17 +34,22 @@ function content_zfsguru_bulletin()
     'BULLETIN_BODY' => $body,
     'BULLETIN_CREATED' => @date('j M Y H:i:s', $bulletins[ $bid ][ 'created' ]),
     'BULLETIN_MODIFIED' => @date('j M Y H:i:s', $bulletins[ $bid ][ 'modified' ]),
-    );
+    ];
 }
 
-function table_bulletins( $bulletins ) 
+/**
+ * @param $bulletins
+ *
+ * @return array
+ */
+function table_bulletins( $bulletins )
 {
     global $guru;
 
     // required library
     activate_library('bulletin');
 
-    $table = array();
+    $table = [];
     ksort($bulletins);
     foreach ( array_reverse($bulletins, true) as $id => $data ) {
         // skip bulletin messages which do not conform to specified type
@@ -63,7 +71,7 @@ function table_bulletins( $bulletins )
         }
         // we make unread bulletins bold
         $class_bold = ( bulletin_isread($data) ) ? 'normal' : 'bold';
-        $table[] = array(
+        $table[] = [
         'CLASS_ROW' => $class_row,
         'CLASS_BOLD' => $class_bold,
         'BULL_ID' => ( int )$id,
@@ -71,7 +79,7 @@ function table_bulletins( $bulletins )
         'BULL_TYPELONG' => @$types[ $data[ 'type' ] ],
         'BULL_TITLE' => htmlentities($data[ 'title' ]),
         'BULL_CREATED' => date('j M Y H:i:s', $data[ 'created' ]),
-        );
+        ];
     }
     return $table;
 }
@@ -91,7 +99,7 @@ function submit_bulletin()
 
     // type
     foreach ( $_POST as $name => $value ) {
-        if (strpos($name, 'submit_bulletin_type') === 0) {
+        if (strncmp($name, 'submit_bulletin_type', 20) === 0) {
             redirect_url($url . '&type=' . substr($name, strlen('submit_bulletin_type')));
         }
     }

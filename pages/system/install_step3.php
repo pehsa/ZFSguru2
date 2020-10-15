@@ -1,6 +1,9 @@
 <?php
 
-function content_system_install_step3() 
+/**
+ * @return array
+ */
+function content_system_install_step3()
 {
     // required library
     activate_library('zfs');
@@ -57,7 +60,7 @@ function content_system_install_step3()
     zfsguru_unmountmedia();
 
     // export shared tags
-    return array(
+    return [
     'PAGE_ACTIVETAB' => 'Install',
     'PAGE_TITLE' => 'Install (step 3)',
     'INSTALL_VERSION' => htmlentities($version),
@@ -78,16 +81,24 @@ function content_system_install_step3()
     'CLASS_GPTDISK' => $class_gptdisk,
     'CLASS_RAWDISK' => $class_rawdisk,
     'CLASS_ZFSPOOL' => $class_zfspool,
-    );
+    ];
 }
 
+/**
+ * @param $version
+ * @param $source
+ * @param $target
+ * @param $dist
+ *
+ * @return false[]
+ */
 function distribution_disabled( $version, $source, $target, $dist )
 {
-    $disabled = array(
+    $disabled = [
     'ROZ' => false,
     'ROR' => false,
     'ROM' => false,
-    );
+    ];
     if (strpos($target, 'ZFS:') !== false ) {
         $disabled[ 'ROR' ] = true;
         $disabled[ 'ROM' ] = true;
@@ -103,7 +114,14 @@ function distribution_disabled( $version, $source, $target, $dist )
     return $disabled;
 }
 
-function distribution_roz( $version, $source, $target ) 
+/**
+ * @param $version
+ * @param $source
+ * @param $target
+ *
+ * @return array
+ */
+function distribution_roz( $version, $source, $target )
 {
     // required library
     activate_library('zfs');
@@ -114,7 +132,7 @@ function distribution_roz( $version, $source, $target )
     $sysloc = @$locate[ 'name' ][ $version ][ 'path' ];
 
     // target ("ZFS: <poolname>")
-    if (strpos($target, 'ZFS: ') !== 0) {
+    if (strncmp($target, 'ZFS: ', 5) !== 0) {
         friendlyerror(
             'Root-on-ZFS distribution can only be installed on a ZFS pool!',
             'system.php?install&version=' . $version . '&source=' . $source 
@@ -151,10 +169,10 @@ function distribution_roz( $version, $source, $target )
     $system[ $sysver ][ $platform ][ 'sha512' ] : $version . ' (cannot verify)';
 
     // swap size table
-    $table_roz_swapsize = array();
+    $table_roz_swapsize = [];
     // TODO: available swap space
     //  $swap_availspace = $syssize - $syssize_uncompressed;
-    $swaplist = array(
+    $swaplist = [
     '0.125' => '128 MiB (minimum)</option>',
     '0.25' => '256 MiB',
     '0.5' => '512 MiB',
@@ -167,7 +185,7 @@ function distribution_roz( $version, $source, $target )
     '16.0' => '16 GiB',
     '20.0' => '20 GiB',
     '32.0' => '32 GiB'
-    );
+    ];
     foreach ( $swaplist as $value => $name ) {
         // TODO: available swap space; hide SWAP volumes that are too big
         //   if (($value * 1024 * 1024 * 1024) > $targetfreespace_afterinstall)
@@ -178,11 +196,11 @@ function distribution_roz( $version, $source, $target )
             $swapname = $name . ' (default)';
             $selected = 'selected="selected"';
         }
-        $table_roz_swapsize[] = array(
+        $table_roz_swapsize[] = [
         'SWAP_NAME' => $swapname,
         'SWAP_VALUE' => $value,
         'SWAP_SELECTED' => $selected
-        );
+        ];
     }
     if (count($table_roz_swapsize) > 1 ) {
         $arr = $table_roz_swapsize;
@@ -195,7 +213,7 @@ function distribution_roz( $version, $source, $target )
     }
 
     // export new tags
-    return @array(
+    return @[
     'TABLE_ROZ_SWAPSIZE' => $table_roz_swapsize,
     'CLASS_LOWSPACE' => $class_lowspace,
     'CLASS_TOOLOWSPACE' => $class_toolowspace,
@@ -209,15 +227,21 @@ function distribution_roz( $version, $source, $target )
     'ROZ_SPACEMAX' => $space_max,
     'ROZ_LZ4' => ( $pool_v5000 ) ? 'selected' : 'disabled',
     'ROZ_LZJB' => ( !$pool_v5000 ) ? 'selected' : '',
-    );
+    ];
 }
 
+/**
+ * @return array
+ */
 function distribution_ror()
 {
-    return array();
+    return [];
 }
 
+/**
+ * @return array
+ */
 function distribution_rom()
 {
-    return array();
+    return [];
 }

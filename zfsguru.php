@@ -4,11 +4,11 @@
 require 'includes/main.php';
 
 // navtabs
-$tabs = array(
+$tabs = [
     'About' => 'zfsguru.php',
     'Bulletin' => 'zfsguru.php?bulletin',
     'Future' => 'zfsguru.php?future',
-);
+];
 
 // select page
 if (@isset($_GET[ 'bulletin' ]) ) {
